@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CANN 体验看板 · 总览 v3.0</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+:root{
+  /* palette */
+  --blue-deep:#1E4FB8;--blue:#2E6BE6;--blue-soft:#6E9BF0;--blue-light:#EAF1FE;
+  --purple-dark:#4F4DA7;--purple:#6A67CE;--purple-bright:#A177FF;--purple-light:#F0EFFA;
+  --teal-dark:#179D8A;--teal:#1AAFD0;--teal-bright:#02CEFF;--teal-light:#E8F7FB;
+  --green-dark:#1FA97C;--green:#37C597;--green-bright:#3BE8B0;--green-light:#EAFBF5;
+  --gold-dark:#E08700;--gold:#FD9A00;--gold-bright:#FFB900;--gold-light:#FFF7E6;
+  --coral-dark:#E63838;--coral:#FC636B;--coral-bright:#FF8AA3;--coral-light:#FEEFF1;
+  --g1:#F7F9FC;--g2:#EFF2F7;--g3:#E6EAF1;--g4:#D7DCE6;--g5:#BFC6D2;
+  --g6:#9AA1AE;--g7:#727A88;--g8:#525A68;--g9:#363E4C;--g10:#1B2330;
+  /* semantic */
+  --bg:#F2F5FA;--card:#FFFFFF;--border:#E9ECF3;--border-2:#DCE1EB;
+  --text:var(--g10);--text-2:var(--g8);--text-3:var(--g6);
+  --primary:var(--blue);--good:var(--green-dark);--warn:var(--gold-dark);--bad:var(--coral-dark);
+  --radius-l:18px;--radius-m:14px;--radius-s:9px;
+  --shadow:0 1px 2px rgba(30,60,120,.04),0 6px 20px rgba(30,60,120,.05);
+  --shadow-pop:0 12px 34px rgba(46,107,230,.16);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.4}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+/* ── decorative network bg ── */
+.deco{position:fixed;top:-60px;right:-40px;width:620px;height:480px;pointer-events:none;z-index:0;opacity:.5;filter:blur(.4px)}
+
+/* ── TOPBAR ── */
+.topbar{background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:0 30px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 14px rgba(30,60,120,.05)}
+.tb-logo{font-size:16px;font-weight:900;letter-spacing:-.02em;background:linear-gradient(120deg,var(--blue-deep),var(--purple-bright));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tb-sep{color:var(--g4);margin:0 9px}
+.tb-title{font-size:12px;color:var(--text-3);font-weight:500}
+.tb-dims{display:flex;margin-left:30px}
+.dim-tab{padding:0 17px;height:56px;font-size:13px;font-weight:600;color:var(--text-3);border:none;background:none;cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;font-family:inherit;transition:all .15s}
+.dim-tab:hover{color:var(--text)}
+.dim-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
+.tb-right{display:flex;align-items:center;gap:9px;margin-left:auto}
+.period-pill{font-size:11.5px;color:var(--text-2);background:#fff;border:1px solid var(--border-2);border-radius:999px;padding:6px 13px;cursor:pointer;display:flex;align-items:center;gap:7px;font-weight:600}
+.period-pill svg{width:13px;height:13px;stroke:var(--text-3)}
+.export-btn{font-size:11.5px;font-weight:700;color:#fff;background:linear-gradient(120deg,var(--blue),var(--blue-deep));border:none;border-radius:999px;padding:7px 15px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+.export-btn svg{width:13px;height:13px;stroke:#fff}
+
+/* ── FILTER BAR ── */
+.filter-bar{background:rgba(255,255,255,.7);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:9px 30px;display:flex;align-items:center;gap:9px;position:sticky;top:56px;z-index:99}
+.fl-lbl{font-size:10px;color:var(--text-3);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.fchip{padding:5px 13px;border-radius:999px;font-size:11.5px;font-weight:600;border:1px solid var(--border-2);background:#fff;color:var(--text-2);cursor:pointer;transition:all .12s}
+.fchip:hover{border-color:var(--blue-soft);color:var(--primary)}
+.fchip.on{background:var(--blue-light);color:var(--blue-deep);border-color:var(--blue-soft)}
+.fl-sep{width:1px;height:15px;background:var(--border);margin:0 3px}
+
+/* ── LAYOUT ── */
+.page{position:relative;z-index:1;max-width:1640px;margin:0 auto;padding:22px 30px 90px}
+
+/* ── FLOOR ── */
+.floor{margin-bottom:30px;scroll-margin-top:124px}
+.floor-hd{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.floor-badge{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(30,60,120,.16)}
+.floor-badge svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.1}
+.floor-title{font-size:17px;font-weight:900;letter-spacing:-.01em;color:var(--text)}
+.floor-sub{font-size:11.5px;color:var(--text-3);font-weight:500;margin-left:2px}
+.floor-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+.more-link{font-size:11.5px;color:var(--text-3);font-weight:600;cursor:pointer;display:flex;align-items:center;gap:3px;white-space:nowrap;text-decoration:none;transition:color .15s}
+.more-link:hover{color:var(--primary)}
+
+/* ── CARD ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-m);box-shadow:var(--shadow);padding:16px 18px;min-width:0}
+.card-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:13px;gap:8px}
+.card-hd-l{display:flex;align-items:baseline;gap:8px;min-width:0}
+.card-title{font-size:13px;font-weight:800;letter-spacing:-.01em;color:var(--text);white-space:nowrap}
+.card-meta{font-size:10.5px;color:var(--text-3);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-more{font-size:10.5px;color:var(--text-3);font-weight:600;cursor:pointer;white-space:nowrap}
+.card-more:hover{color:var(--primary)}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:1180px){.grid4{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:1fr 1fr}}
+
+/* ── summary card (floor1) ── */
+.scard{display:flex;flex-direction:column;min-height:182px}
+.sc-tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;align-self:flex-start;margin-bottom:2px}
+.sc-row{display:flex;align-items:center;gap:14px;flex:1}
+.sc-nums{display:flex;flex-direction:column;gap:9px;flex:1}
+.sc-stat-l{font-size:10.5px;color:var(--text-3);font-weight:600;margin-bottom:2px}
+.sc-stat-v{font-size:21px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.sc-stat-v small{font-size:11px;font-weight:600;color:var(--text-3);margin-left:2px}
+.sc-mini{display:flex;gap:16px}
+.sc-mini .sc-stat-v{font-size:17px}
+
+/* ring */
+.ring-wrap{position:relative;width:96px;height:96px;flex-shrink:0}
+.ring-c{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.ring-c small{font-size:10px;color:var(--text-3);font-weight:600}
+.ring-lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.ring-sub{font-size:9.5px;color:var(--text-3);font-weight:600}
+
+/* mini table */
+.mtable{width:100%;border-collapse:collapse;font-size:11.5px}
+.mtable th{font-size:10px;font-weight:700;color:var(--text-3);text-align:right;padding:0 0 7px;font-weight:700}
+.mtable th:first-child{text-align:left}
+.mtable td{padding:5px 0;border-top:1px solid var(--g2);text-align:right;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+.mtable td:first-child{text-align:left;font-weight:600;color:var(--text-2)}
+.mtable .pct-ok{color:var(--good)}.mtable .pct-bad{color:var(--bad)}.mtable .pct-warn{color:var(--warn)}
+
+/* horizontal bars */
+.hbar{display:flex;flex-direction:column;gap:8px}
+.hbar-row{display:grid;grid-template-columns:96px 1fr 52px;align-items:center;gap:9px}
+.hbar-name{font-size:11px;color:var(--text-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbar-track{height:8px;border-radius:99px;background:var(--g2);position:relative;overflow:hidden}
+.hbar-fill{height:100%;border-radius:99px}
+.hbar-val{font-size:12px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.hbar-tgt{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--g5);border-radius:2px}
+
+/* delta chips */
+.dlt{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:800;padding:1px 6px;border-radius:999px;vertical-align:middle}
+.dlt.up{color:var(--good);background:var(--green-light)}
+.dlt.dn{color:var(--bad);background:var(--coral-light)}
+.dlt.neu{color:var(--text-3);background:var(--g2)}
+.dlt svg{width:8px;height:8px;stroke-width:3.4;fill:none}
+
+/* pyramid */
+.pyr{display:flex;flex-direction:column;align-items:center;gap:5px;padding:6px 0}
+.pyr-lvl{display:flex;align-items:center;justify-content:space-between;height:38px;border-radius:7px;color:#fff;padding:0 14px;box-shadow:0 3px 10px rgba(30,60,120,.12)}
+.pyr-lvl .pl-name{font-size:11.5px;font-weight:700}
+.pyr-lvl .pl-score{font-size:14px;font-weight:900;font-variant-numeric:tabular-nums}
+.pyr-lvl .pl-score small{font-size:9.5px;opacity:.8;font-weight:600}
+
+/* 0day chips */
+.chip-grp{display:flex;flex-wrap:wrap;gap:7px}
+.mchip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:6px 11px;border-radius:8px;background:var(--g1);border:1px solid var(--border);color:var(--text)}
+.mchip .dot{width:6px;height:6px;border-radius:50%}
+.sub-lbl{font-size:10.5px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 9px;display:flex;align-items:center;gap:7px}
+.sub-lbl::after{content:'';flex:1;height:1px;background:var(--g2)}
+
+/* big stat row */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius-s);overflow:hidden}
+.kpi-cell{padding:13px 15px;border-right:1px solid var(--g2)}
+.kpi-cell:last-child{border-right:none}
+.kpi-cell .kc-l{font-size:10.5px;color:var(--text-3);font-weight:600;margin-bottom:5px}
+.kpi-cell .kc-v{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.kpi-cell .kc-v small{font-size:11px;color:var(--text-3);font-weight:600}
+
+/* callout */
+.callout{display:flex;gap:9px;align-items:flex-start;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:10px 13px;font-size:11.5px;color:var(--blue-deep);font-weight:600;line-height:1.6}
+.callout svg{width:15px;height:15px;stroke:var(--blue);flex-shrink:0;margin-top:1px;fill:none;stroke-width:2}
+
+/* radar legend */
+.rlg{display:flex;flex-direction:column;gap:9px}
+.rlg-row{display:grid;grid-template-columns:78px 1fr 1fr;gap:8px;align-items:center;font-size:11px}
+.rlg-name{font-weight:600;color:var(--text-2)}
+.rlg-bar{height:6px;border-radius:99px;background:var(--g2);overflow:hidden}
+.rlg-bar i{display:block;height:100%;border-radius:99px}
+.rlg-v{font-size:11px;font-weight:800;text-align:right}
+
+/* FAB */
+.fab{position:fixed;right:26px;bottom:26px;width:50px;height:50px;border-radius:50%;background:var(--g10);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow-pop);z-index:120;transition:transform .15s}
+.fab:hover{transform:translateY(-2px)}
+.fab svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2}
+
+.ec{width:100%}
+</style>
+</head>
+<body>
+
+<!-- decorative network -->
+<svg class="deco" viewBox="0 0 620 480" fill="none">
+  <defs><radialGradient id="dg" cx="70%" cy="20%" r="80%">
+    <stop offset="0%" stop-color="#9DC0FF"/><stop offset="60%" stop-color="#C9DBFF"/><stop offset="100%" stop-color="#F2F5FA" stop-opacity="0"/>
+  </radialGradient></defs>
+  <g id="netLines" stroke="#7AA0E8" stroke-width="1" opacity=".55"></g>
+  <g id="netDots"></g>
+</svg>
+
+<!-- topbar -->
+<div class="topbar">
+  <span class="tb-logo">CANN</span>
+  <span class="tb-sep">/</span>
+  <span class="tb-title">开发者体验全景看板</span>
+  <div class="tb-dims">
+    <button class="dim-tab on">总览</button>
+    <button class="dim-tab" onclick="alert('其他 Tab 在 v2.0 中，本页为 v3.0 总览重构')">体验测试</button>
+    <button class="dim-tab" onclick="alert('其他 Tab 在 v2.0 中，本页为 v3.0 总览重构')">用户旅程</button>
+  </div>
+  <div class="tb-right">
+    <div class="period-pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>2026 年 5 月</div>
+    <button class="export-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>导出</button>
+  </div>
+</div>
+
+<!-- filter -->
+<div class="filter-bar">
+  <span class="fl-lbl">芯片</span>
+  <span class="fchip on">A5</span>
+  <span class="fchip">A2 &amp; A3</span>
+  <div class="fl-sep"></div>
+  <span class="fl-lbl">视角</span>
+  <span class="fchip on">全部</span>
+  <span class="fchip">算子开发者</span>
+  <span class="fchip">框架开发者</span>
+  <span class="fchip">应用开发者</span>
+  <span class="fchip">入门开发者</span>
+</div>
+
+<div class="page">
+
+  <!-- ════════ FLOOR 1 · 总览 ════════ -->
+  <section class="floor" id="f-top">
+    <div class="floor-hd">
+      <div class="floor-badge" style="background:linear-gradient(135deg,#2E6BE6,#1E4FB8)">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      </div>
+      <div class="floor-title">总览</div>
+      <div class="floor-sub">四大核心模块 · 月度汇总</div>
+      <div class="floor-line"></div>
+    </div>
+
+    <div class="grid4">
+      <!-- VOD 声音 -->
+      <div class="card scard">
+        <span class="sc-tag" style="background:var(--teal-light);color:var(--teal-dark)">VOD 声音</span>
+        <div class="sc-row">
+          <div class="sc-nums">
+            <div>
+              <div class="sc-stat-l">正向 / 负向声量</div>
+              <div class="sc-mini">
+                <div class="sc-stat-v" style="color:var(--good)">168</div>
+                <div class="sc-stat-v" style="color:var(--bad)">72</div>
+              </div>
+            </div>
+            <div>
+              <div class="sc-stat-l">痛点闭环率 <span class="dlt up"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="18 15 12 9 6 15"/></svg>6%</span></div>
+              <div class="sc-stat-v">38<small>%</small></div>
+            </div>
+          </div>
+          <div class="ring-wrap">
+            <div id="ringNSS" class="ec" style="height:96px"></div>
+            <div class="ring-lbl"><div class="ring-c num">42<small></small></div><div class="ring-sub">NSS</div></div>
+          </div>
+        </div>
+        <a class="card-more" style="margin-top:10px" href="#f-vod">查看更多 ›</a>
+      </div>
+
+      <!-- 生态增益 -->
+      <div class="card scard">
+        <span class="sc-tag" style="background:var(--green-light);color:var(--green-dark)">生态增益</span>
+        <table class="mtable" style="margin-top:4px">
+          <tr><td>PyTorch API 支持度</td><td>4216<small style="color:var(--text-3);font-weight:600">/5000</small></td></tr>
+          <tr><td>开箱达标率 · 裸模型</td><td class="pct-ok">100%</td></tr>
+          <tr><td>开箱达标率 · 带框架</td><td class="pct-warn">72%</td></tr>
+          <tr><td>开箱通过率 · 裸模型</td><td class="pct-ok">100%</td></tr>
+          <tr><td>开箱通过率 · 带框架</td><td class="pct-bad">61%</td></tr>
+        </table>
+        <a class="card-more" style="margin-top:auto;padding-top:8px" href="#f-eco">查看更多 ›</a>
+      </div>
+
+      <!-- 开发界面 -->
+      <div class="card scard">
+        <span class="sc-tag" style="background:var(--purple-light);color:var(--purple-dark)">开发界面</span>
+        <div class="sc-stat-l" style="margin:2px 0 9px">产品易用性评分 · 实际 / 目标</div>
+        <div class="hbar" style="flex:1">
+          <div class="hbar-row"><div class="hbar-name">算子库</div><div class="hbar-track"><div class="hbar-fill" style="width:90%;background:linear-gradient(90deg,#37C597,#3BE8B0)"></div><div class="hbar-tgt" style="left:100%"></div></div><div class="hbar-val">5.23</div></div>
+          <div class="hbar-row"><div class="hbar-name">集合通信</div><div class="hbar-track"><div class="hbar-fill" style="width:80%;background:linear-gradient(90deg,#1AAFD0,#02CEFF)"></div><div class="hbar-tgt" style="left:100%"></div></div><div class="hbar-val">4.80</div></div>
+          <div class="hbar-row"><div class="hbar-name">Ascend C</div><div class="hbar-track"><div class="hbar-fill" style="width:68%;background:linear-gradient(90deg,#FD9A00,#FFB900)"></div><div class="hbar-tgt" style="left:100%"></div></div><div class="hbar-val">4.10</div></div>
+          <div class="hbar-row"><div class="hbar-name">图引擎</div><div class="hbar-track"><div class="hbar-fill" style="width:88%;background:linear-gradient(90deg,#6A67CE,#A177FF)"></div><div class="hbar-tgt" style="left:100%"></div></div><div class="hbar-val">5.27</div></div>
+        </div>
+        <a class="card-more" style="margin-top:8px" href="#f-dev">查看更多 ›</a>
+      </div>
+
+      <!-- 技术内核 -->
+      <div class="card scard">
+        <span class="sc-tag" style="background:var(--coral-light);color:var(--coral-dark)">技术内核</span>
+        <div class="sc-stat-l" style="margin:2px 0 9px">专项维度 vs CUDA · 外部专家评分</div>
+        <table class="mtable" style="flex:1">
+          <tr><td>硬件建模</td><td>4.2 <span class="dlt up"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="18 15 12 9 6 15"/></svg></span></td></tr>
+          <tr><td>编译器</td><td>3.6 <span class="dlt dn"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></span></td></tr>
+          <tr><td>编程模型</td><td>4.0 <span class="dlt neu">–</span></td></tr>
+          <tr><td>IR 表达</td><td>3.4 <span class="dlt dn"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg></span></td></tr>
+        </table>
+        <a class="card-more" style="margin-top:8px" href="#f-core">查看更多 ›</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FLOOR 2 · VOD 声音 ════════ -->
+  <section class="floor" id="f-vod">
+    <div class="floor-hd">
+      <div class="floor-badge" style="background:linear-gradient(135deg,#1AAFD0,#179D8A)">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+      </div>
+      <div class="floor-title">VOD 声音</div>
+      <div class="floor-sub">客户原声 · 痛点闭环 · 正向案例</div>
+      <div class="floor-line"></div>
+      <a class="more-link">导出原声报告 ›</a>
+    </div>
+
+    <div class="grid3" style="margin-bottom:14px">
+      <!-- 痛点闭环率 -->
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">痛点闭环率</span><span class="card-meta">大客户 · 目标 50%</span></div></div>
+        <div class="hbar">
+          <div class="hbar-row"><div class="hbar-name">京东</div><div class="hbar-track"><div class="hbar-fill" style="width:90%;background:linear-gradient(90deg,#37C597,#3BE8B0)"></div><div class="hbar-tgt" style="left:100%"></div></div><div class="hbar-val" style="color:var(--good)">45%</div></div>
+          <div class="hbar-row"><div class="hbar-name">盘古</div><div class="hbar-track"><div class="hbar-fill" style="width:84%;background:linear-gradient(90deg,#37C597,#3BE8B0)"></div><div class="hbar-tgt" style="left:100%"></div></div><div class="hbar-val" style="color:var(--good)">42%</div></div>
+          <div class="hbar-row"><div class="hbar-name">蚂蚁</div><div class="hbar-track"><div class="hbar-fill" style="width:70%;background:linear-gradient(90deg,#FD9A00,#FFB900)"></div><div class="hbar-tgt" style="left:100%"></div></div><div class="hbar-val" style="color:var(--warn)">35%</div></div>
+          <div class="hbar-row"><div class="hbar-name">美团</div><div class="hbar-track"><div class="hbar-fill" style="width:60%;background:linear-gradient(90deg,#FD9A00,#FFB900)"></div><div class="hbar-tgt" style="left:100%"></div></div><div class="hbar-val" style="color:var(--warn)">30%</div></div>
+          <div class="hbar-row"><div class="hbar-name">O1</div><div class="hbar-track"><div class="hbar-fill" style="width:56%;background:linear-gradient(90deg,#FC636B,#FF8AA3)"></div><div class="hbar-tgt" style="left:100%"></div></div><div class="hbar-val" style="color:var(--bad)">28%</div></div>
+          <div class="hbar-row"><div class="hbar-name">讯飞</div><div class="hbar-track"><div class="hbar-fill" style="width:50%;background:linear-gradient(90deg,#FC636B,#FF8AA3)"></div><div class="hbar-tgt" style="left:100%"></div></div><div class="hbar-val" style="color:var(--bad)">25%</div></div>
+        </div>
+      </div>
+      <!-- 痛点分布 bubble -->
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">痛点分布</span><span class="card-meta">按分队 · 共 30 条</span></div><span class="card-more">气泡 / 柱状</span></div>
+        <div id="bubblePain" class="ec" style="height:212px"></div>
+      </div>
+      <!-- 正向案例 grouped -->
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">正向案例</span><span class="card-meta">已完成 / 已规划</span></div></div>
+        <div id="posCase" class="ec" style="height:212px"></div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <!-- VOD 声量 Top5 -->
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">高频共性声音 Top 5</span><span class="card-meta">来源 · 社区 issue 97%</span></div></div>
+        <div id="vodVol" class="ec" style="height:218px"></div>
+      </div>
+      <!-- Top 原声 -->
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">Top 原声摘要</span><span class="card-meta">本期 240 条 VOD</span></div></div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:2px">
+          <div class="callout" style="background:var(--coral-light);border-color:var(--coral);color:var(--coral-dark)">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>多算子层：空指针校验缺失、编译失败、core dump、精度异常、文档描述不一致 <b>· 71 声量</b></span>
+          </div>
+          <div class="callout" style="background:var(--gold-light);border-color:var(--gold);color:var(--gold-dark)">
+            <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span>CANN 多算子仓：文档参数错误、格式错误、描述不一致、内容缺失 <b>· 61 声量</b></span>
+          </div>
+          <div class="callout">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>算子资料文档：格式不规范、参数描述错误、命令目录错误 <b>· 40 声量</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FLOOR 3 · 生态增益 ════════ -->
+  <section class="floor" id="f-eco">
+    <div class="floor-hd">
+      <div class="floor-badge" style="background:linear-gradient(135deg,#37C597,#1FA97C)">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></svg>
+      </div>
+      <div class="floor-title">生态增益</div>
+      <div class="floor-sub">PyTorch API · 模型开箱 · 0day 发布</div>
+      <div class="floor-line"></div>
+      <span class="fchip on" style="cursor:default">芯片 A5</span>
+    </div>
+
+    <!-- PyTorch API -->
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-hd"><div class="card-hd-l"><span class="card-title">PyTorch API 支持度</span><span class="card-meta">基础能力验证 + 增强能力验证</span></div><span class="card-more">查看更多 ›</span></div>
+      <div class="kpi-row" style="margin-bottom:12px">
+        <div class="kpi-cell"><div class="kc-l">Torch 社区用例 (Core)</div><div class="kc-v num">77006<small> 总</small></div></div>
+        <div class="kpi-cell"><div class="kc-l">通过数</div><div class="kc-v num" style="color:var(--good)">65724</div></div>
+        <div class="kpi-cell"><div class="kc-l">通过率</div><div class="kc-v num" style="color:var(--good)">85.35<small>%</small></div></div>
+        <div class="kpi-cell"><div class="kc-l">社区用例 (全量)</div><div class="kc-v num" style="color:var(--text-3)">0.00<small>%</small></div></div>
+      </div>
+      <div class="sub-lbl">增强能力验证</div>
+      <table class="mtable">
+        <tr><th>API 类别</th><th>规划改进</th><th>覆盖数</th><th>通过数</th><th>通过率</th></tr>
+        <tr><td>PyTorch API</td><td>2342</td><td>2105</td><td>1789</td><td class="pct-warn">76.4%</td></tr>
+        <tr><td>算子 API</td><td>1703</td><td>1520</td><td>1402</td><td class="pct-ok">82.3%</td></tr>
+        <tr><td>通信 API</td><td>318</td><td>290</td><td>261</td><td class="pct-ok">82.1%</td></tr>
+        <tr><td>框架 API</td><td>540</td><td>410</td><td>312</td><td class="pct-warn">57.8%</td></tr>
+        <tr><td>工具 API</td><td>96</td><td>72</td><td>10</td><td class="pct-bad">10.4%</td></tr>
+      </table>
+    </div>
+
+    <div class="grid2">
+      <!-- 模型开箱 -->
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">模型开箱成功率 / 性能</span></div></div>
+        <div class="sub-lbl" style="margin-top:4px">带框架模型</div>
+        <table class="mtable">
+          <tr><th>模型</th><th>总数</th><th>通过率</th><th>性能值</th></tr>
+          <tr><td>VLLM 迁移</td><td>24</td><td class="pct-ok">91.7%</td><td>1.08×</td></tr>
+          <tr><td>SGLang 迁移</td><td>16</td><td class="pct-warn">68.8%</td><td>0.94×</td></tr>
+          <tr><td>VERL 迁移</td><td>9</td><td class="pct-bad">44.4%</td><td>0.81×</td></tr>
+        </table>
+        <div class="sub-lbl">纯模型</div>
+        <table class="mtable">
+          <tr><th>模型</th><th>总数</th><th>通过率</th><th>性能值</th></tr>
+          <tr><td>大语言模型</td><td>41</td><td class="pct-ok">100%</td><td>1.12×</td></tr>
+          <tr><td>多模态模型</td><td>18</td><td class="pct-ok">94.4%</td><td>1.03×</td></tr>
+        </table>
+      </div>
+      <!-- 0day 发布 -->
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">高影响力模型 0day 发布</span></div></div>
+        <div class="sub-lbl" style="margin-top:4px"><span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block"></span>基础模型</div>
+        <div class="chip-grp">
+          <span class="mchip"><span class="dot" style="background:var(--green)"></span>Deepseek V4 Pro</span>
+          <span class="mchip"><span class="dot" style="background:var(--green)"></span>Deepseek V4 Flash</span>
+          <span class="mchip"><span class="dot" style="background:var(--green)"></span>Kimi K2 Thinking</span>
+          <span class="mchip"><span class="dot" style="background:var(--green)"></span>Deepseek V3.2</span>
+          <span class="mchip"><span class="dot" style="background:var(--green)"></span>Longcat</span>
+        </div>
+        <div class="sub-lbl"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);display:inline-block"></span>SOTA 性能</div>
+        <div class="chip-grp">
+          <span class="mchip"><span class="dot" style="background:var(--gold)"></span>Deepseek V4 Pro</span>
+          <span class="mchip"><span class="dot" style="background:var(--gold)"></span>Deepseek V4 Flash</span>
+          <span class="mchip"><span class="dot" style="background:var(--gold)"></span>Deepseek V3.2</span>
+        </div>
+        <div class="sub-lbl"><span style="width:6px;height:6px;border-radius:50%;background:var(--blue);display:inline-block"></span>E2E 带框架部署</div>
+        <div class="chip-grp">
+          <span class="mchip"><span class="dot" style="background:var(--blue)"></span>Deepseek V3.2</span>
+          <span class="mchip"><span class="dot" style="background:var(--blue)"></span>Kimi K2 Thinking</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FLOOR 4 · 开发界面 ════════ -->
+  <section class="floor" id="f-dev">
+    <div class="floor-hd">
+      <div class="floor-badge" style="background:linear-gradient(135deg,#6A67CE,#4F4DA7)">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </div>
+      <div class="floor-title">开发界面</div>
+      <div class="floor-sub">基于旅程五层金字塔 · 接口满足度 · 开发效率</div>
+      <div class="floor-line"></div>
+    </div>
+
+    <div class="grid2" style="margin-bottom:14px">
+      <!-- 五层金字塔 -->
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">五层金字塔模型</span><span class="card-meta">基于用户旅程 · 各组件评分</span></div></div>
+        <div class="pyr">
+          <div class="pyr-lvl" style="width:46%;background:linear-gradient(135deg,#37C597,#1FA97C)"><span class="pl-name">感知学习</span><span class="pl-score num">5.1<small>/6</small></span></div>
+          <div class="pyr-lvl" style="width:60%;background:linear-gradient(135deg,#1AAFD0,#179D8A)"><span class="pl-name">设计与实现</span><span class="pl-score num">4.4<small>/6</small></span></div>
+          <div class="pyr-lvl" style="width:74%;background:linear-gradient(135deg,#6A67CE,#4F4DA7)"><span class="pl-name">算子编译</span><span class="pl-score num">3.8<small>/6</small></span></div>
+          <div class="pyr-lvl" style="width:88%;background:linear-gradient(135deg,#FD9A00,#E08700)"><span class="pl-name">功能调测</span><span class="pl-score num">3.5<small>/6</small></span></div>
+          <div class="pyr-lvl" style="width:100%;background:linear-gradient(135deg,#FC636B,#E63838)"><span class="pl-name">性能调优</span><span class="pl-score num">3.1<small>/6</small></span></div>
+        </div>
+        <div class="callout" style="margin-top:6px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span>越往底层（性能调优）体验越弱，是开发界面的核心改进区。</span></div>
+      </div>
+      <!-- Sample 覆盖度 -->
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">Sample 覆盖度</span><span class="card-meta">样例覆盖 / 目标</span></div></div>
+        <div id="sampleCov" class="ec" style="height:198px"></div>
+        <div class="sub-lbl">Agentic 算子开发体验</div>
+        <div class="kpi-row">
+          <div class="kpi-cell"><div class="kc-l">开发成功率</div><div class="kc-v num" style="color:var(--good)">82<small>%</small></div></div>
+          <div class="kpi-cell"><div class="kc-l">用例通过率</div><div class="kc-v num" style="color:var(--warn)">71<small>%</small></div></div>
+          <div class="kpi-cell"><div class="kc-l">平均复杂度</div><div class="kc-v num">34<small>万tok</small></div></div>
+          <div class="kpi-cell"><div class="kc-l">平均时长</div><div class="kc-v num">18<small>min</small></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 接口能力满足度 -->
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-l"><span class="card-title">接口能力满足度</span><span class="card-meta">含 Sample 覆盖与接口完成度</span></div></div>
+      <div class="grid4" style="gap:22px;margin-top:4px">
+        <div>
+          <div class="sub-lbl" style="margin-top:0">Ascend C</div>
+          <div class="hbar">
+            <div class="hbar-row"><div class="hbar-name">算子模板</div><div class="hbar-track"><div class="hbar-fill" style="width:72%;background:linear-gradient(90deg,#6A67CE,#A177FF)"></div></div><div class="hbar-val">72%</div></div>
+            <div class="hbar-row"><div class="hbar-name">Python 接口</div><div class="hbar-track"><div class="hbar-fill" style="width:64%;background:linear-gradient(90deg,#6A67CE,#A177FF)"></div></div><div class="hbar-val">64%</div></div>
+            <div class="hbar-row"><div class="hbar-name">基础 API</div><div class="hbar-track"><div class="hbar-fill" style="width:88%;background:linear-gradient(90deg,#6A67CE,#A177FF)"></div></div><div class="hbar-val">88%</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="sub-lbl" style="margin-top:0">框架 (图模式)</div>
+          <div class="hbar">
+            <div class="hbar-row"><div class="hbar-name">图构造 API</div><div class="hbar-track"><div class="hbar-fill" style="width:45%;background:linear-gradient(90deg,#1AAFD0,#02CEFF)"></div></div><div class="hbar-val">45%</div></div>
+            <div class="hbar-row"><div class="hbar-name">图开发 API</div><div class="hbar-track"><div class="hbar-fill" style="width:28%;background:linear-gradient(90deg,#1AAFD0,#02CEFF)"></div></div><div class="hbar-val">28%</div></div>
+            <div class="hbar-row"><div class="hbar-name">基础接口</div><div class="hbar-track"><div class="hbar-fill" style="width:82%;background:linear-gradient(90deg,#1AAFD0,#02CEFF)"></div></div><div class="hbar-val">82%</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="sub-lbl" style="margin-top:0">集合通信</div>
+          <div class="hbar">
+            <div class="hbar-row"><div class="hbar-name">基础 API</div><div class="hbar-track"><div class="hbar-fill" style="width:100%;background:linear-gradient(90deg,#37C597,#3BE8B0)"></div></div><div class="hbar-val">100%</div></div>
+            <div class="hbar-row"><div class="hbar-name">增强 API</div><div class="hbar-track"><div class="hbar-fill" style="width:8%;background:linear-gradient(90deg,#FC636B,#FF8AA3)"></div></div><div class="hbar-val">7.7%</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="sub-lbl" style="margin-top:0">运行时</div>
+          <div class="hbar">
+            <div class="hbar-row"><div class="hbar-name">Torch/NPU 接口</div><div class="hbar-track"><div class="hbar-fill" style="width:80%;background:linear-gradient(90deg,#FD9A00,#FFB900)"></div></div><div class="hbar-val">80%</div></div>
+            <div class="hbar-row"><div class="hbar-name">全量 API</div><div class="hbar-track"><div class="hbar-fill" style="width:59%;background:linear-gradient(90deg,#FD9A00,#FFB900)"></div></div><div class="hbar-val">58.6%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FLOOR 5 · 技术内核 ════════ -->
+  <section class="floor" id="f-core">
+    <div class="floor-hd">
+      <div class="floor-badge" style="background:linear-gradient(135deg,#FC636B,#E63838)">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+      </div>
+      <div class="floor-title">技术内核</div>
+      <div class="floor-sub">硬件 · 编译器 · 编程模型 · IR — vs CUDA</div>
+      <div class="floor-line"></div>
+      <span class="dlt neu" style="font-size:10px">外部专家评分</span>
+    </div>
+
+    <div class="grid2">
+      <!-- 雷达 vs CUDA -->
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">能力对标 vs CUDA</span><span class="card-meta">满分 5 · 外部专家</span></div></div>
+        <div id="coreRadar" class="ec" style="height:268px"></div>
+      </div>
+      <!-- 维度明细 -->
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">维度明细评分</span></div><span class="card-more">Ascend · CUDA 基线 5.0</span></div>
+        <div class="rlg" style="margin-top:6px">
+          <div class="rlg-row"><div class="rlg-name">硬件建模</div><div class="rlg-bar"><i style="width:84%;background:linear-gradient(90deg,#37C597,#3BE8B0)"></i></div><div class="rlg-v" style="color:var(--good)">4.2</div></div>
+          <div class="rlg-row"><div class="rlg-name">编译器·语言</div><div class="rlg-bar"><i style="width:72%;background:linear-gradient(90deg,#FD9A00,#FFB900)"></i></div><div class="rlg-v" style="color:var(--warn)">3.6</div></div>
+          <div class="rlg-row"><div class="rlg-name">编译器·库</div><div class="rlg-bar"><i style="width:64%;background:linear-gradient(90deg,#FD9A00,#FFB900)"></i></div><div class="rlg-v" style="color:var(--warn)">3.2</div></div>
+          <div class="rlg-row"><div class="rlg-name">编程模型</div><div class="rlg-bar"><i style="width:80%;background:linear-gradient(90deg,#6A67CE,#A177FF)"></i></div><div class="rlg-v" style="color:var(--text)">4.0</div></div>
+          <div class="rlg-row"><div class="rlg-name">IR 表达</div><div class="rlg-bar"><i style="width:68%;background:linear-gradient(90deg,#FC636B,#FF8AA3)"></i></div><div class="rlg-v" style="color:var(--bad)">3.4</div></div>
+        </div>
+        <div class="sub-lbl">自动化覆盖</div>
+        <div class="callout"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>与 Ascend C 相关维度（硬件建模 / 软硬打通）可自动化采集评分；其余维度依赖外部专家人工评估。</span></div>
+        <div class="chip-grp" style="margin-top:10px">
+          <span class="mchip"><span class="dot" style="background:var(--green)"></span>硬件建模 · 自动化</span>
+          <span class="mchip"><span class="dot" style="background:var(--green)"></span>软硬打通 · 自动化</span>
+          <span class="mchip"><span class="dot" style="background:var(--g5)"></span>编译器 · 人工</span>
+          <span class="mchip"><span class="dot" style="background:var(--g5)"></span>IR · 人工</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="fab" title="分享 / 导出"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
+
+<script>
+// ── decorative network ──
+(function(){
+  const dots=document.getElementById('netDots'),lines=document.getElementById('netLines');
+  const pts=[];const N=22;
+  for(let i=0;i<N;i++){pts.push([60+Math.random()*540,20+Math.random()*420]);}
+  pts.forEach(p=>{
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',p[0]);c.setAttribute('cy',p[1]);c.setAttribute('r',2.2);
+    c.setAttribute('fill','#5E86DC');c.setAttribute('opacity',.7);dots.appendChild(c);
+  });
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+    const dx=pts[i][0]-pts[j][0],dy=pts[i][1]-pts[j][1];
+    if(Math.hypot(dx,dy)<130){
+      const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+      l.setAttribute('x1',pts[i][0]);l.setAttribute('y1',pts[i][1]);
+      l.setAttribute('x2',pts[j][0]);l.setAttribute('y2',pts[j][1]);lines.appendChild(l);
+    }
+  }
+})();
+
+// ── ECharts ──
+function makeChart(id,opt,renderer){
+  const el=document.getElementById(id);if(!el||typeof echarts==='undefined')return null;
+  const ch=echarts.init(el,null,{renderer:renderer||'svg'});ch.setOption(opt);
+  window.addEventListener('resize',()=>ch.resize());return ch;
+}
+const AX={axisLine:{lineStyle:{color:'#E6EAF1'}},axisTick:{show:false},axisLabel:{color:'#9AA1AE',fontSize:10},splitLine:{lineStyle:{color:'#F2F5F9'}}};
+
+// NSS ring (gauge progress)
+makeChart('ringNSS',{
+  series:[{type:'gauge',startAngle:90,endAngle:-270,radius:'94%',pointer:{show:false},
+    progress:{show:true,width:8,roundCap:true,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,1,[{offset:0,color:'#2E6BE6'},{offset:1,color:'#6E9BF0'}])}},
+    axisLine:{lineStyle:{width:8,color:[[1,'#EAF1FE']]}},
+    axisTick:{show:false},splitLine:{show:false},axisLabel:{show:false},
+    data:[{value:71}],detail:{show:false},title:{show:false}}]
+});
+
+// 痛点分布 bubble
+makeChart('bubblePain',{
+  grid:{top:14,right:14,bottom:24,left:36},
+  xAxis:{type:'value',min:0,max:14,...AX,name:'痛点数',nameTextStyle:{color:'#9AA1AE',fontSize:9}},
+  yAxis:{type:'value',min:0,max:60,...AX,name:'闭环率%',nameTextStyle:{color:'#9AA1AE',fontSize:9}},
+  tooltip:{trigger:'item',formatter:p=>`${p.data[3]}<br/>痛点 ${p.data[0]} · 闭环 ${p.data[1]}%`},
+  series:[{type:'scatter',symbolSize:d=>d[2],
+    data:[[12,28,54,'算子编程·Ascend C','#E63838'],[7,42,40,'算子分队·多算子层','#FD9A00'],[5,36,34,'编译&OS·工具链','#6A67CE'],[4,45,30,'资料分队·文档仓库','#1AAFD0'],[2,50,24,'工具链·DevKit','#37C597']].map(d=>({value:d,itemStyle:{color:d[4],opacity:.78}})),
+    label:{show:true,formatter:p=>p.data.value[3].split('·')[0],color:'#fff',fontSize:9,fontWeight:700}}]
+});
+
+// 正向案例 grouped
+makeChart('posCase',{
+  grid:{top:30,right:10,bottom:22,left:30},
+  legend:{top:0,right:0,itemWidth:10,itemHeight:8,textStyle:{fontSize:10,color:'#727A88'},data:['已完成','已规划']},
+  tooltip:{trigger:'axis'},
+  xAxis:{type:'category',data:['O1','美团','讯飞','腾讯','蚂蚁','京东'],...AX},
+  yAxis:{type:'value',...AX},
+  series:[
+    {name:'已完成',type:'bar',barWidth:9,itemStyle:{borderRadius:[3,3,0,0],color:'#37C597'},data:[3,5,4,7,6,8]},
+    {name:'已规划',type:'bar',barWidth:9,itemStyle:{borderRadius:[3,3,0,0],color:'#6E9BF0'},data:[5,4,6,5,7,6]}
+  ]
+});
+
+// VOD 声量 Top5 horizontal
+makeChart('vodVol',{
+  grid:{top:10,right:30,bottom:6,left:120},
+  tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+  xAxis:{type:'value',max:80,...AX,splitLine:{show:false}},
+  yAxis:{type:'category',inverse:true,data:['ops-transformer 调参','transformer 图模式','算子资料文档','CANN 多算子仓','多算子层缺陷'],...AX,axisLabel:{color:'#586072',fontSize:10.5,fontWeight:600}},
+  series:[{type:'bar',barWidth:13,
+    itemStyle:{borderRadius:[0,6,6,0]},
+    label:{show:true,position:'right',color:'#363E4C',fontSize:10.5,fontWeight:700},
+    data:[
+      {value:33,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#C9DBFF'},{offset:1,color:'#37C597'}])}},
+      {value:35,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#C9DBFF'},{offset:1,color:'#1AAFD0'}])}},
+      {value:40,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#C9DBFF'},{offset:1,color:'#FD9A00'}])}},
+      {value:61,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#FFE0B2'},{offset:1,color:'#FC636B'}])}},
+      {value:71,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#FFD0D5'},{offset:1,color:'#E63838'}])}}
+    ]}]
+});
+
+// Sample 覆盖度
+makeChart('sampleCov',{
+  grid:{top:18,right:16,bottom:22,left:36},
+  tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
+  xAxis:{type:'category',data:['算子库','Ascend C','集合通信','运行时'],...AX},
+  yAxis:{type:'value',max:100,...AX},
+  series:[{type:'bar',barWidth:26,
+    label:{show:true,position:'top',formatter:'{c}%',color:'#363E4C',fontSize:10.5,fontWeight:700},
+    data:[
+      {value:100,itemStyle:{borderRadius:[5,5,0,0],color:new echarts.graphic.LinearGradient(0,1,0,0,[{offset:0,color:'#3BE8B0'},{offset:1,color:'#37C597'}])}},
+      {value:75,itemStyle:{borderRadius:[5,5,0,0],color:new echarts.graphic.LinearGradient(0,1,0,0,[{offset:0,color:'#A177FF'},{offset:1,color:'#6A67CE'}])}},
+      {value:85,itemStyle:{borderRadius:[5,5,0,0],color:new echarts.graphic.LinearGradient(0,1,0,0,[{offset:0,color:'#02CEFF'},{offset:1,color:'#1AAFD0'}])}},
+      {value:58,itemStyle:{borderRadius:[5,5,0,0],color:new echarts.graphic.LinearGradient(0,1,0,0,[{offset:0,color:'#FFB900'},{offset:1,color:'#FD9A00'}])}}
+    ]}]
+});
+
+// 技术内核 radar
+makeChart('coreRadar',{
+  tooltip:{},
+  legend:{bottom:0,itemWidth:11,itemHeight:8,textStyle:{fontSize:11,color:'#727A88'},data:['Ascend','CUDA 基线']},
+  radar:{indicator:[{name:'硬件建模',max:5},{name:'编译器·语言',max:5},{name:'编译器·库',max:5},{name:'编程模型',max:5},{name:'IR 表达',max:5}],
+    radius:'62%',center:['50%','46%'],
+    axisName:{color:'#586072',fontSize:10.5},
+    splitLine:{lineStyle:{color:'#E6EAF1'}},splitArea:{areaStyle:{color:['#fff','#F7F9FC']}},axisLine:{lineStyle:{color:'#E6EAF1'}}},
+  series:[{type:'radar',data:[
+    {value:[4.2,3.6,3.2,4.0,3.4],name:'Ascend',areaStyle:{color:'rgba(46,107,230,.18)'},lineStyle:{color:'#2E6BE6',width:2},itemStyle:{color:'#2E6BE6'}},
+    {value:[5,5,5,5,5],name:'CUDA 基线',areaStyle:{color:'rgba(154,161,174,.08)'},lineStyle:{color:'#BFC6D2',width:1.5,type:'dashed'},itemStyle:{color:'#BFC6D2'}}
+  ]}]
+});
+
+// smooth anchor for more-links
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}
+  });
+});
+</script>
+</body>
+</html>

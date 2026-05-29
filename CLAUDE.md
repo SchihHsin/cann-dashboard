@@ -1,0 +1,71 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## 这个目录是什么
+
+CANN「开发者效能全景概览」看板的**总览界面 v3.0 重构工作区**。目标：帮助产品/体验团队快速定位体验最差的角色/场景，基于 Agentic 评分、客户痛点、VOD 声量三类证据作改进决策。全部为单文件静态 HTML + 内联模拟数据，无构建系统、无后端、无依赖安装。
+
+> 注意：本目录**不在任何 git 仓库内**，是与 `../AscendCANN/` 平级的独立文件夹。若需版本管理，先确认是 `git init` 本目录还是并入 `../AscendCANN` 仓库。
+
+## 版本谱系（理解任务的关键）
+
+| 文件 | 角色 |
+|------|------|
+| `cann-dashboard-homepage-before.md` | **v1.0 架构规格**（旧版总览：总览4卡 → TOP客户痛点 → 开箱即用 → 开发效率），与 `IMG_3633` 内容一一对应 |
+| `IMG_3633.HEIC` | **视觉参考图**（= v1.0 的视觉实现）：浅色通透白卡、右上淡蓝网络装饰、横向渐变条、环形仪表、气泡图、分组柱、右下悬浮按钮 |
+| `design-options-themed.html` | **v2.0 主题看板**（4398 行，含 总览/体验测试/用户旅程 三个 tab，完整 CSS token + ECharts）。v3 的视觉 token、组件、图表写法都从这里沿袭 |
+| `总览界面改版新架构说明.md` | **v3.0 新架构规格**：五大楼层 |
+| `overview-v3.html` | **v3.0 成品**（单页、仅总览、内联模拟数据） |
+
+v3.0 把 v1.0 的内容**重新分组**为五楼层，并采用 `IMG_3633` 的视觉皮肤。`.md` 规格对部分楼层描述较简略，缺口用模拟数据 + 复用 v2.0/v1.0 结构补全。
+
+## v3.0 五大楼层（`overview-v3.html`）
+
+锚点 id 依次为 `#f-top / #f-vod / #f-eco / #f-dev / #f-core`：
+
+1. **总览**（4 张汇总卡，每卡"查看更多"锚点跳到对应详情楼层）：VOD声音(NSS环形仪表+正负向+闭环率) / 生态增益(API支持度·开箱达标/通过率表) / 开发界面(产品易用性横向评分条) / 技术内核(专项维度 vs CUDA)
+2. **VOD 声音**：痛点闭环率横条、痛点分布气泡图、正向案例分组柱、高频共性声音 Top5、Top原声 callout（v1.0 的"TOP客户痛点"折叠进此层）
+3. **生态增益**：PyTorch API(Core test KPI + 增强能力表)、模型开箱成功率/性能、高影响力模型 0day 发布（v1.0 的"开箱即用"层）
+4. **开发界面**：五层金字塔模型(感知学习→性能调优，越底层评分越低)、Sample覆盖度、Agentic KPI、接口能力满足度
+5. **技术内核**：能力对标 vs CUDA 雷达、维度明细、自动化覆盖说明
+
+## 代码结构（单文件约定）
+
+`overview-v3.html` 内部分三段：`<style>`（:root token + 组件类）→ `<body>`（topbar / filter-bar / `.page` 内五个 `<section class="floor">` / FAB）→ `<script>`。
+
+- **图表统一走 `makeChart(id, opt, renderer)`**（默认 svg 渲染，自带 resize 监听）。当前实例：`ringNSS`(gauge) / `bubblePain`(scatter) / `posCase`(grouped bar) / `vodVol`(横向 bar) / `sampleCov`(bar) / `coreRadar`(radar)。`AX` 常量统一坐标轴样式。
+- ECharts 由 CDN 引入（`cdn.jsdelivr.net/npm/echarts@5`）——**离线/无网环境图表不渲染**，截图验证时需放网。
+- 右上**网络装饰图**由脚本随机生成节点+连线（纯 SVG），非位图。
+- 横向评分条、五层金字塔为纯 CSS；仪表/气泡/柱/雷达用 ECharts。
+- "查看更多 / a[href^='#']" 通过末尾脚本做平滑锚点滚动。
+- 所有数据为内联模拟值，无外部数据源。
+
+## 查看与验证
+
+```bash
+# 在浏览器打开
+open overview-v3.html        # 或 design-options-themed.html
+
+# 无头截图验证（ECharts 走 CDN，必须联网；--virtual-time-budget 等待图表渲染）
+CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+"$CHROME" --headless --disable-gpu --hide-scrollbars --force-device-scale-factor=2 \
+  --window-size=1680,3400 --virtual-time-budget=6000 \
+  --screenshot=/tmp/v3.png "file://$(pwd)/overview-v3.html"
+
+# HEIC 参考图转 PNG 后再读
+sips -s format png IMG_3633.HEIC --out /tmp/ref.png
+# 分块放大读细节：sips -c <高> <宽> --cropOffset <Y> <X> /tmp/ref.png --out tile.png
+```
+
+## 设计约定（沿袭 v2.0）
+
+- 配色 token 在 `:root`：蓝(主色)/紫/青/绿/金/珊瑚 各 5 档 + 灰阶 `--g1..g10`，语义别名 `--good/warn/bad` 等。新卡片优先复用既有 token 与组件类，不要硬编码色值。
+- 视觉基调：浅色通透、白卡 + 柔阴影 + 圆角，高度对齐 `IMG_3633`。
+- 问题优先：排序/颜色/强调以"哪里最差"为导向；三类证据(Agent评分/痛点/VOD)并列互证。
+
+## 协作规则
+
+- **用中文**交流。
+- **视觉/设计类改动先提 2–4 个选项**让用户选（可用 AskUserQuestion），不要直接实现。
+- **模拟数据先行**：缺真实结构时用模拟数据做成完整楼层，后续替换。
