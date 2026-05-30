@@ -183,10 +183,6 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .vp-d-src-l{font-size:9px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em}
 .vp-d-src b{color:var(--text-2);font-weight:800;margin-right:3px}
 
-/* FAB */
-.fab{position:fixed;right:26px;bottom:26px;width:50px;height:50px;border-radius:50%;background:var(--g10);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow-pop);z-index:120;transition:transform .15s}
-.fab:hover{transform:translateY(-2px)}
-.fab svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2}
 
 .ec{width:100%}
 </style>
@@ -355,8 +351,8 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
       <!-- VOD 声量 Top5 -->
       <div class="card" style="display:flex;flex-direction:column">
         <div class="card-hd"><div class="card-hd-l"><span class="card-title">高频共性声音 Top 5</span><span class="card-meta">来源 · 社区 issue 97%</span></div></div>
-        <div style="flex:0.1"></div>
-        <div id="vodVol" class="ec" style="flex:0.8;min-height:0"></div>
+        <div style="flex:0.05"></div>
+        <div id="vodVol" class="ec" style="flex:0.85;min-height:0"></div>
         <div style="flex:0.1"></div>
       </div>
       <!-- Top 原声（与左图联动） -->
@@ -614,7 +610,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 
 </div>
 
-<div class="fab" title="分享 / 导出"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
+
 
 <script>
 // ── decorative network ──
