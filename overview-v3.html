@@ -659,7 +659,13 @@ makeChart('bubblePain',{
   yAxis:{type:'value',min:0,max:60,...AX,name:'闭环率%',nameTextStyle:{color:'#9AA1AE',fontSize:9}},
   tooltip:{trigger:'item',formatter:p=>`${p.data[3]}<br/>痛点 ${p.data[0]} · 闭环 ${p.data[1]}%`},
   series:[{type:'scatter',symbolSize:d=>d[2],
-    data:[[12,28,54,'算子编程·Ascend C'],[7,42,40,'算子分队·多算子层'],[5,36,34,'编译&OS·工具链'],[4,45,30,'资料分队·文档仓库'],[2,50,24,'工具链·DevKit']].map(d=>({value:d,itemStyle:{color:'#2E6BE6',opacity:.72}})),
+    data:[
+      {value:[12,28,54,'算子编程·Ascend C'],itemStyle:{color:'#1D4ED8',opacity:.8}},
+      {value:[7,42,40,'算子分队·多算子层'],itemStyle:{color:'#2E6BE6',opacity:.8}},
+      {value:[5,36,34,'编译&OS·工具链'],itemStyle:{color:'#4F86F7',opacity:.8}},
+      {value:[4,45,30,'资料分队·文档仓库'],itemStyle:{color:'#6E9BF0',opacity:.8}},
+      {value:[2,50,24,'工具链·DevKit'],itemStyle:{color:'#93C5FD',opacity:.8}}
+    ],
     label:{show:true,formatter:p=>p.data.value[3].split('·')[0],color:'#fff',fontSize:9,fontWeight:700}}]
 });
 
@@ -686,11 +692,11 @@ const _vodChart=makeChart('vodVol',{
     itemStyle:{borderRadius:[0,6,6,0]},
     label:{show:true,position:'right',color:'#363E4C',fontSize:10.5,fontWeight:700},
     data:[
-      {value:71,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#2E6BE6'},{offset:1,color:'#BFDBFE'}])}},
-      {value:61,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#2E6BE6'},{offset:1,color:'#BFDBFE'}])}},
-      {value:40,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#2E6BE6'},{offset:1,color:'#BFDBFE'}])}},
-      {value:35,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#2E6BE6'},{offset:1,color:'#BFDBFE'}])}},
-      {value:33,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#2E6BE6'},{offset:1,color:'#BFDBFE'}])}}
+      {value:71,itemStyle:{color:'#1D4ED8'}},
+      {value:61,itemStyle:{color:'#2E6BE6'}},
+      {value:40,itemStyle:{color:'#4F86F7'}},
+      {value:35,itemStyle:{color:'#6E9BF0'}},
+      {value:33,itemStyle:{color:'#93C5FD'}}
     ]}]
 });
 if(_vodChart) _vodChart.on('click',p=>selectVod(p.dataIndex));
@@ -704,10 +710,10 @@ makeChart('sampleCov',{
   series:[{type:'bar',barWidth:26,
     label:{show:true,position:'top',formatter:'{c}%',color:'#363E4C',fontSize:10.5,fontWeight:700},
     data:[
-      {value:100,itemStyle:{borderRadius:[5,5,0,0],color:new echarts.graphic.LinearGradient(0,1,0,0,[{offset:0,color:'#2E6BE6'},{offset:1,color:'#BFDBFE'}])}},
-      {value:75,itemStyle:{borderRadius:[5,5,0,0],color:new echarts.graphic.LinearGradient(0,1,0,0,[{offset:0,color:'#2E6BE6'},{offset:1,color:'#BFDBFE'}])}},
-      {value:85,itemStyle:{borderRadius:[5,5,0,0],color:new echarts.graphic.LinearGradient(0,1,0,0,[{offset:0,color:'#2E6BE6'},{offset:1,color:'#BFDBFE'}])}},
-      {value:58,itemStyle:{borderRadius:[5,5,0,0],color:new echarts.graphic.LinearGradient(0,1,0,0,[{offset:0,color:'#2E6BE6'},{offset:1,color:'#BFDBFE'}])}}
+      {value:100,itemStyle:{borderRadius:[5,5,0,0],color:'#1D4ED8'}},
+      {value:75,itemStyle:{borderRadius:[5,5,0,0],color:'#4F86F7'}},
+      {value:85,itemStyle:{borderRadius:[5,5,0,0],color:'#2E6BE6'}},
+      {value:58,itemStyle:{borderRadius:[5,5,0,0],color:'#6E9BF0'}}
     ]}]
 });
 
