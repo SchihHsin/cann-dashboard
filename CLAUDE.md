@@ -89,4 +89,4 @@ sips -s format png IMG_3633.HEIC --out /tmp/ref.png
 - **用中文**交流。
 - **视觉/设计类改动先提 2–4 个选项**让用户选（可用 AskUserQuestion），不要直接实现。
 - **模拟数据先行**：缺真实结构时用模拟数据做成完整楼层，后续替换。
-- **改完自动 commit + push**：每次改完立即用现有 commit 风格（中文 prefix `style:` / `feat:` / `fix:` + 简要描述）提交并推 `origin/main`，不要堆积、不必逐次确认。
+- **改完自动同步 CLAUDE.md + commit + push**：每次完成一组改动后，先把引入的新架构/组件/约定/坑同步到本文件（纯文案/数值微调不必更新），再按现有 commit 风格（中文 prefix `style:` / `feat:` / `fix:` + 简要描述）一次性提交并推 `origin/main`。CLAUDE.md 改动与功能改动合并到同一 commit，不要堆积。
