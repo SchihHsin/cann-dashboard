@@ -355,7 +355,9 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
       <!-- VOD 声量 Top5 -->
       <div class="card" style="display:flex;flex-direction:column">
         <div class="card-hd"><div class="card-hd-l"><span class="card-title">高频共性声音 Top 5</span><span class="card-meta">来源 · 社区 issue 97%</span></div></div>
-        <div id="vodVol" class="ec" style="flex:1;min-height:230px"></div>
+        <div style="flex:0.1"></div>
+        <div id="vodVol" class="ec" style="flex:0.8;min-height:0"></div>
+        <div style="flex:0.1"></div>
       </div>
       <!-- Top 原声（与左图联动） -->
       <div class="card">
@@ -463,16 +465,19 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
             <linearGradient id="pg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#EDE9FE"/><stop offset="100%" stop-color="#C4B5FD"/></linearGradient>
             <linearGradient id="pg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFFBEB"/><stop offset="100%" stop-color="#FDE68A"/></linearGradient>
             <linearGradient id="pg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFF1F2"/><stop offset="100%" stop-color="#FCA5A5"/></linearGradient>
+            <clipPath id="pyrClip">
+              <path d="M 91,11 L 165,116 Q 168,121 162,121 L 14,121 Q 8,121 11,116 L 85,11 Q 88,7 91,11 Z"/>
+            </clipPath>
           </defs>
           <!-- apex(88,7) base 8→168 y=121; h=114 half=80 -->
-          <g>
+          <g clip-path="url(#pyrClip)">
             <polygon points="88,7   72,30  104,30"         fill="url(#pg5)"/>
             <polygon points="72,30  104,30 120,53  56,53"  fill="url(#pg4)"/>
             <polygon points="56,53  120,53 136,76  40,76"  fill="url(#pg3)"/>
             <polygon points="40,76  136,76 153,99  23,99"  fill="url(#pg2)"/>
             <polygon points="23,99  153,99 168,121 8,121"  fill="url(#pg1)"/>
           </g>
-          <polyline points="88,7 8,121 168,121 88,7" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="1"/>
+          <path d="M 91,11 L 165,116 Q 168,121 162,121 L 14,121 Q 8,121 11,116 L 85,11 Q 88,7 91,11 Z" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="1"/>
           <line x1="72"  y1="30" x2="104" y2="30" stroke="rgba(255,255,255,.4)" stroke-width=".9"/>
           <line x1="56"  y1="53" x2="120" y2="53" stroke="rgba(255,255,255,.4)" stroke-width=".9"/>
           <line x1="40"  y1="76" x2="136" y2="76" stroke="rgba(255,255,255,.4)" stroke-width=".9"/>
