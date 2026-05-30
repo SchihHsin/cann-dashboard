@@ -158,6 +158,31 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .rlg-bar i{display:block;height:100%;border-radius:99px}
 .rlg-v{font-size:11px;font-weight:800;text-align:right}
 
+/* VOD list / detail panel (Floor 2 联动) */
+.vp-body{display:flex;flex-direction:column;gap:8px;margin-top:2px}
+.vp-item{display:flex;gap:11px;padding:9px 11px;border-radius:9px;border:1px solid var(--border);background:#fff;cursor:pointer;transition:all .15s;align-items:flex-start}
+.vp-item:hover{border-color:var(--blue-soft);box-shadow:0 4px 12px rgba(46,107,230,.08);transform:translateY(-1px)}
+.vp-item.on{border-color:var(--blue);background:var(--blue-light);cursor:default;transform:none;box-shadow:none}
+.vp-rank{display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;width:34px;border-radius:6px;color:#fff;padding:5px 0;line-height:1}
+.vp-rank b{font-size:13px;font-weight:900}
+.vp-rank small{font-size:8.5px;opacity:.85;margin-top:2px;font-weight:600}
+.vp-text{min-width:0;flex:1}
+.vp-text-t{font-size:11.5px;font-weight:800;color:var(--text);margin-bottom:3px;letter-spacing:-.01em}
+.vp-text-q{font-size:10.5px;color:var(--text-3);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-style:italic}
+.vp-back{font-size:11px;color:var(--text-3);font-weight:700;cursor:pointer;background:none;border:none;display:inline-flex;align-items:center;gap:4px;padding:0;font-family:inherit;transition:color .15s}
+.vp-back:hover{color:var(--primary)}
+.vp-d-quote{font-size:12px;color:var(--text);line-height:1.65;padding:11px 14px;background:var(--g1);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;font-style:italic;margin-top:8px;position:relative}
+.vp-d-quote::before{content:'\201C';position:absolute;left:6px;top:-2px;font-size:24px;color:var(--blue);opacity:.35;font-family:Georgia,serif;line-height:1}
+.vp-d-meta{display:flex;gap:14px;margin-top:10px;padding:10px 12px;background:var(--g1);border-radius:7px;font-size:10.5px}
+.vp-d-meta>div{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.vp-d-meta .l{color:var(--text-3);font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.06em}
+.vp-d-meta .v{color:var(--text);font-weight:800;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vp-d-action{display:flex;gap:8px;align-items:flex-start;background:var(--green-light);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:9px 12px;font-size:11px;color:var(--green-dark);font-weight:600;line-height:1.55;margin-top:10px}
+.vp-d-action svg{width:13px;height:13px;stroke:var(--green-dark);flex-shrink:0;margin-top:2px;fill:none;stroke-width:2}
+.vp-d-src{display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;font-size:10.5px;color:var(--text-3);align-items:center}
+.vp-d-src-l{font-size:9px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em}
+.vp-d-src b{color:var(--text-2);font-weight:800;margin-right:3px}
+
 /* FAB */
 .fab{position:fixed;right:26px;bottom:26px;width:50px;height:50px;border-radius:50%;background:var(--g10);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:var(--shadow-pop);z-index:120;transition:transform .15s}
 .fab:hover{transform:translateY(-2px)}
@@ -201,10 +226,12 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
   <div class="fl-sep"></div>
   <span class="fl-lbl">视角</span>
   <span class="fchip on">全部</span>
-  <span class="fchip">算子开发者</span>
-  <span class="fchip">框架开发者</span>
-  <span class="fchip">应用开发者</span>
-  <span class="fchip">入门开发者</span>
+  <span class="fchip">资料</span>
+  <span class="fchip">体验设计</span>
+  <span class="fchip">算子编程</span>
+  <span class="fchip">推理框架</span>
+  <span class="fchip">产品负责人</span>
+  <span class="fchip">社区运营</span>
 </div>
 
 <div class="page">
@@ -324,29 +351,16 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
       </div>
     </div>
 
-    <div class="grid2">
+    <div class="grid2" style="align-items:stretch">
       <!-- VOD 声量 Top5 -->
-      <div class="card">
+      <div class="card" style="display:flex;flex-direction:column">
         <div class="card-hd"><div class="card-hd-l"><span class="card-title">高频共性声音 Top 5</span><span class="card-meta">来源 · 社区 issue 97%</span></div></div>
-        <div id="vodVol" class="ec" style="height:218px"></div>
+        <div id="vodVol" class="ec" style="flex:1;min-height:230px"></div>
       </div>
-      <!-- Top 原声 -->
+      <!-- Top 原声（与左图联动） -->
       <div class="card">
-        <div class="card-hd"><div class="card-hd-l"><span class="card-title">Top 原声摘要</span><span class="card-meta">本期 240 条 VOD</span></div></div>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-top:2px">
-          <div class="callout" style="background:var(--coral-light);border-color:var(--coral);color:var(--coral-dark)">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span>多算子层：空指针校验缺失、编译失败、core dump、精度异常、文档描述不一致 <b>· 71 声量</b></span>
-          </div>
-          <div class="callout" style="background:var(--gold-light);border-color:var(--gold);color:var(--gold-dark)">
-            <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-            <span>CANN 多算子仓：文档参数错误、格式错误、描述不一致、内容缺失 <b>· 61 声量</b></span>
-          </div>
-          <div class="callout">
-            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <span>算子资料文档：格式不规范、参数描述错误、命令目录错误 <b>· 40 声量</b></span>
-          </div>
-        </div>
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">Top 原声摘要</span><span class="card-meta" id="vpMeta">本期 240 条 VOD · 点击左侧条目查看详情</span></div></div>
+        <div id="vodPanel" class="vp-body"></div>
       </div>
     </div>
   </section>
@@ -439,17 +453,70 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
     </div>
 
     <div class="grid2" style="margin-bottom:14px">
-      <!-- 五层金字塔 -->
+      <!-- 体验金字塔 -->
       <div class="card">
-        <div class="card-hd"><div class="card-hd-l"><span class="card-title">五层金字塔模型</span><span class="card-meta">基于用户旅程 · 各组件评分</span></div></div>
-        <div class="pyr">
-          <div class="pyr-lvl" style="width:46%;background:linear-gradient(135deg,#37C597,#1FA97C)"><span class="pl-name">感知学习</span><span class="pl-score num">5.1<small>/6</small></span></div>
-          <div class="pyr-lvl" style="width:60%;background:linear-gradient(135deg,#1AAFD0,#179D8A)"><span class="pl-name">设计与实现</span><span class="pl-score num">4.4<small>/6</small></span></div>
-          <div class="pyr-lvl" style="width:74%;background:linear-gradient(135deg,#6A67CE,#4F4DA7)"><span class="pl-name">算子编译</span><span class="pl-score num">3.8<small>/6</small></span></div>
-          <div class="pyr-lvl" style="width:88%;background:linear-gradient(135deg,#FD9A00,#E08700)"><span class="pl-name">功能调测</span><span class="pl-score num">3.5<small>/6</small></span></div>
-          <div class="pyr-lvl" style="width:100%;background:linear-gradient(135deg,#FC636B,#E63838)"><span class="pl-name">性能调优</span><span class="pl-score num">3.1<small>/6</small></span></div>
-        </div>
-        <div class="callout" style="margin-top:6px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span>越往底层（性能调优）体验越弱，是开发界面的核心改进区。</span></div>
+        <div class="card-hd"><div class="card-hd-l"><span class="card-title">体验金字塔</span><span class="card-meta">综合体验定级 · 当前位置标注</span></div></div>
+        <svg viewBox="0 0 360 208" width="100%" style="display:block;margin:8px 0 4px;overflow:visible">
+          <defs>
+            <filter id="pyrSh" x="-15%" y="-10%" width="140%" height="130%">
+              <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="rgba(0,0,0,.15)"/>
+            </filter>
+            <linearGradient id="pg5" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6EE7B7"/><stop offset="100%" stop-color="#059669"/></linearGradient>
+            <linearGradient id="pg4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#93C5FD"/><stop offset="100%" stop-color="#1D4ED8"/></linearGradient>
+            <linearGradient id="pg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C4B5FD"/><stop offset="100%" stop-color="#6D28D9"/></linearGradient>
+            <linearGradient id="pg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FDE68A"/><stop offset="100%" stop-color="#D97706"/></linearGradient>
+            <linearGradient id="pg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FCA5A5"/><stop offset="100%" stop-color="#B91C1C"/></linearGradient>
+          </defs>
+          <!-- Narrow pyramid: apex(88,8) base 8→168 y=198; h=190 half=80 -->
+          <g filter="url(#pyrSh)">
+            <polygon points="88,8   72,46  104,46"          fill="url(#pg5)"/>
+            <polygon points="72,46  104,46 118,84  58,84"   fill="url(#pg4)"/>
+            <polygon points="58,84  118,84 134,122 42,122"  fill="url(#pg3)"/>
+            <polygon points="42,122 134,122 150,160 26,160" fill="url(#pg2)"/>
+            <polygon points="26,160 150,160 168,198 8,198"  fill="url(#pg1)"/>
+          </g>
+          <polyline points="88,8 8,198 168,198 88,8" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="1"/>
+          <line x1="72"  y1="46"  x2="104" y2="46"  stroke="rgba(255,255,255,.4)" stroke-width=".9"/>
+          <line x1="58"  y1="84"  x2="118" y2="84"  stroke="rgba(255,255,255,.4)" stroke-width=".9"/>
+          <line x1="42"  y1="122" x2="134" y2="122" stroke="rgba(255,255,255,.4)" stroke-width=".9"/>
+          <line x1="26"  y1="160" x2="150" y2="160" stroke="rgba(255,255,255,.4)" stroke-width=".9"/>
+          <!-- Level numbers inside -->
+          <text x="88" y="31"  text-anchor="middle" fill="rgba(255,255,255,.8)" font-size="8"  font-weight="900" font-family="system-ui,sans-serif">L5</text>
+          <text x="88" y="69"  text-anchor="middle" fill="rgba(255,255,255,.8)" font-size="9"  font-weight="900" font-family="system-ui,sans-serif">L4</text>
+          <text x="88" y="107" text-anchor="middle" fill="rgba(255,255,255,.8)" font-size="9"  font-weight="900" font-family="system-ui,sans-serif">L3</text>
+          <text x="88" y="145" text-anchor="middle" fill="rgba(255,255,255,.8)" font-size="9"  font-weight="900" font-family="system-ui,sans-serif">L2</text>
+          <text x="88" y="183" text-anchor="middle" fill="rgba(255,255,255,.8)" font-size="9"  font-weight="900" font-family="system-ui,sans-serif">L1</text>
+          <!-- Fan connectors -->
+          <line x1="97"  y1="27"  x2="180" y2="27"  stroke="#CBD5E1" stroke-width="1"   stroke-dasharray="3,3"/>
+          <line x1="113" y1="65"  x2="180" y2="65"  stroke="#CBD5E1" stroke-width="1"   stroke-dasharray="3,3"/>
+          <line x1="129" y1="103" x2="180" y2="103" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="4,3" opacity=".6"/>
+          <line x1="145" y1="141" x2="180" y2="141" stroke="#CBD5E1" stroke-width="1"   stroke-dasharray="3,3"/>
+          <line x1="161" y1="179" x2="180" y2="179" stroke="#CBD5E1" stroke-width="1"   stroke-dasharray="3,3"/>
+          <!-- Right label rows -->
+          <circle cx="186" cy="27"  r="3.5" fill="#059669"/>
+          <text x="194" y="31"  fill="#374151" font-size="11" font-weight="700" font-family="system-ui,sans-serif">好用</text>
+          <text x="354" y="31"  text-anchor="end" fill="#9CA3AF" font-size="9.5" font-family="system-ui,sans-serif">8–10 分</text>
+          <circle cx="186" cy="65"  r="3.5" fill="#1D4ED8"/>
+          <text x="194" y="69"  fill="#374151" font-size="11" font-weight="700" font-family="system-ui,sans-serif">易用</text>
+          <rect x="218" y="57" width="28" height="14" rx="3" fill="#DBEAFE"/>
+          <text x="232" y="67" text-anchor="middle" fill="#1D4ED8" font-size="8" font-weight="700" font-family="system-ui,sans-serif">目标</text>
+          <text x="354" y="69"  text-anchor="end" fill="#9CA3AF" font-size="9.5" font-family="system-ui,sans-serif">6–8 分</text>
+          <!-- L3 current (highlighted) -->
+          <rect x="179" y="92" width="173" height="22" rx="4" fill="rgba(109,40,217,.08)"/>
+          <circle cx="186" cy="103" r="4"   fill="#6D28D9"/>
+          <circle cx="186" cy="103" r="7"   fill="none" stroke="#6D28D9" stroke-width="1.5" opacity=".28"/>
+          <text x="194" y="107" fill="#4C1D95" font-size="11" font-weight="900" font-family="system-ui,sans-serif">可用</text>
+          <rect x="218" y="94" width="44" height="16" rx="4" fill="#6D28D9"/>
+          <text x="240" y="105" text-anchor="middle" fill="#fff" font-size="8.5" font-weight="800" font-family="system-ui,sans-serif">当前 5.4</text>
+          <text x="354" y="107" text-anchor="end" fill="#4C1D95" font-size="9.5" font-weight="700" font-family="system-ui,sans-serif">4–6 分</text>
+          <circle cx="186" cy="141" r="3.5" fill="#D97706"/>
+          <text x="194" y="145" fill="#374151" font-size="11" font-weight="700" font-family="system-ui,sans-serif">难用</text>
+          <text x="354" y="145" text-anchor="end" fill="#9CA3AF" font-size="9.5" font-family="system-ui,sans-serif">2–4 分</text>
+          <circle cx="186" cy="179" r="3.5" fill="#B91C1C"/>
+          <text x="194" y="183" fill="#374151" font-size="11" font-weight="700" font-family="system-ui,sans-serif">不可用</text>
+          <text x="354" y="183" text-anchor="end" fill="#9CA3AF" font-size="9.5" font-family="system-ui,sans-serif">0–2 分</text>
+        </svg>
+        <div class="callout" style="margin-top:4px"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span>整体体验处于 L3 可用区间，核心瓶颈在功能调测与性能调优，距 L4 易用目标仍有差距。</span></div>
       </div>
       <!-- Sample 覆盖度 -->
       <div class="card">
@@ -609,23 +676,24 @@ makeChart('posCase',{
   ]
 });
 
-// VOD 声量 Top5 horizontal
-makeChart('vodVol',{
-  grid:{top:10,right:30,bottom:6,left:120},
+// VOD 声量 Top5 horizontal — 按声量降序，rank1 在顶
+const _vodChart=makeChart('vodVol',{
+  grid:{top:18,right:30,bottom:18,left:120,containLabel:false},
   tooltip:{trigger:'axis',axisPointer:{type:'shadow'}},
   xAxis:{type:'value',max:80,...AX,splitLine:{show:false}},
-  yAxis:{type:'category',inverse:true,data:['ops-transformer 调参','transformer 图模式','算子资料文档','CANN 多算子仓','多算子层缺陷'],...AX,axisLabel:{color:'#586072',fontSize:10.5,fontWeight:600}},
+  yAxis:{type:'category',inverse:true,data:['多算子层缺陷','CANN 多算子仓','算子资料文档','transformer 图模式','ops-transformer 调参'],...AX,axisLabel:{color:'#586072',fontSize:10.5,fontWeight:600}},
   series:[{type:'bar',barWidth:13,
     itemStyle:{borderRadius:[0,6,6,0]},
     label:{show:true,position:'right',color:'#363E4C',fontSize:10.5,fontWeight:700},
     data:[
-      {value:33,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#C9DBFF'},{offset:1,color:'#37C597'}])}},
-      {value:35,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#C9DBFF'},{offset:1,color:'#1AAFD0'}])}},
-      {value:40,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#C9DBFF'},{offset:1,color:'#FD9A00'}])}},
+      {value:71,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#FFD0D5'},{offset:1,color:'#E63838'}])}},
       {value:61,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#FFE0B2'},{offset:1,color:'#FC636B'}])}},
-      {value:71,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#FFD0D5'},{offset:1,color:'#E63838'}])}}
+      {value:40,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#C9DBFF'},{offset:1,color:'#FD9A00'}])}},
+      {value:35,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#C9DBFF'},{offset:1,color:'#1AAFD0'}])}},
+      {value:33,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#C9DBFF'},{offset:1,color:'#37C597'}])}}
     ]}]
 });
+if(_vodChart) _vodChart.on('click',p=>selectVod(p.dataIndex));
 
 // Sample 覆盖度
 makeChart('sampleCov',{
@@ -656,6 +724,61 @@ makeChart('coreRadar',{
     {value:[5,5,5,5,5],name:'CUDA 基线',areaStyle:{color:'rgba(154,161,174,.08)'},lineStyle:{color:'#BFC6D2',width:1.5,type:'dashed'},itemStyle:{color:'#BFC6D2'}}
   ]}]
 });
+
+// ── VOD Top 5 联动（左柱图 / 右列表-详情切换） ──
+const VOD_TOP=[
+  {rank:1,vol:71,title:'多算子层：空指针 / core dump / 精度异常',c:'#E63838',
+   quote:'空指针校验缺失、编译失败、core dump、精度异常、内存越界、文档描述不一致——基本所有算子开发者都至少踩过一种。',
+   impact:'40+ 开发者反馈',adt:'调试耗时 +3.2 天',status:'处理中',
+   action:'算子仓统一空指针校验 PR 已提交 (#4872)，预计 Q2 末合入；AIC 日志补全方案评审通过',
+   sources:[['社区 issue',52],['线下活动',11],['社区论坛',8]]},
+  {rank:2,vol:61,title:'CANN 多算子仓：文档参数错误',c:'#FC636B',
+   quote:'文档里写的参数和代码对不上号，格式也乱，描述前后不一致，新人按文档走基本走不通。',
+   impact:'28+ 开发者反馈',adt:'新手上手 +2h',status:'已计划',
+   action:'资料分队启动文档巡检流水线 (AST diff)，每两周扫描参数类型一致性',
+   sources:[['社区 issue',48],['社区论坛',9],['线上直播',4]]},
+  {rank:3,vol:40,title:'算子资料文档：格式 / 命令目录错误',c:'#FD9A00',
+   quote:'文档格式不规范、参数描述错误、命令目录给的路径找不到，对新手特别不友好。',
+   impact:'18+ 新手开发者',adt:'入门成功率显著降低',status:'待排期',
+   action:'文档 CI 路径存在性自动验证已提案，待资料分队 Q3 排期',
+   sources:[['社区 issue',33],['社区论坛',5],['线下活动',2]]},
+  {rank:4,vol:35,title:'transformer 算子：图模式类型缺失',c:'#1AAFD0',
+   quote:'transformer 这套算子在图模式下经常类型缺失，编码韧性也差，描述和实际行为不一致。',
+   impact:'15+ 框架开发者',adt:'图模式适配 +1–2 周',status:'处理中',
+   action:'bfloat16 图模式类型注册补全已立项 (Q3 上线)；一致性检查纳入算子评审 checklist',
+   sources:[['社区 issue',28],['线下活动',5],['线上直播',2]]},
+  {rank:5,vol:33,title:'ops-transformer：量化 / shape / 精度问题',c:'#37C597',
+   quote:'量化适配不足、shape 拦截缺失、编译依赖有缺陷，到最后精度还是失败。希望出算子稳定性 checklist。',
+   impact:'12+ 算子开发者',adt:'精度误差 1–2%',status:'调研中',
+   action:'编译依赖版本锁定方案制定中；量化支持矩阵文档纳入下季度交付',
+   sources:[['社区 issue',26],['社区论坛',4],['线上直播',3]]}
+];
+function renderVodList(){
+  document.getElementById('vpMeta').textContent='本期 240 条 VOD · 点击左图柱条或下方列表查看详情';
+  document.getElementById('vodPanel').innerHTML=VOD_TOP.map((v,i)=>`
+    <div class="vp-item" onclick="selectVod(${i})">
+      <div class="vp-rank" style="background:${v.c}"><b>${v.rank}</b><small>${v.vol}</small></div>
+      <div class="vp-text"><div class="vp-text-t">${v.title}</div><div class="vp-text-q">"${v.quote}"</div></div>
+    </div>`).join('');
+}
+function selectVod(i){
+  const v=VOD_TOP[i];if(!v)return;
+  document.getElementById('vpMeta').innerHTML=`<button class="vp-back" onclick="renderVodList()">← 返回列表</button>`;
+  document.getElementById('vodPanel').innerHTML=`
+    <div class="vp-item on">
+      <div class="vp-rank" style="background:${v.c}"><b>${v.rank}</b><small>${v.vol}</small></div>
+      <div class="vp-text"><div class="vp-text-t">${v.title}</div></div>
+    </div>
+    <div class="vp-d-quote" style="border-left-color:${v.c}">${v.quote}</div>
+    <div class="vp-d-meta">
+      <div><div class="l">影响范围</div><div class="v">${v.impact}</div></div>
+      <div><div class="l">附带影响</div><div class="v">${v.adt}</div></div>
+      <div><div class="l">处理状态</div><div class="v" style="color:${v.c}">${v.status}</div></div>
+    </div>
+    <div class="vp-d-action"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>${v.action}</span></div>
+    <div class="vp-d-src"><span class="vp-d-src-l">来源拆解</span>${v.sources.map(([l,n])=>`<span><b>${n}</b>${l}</span>`).join('')}</div>`;
+}
+renderVodList();
 
 // smooth anchor for more-links
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
