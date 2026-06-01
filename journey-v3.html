@@ -216,16 +216,6 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .kc-trend{font-size:10px;font-weight:800;margin-left:auto}
 .kc-trend.up{color:var(--good)}.kc-trend.dn{color:var(--bad)}.kc-trend.flat{color:var(--text-3)}
 
-/* evidence tabs */
-.ev-tabs{display:flex;gap:6px;border-bottom:1px solid var(--border);margin:4px 0 0}
-.ev-tab{position:relative;font-size:12.5px;font-weight:700;color:var(--text-3);border:none;background:none;padding:10px 14px 11px;cursor:pointer;font-family:inherit;border-bottom:2.5px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:7px;transition:color .15s}
-.ev-tab:hover{color:var(--text)}
-.ev-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
-.ev-tab-count{font-size:10px;font-weight:800;background:var(--g2);color:var(--text-3);padding:1px 7px;border-radius:999px}
-.ev-tab.on .ev-tab-count{background:var(--blue-light);color:var(--blue-deep)}
-.ev-panel{display:none;padding-top:16px}
-.ev-panel.on{display:block}
-
 /* agent timeline */
 .agent-lbl{font-size:11px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px}
 .step-tl{display:flex;flex-direction:column}
@@ -442,17 +432,8 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
         <!-- Agentic KPI strip -->
         <div class="kpi-row" id="detKpis" style="margin-bottom:18px"></div>
 
-        <!-- evidence tabs -->
-        <div class="ev-tabs">
-          <button class="ev-tab on" onclick="switchEvTab('agent',this)">Agent 评分<span class="ev-tab-count" id="agentTabCount"></span></button>
-          <button class="ev-tab" onclick="switchEvTab('pain',this)">痛点分析<span class="ev-tab-count" id="painTabCount"></span></button>
-          <button class="ev-tab" onclick="switchEvTab('vod',this)">VOD 原声<span class="ev-tab-count" id="vodTabCount"></span></button>
-        </div>
-        <div>
-          <div class="ev-panel on" id="panel-agent"></div>
-          <div class="ev-panel" id="panel-pain"></div>
-          <div class="ev-panel" id="panel-vod"></div>
-        </div>
+        <!-- Agent 逐步评分（痛点 / VOD 走卡片证据速览 popover） -->
+        <div id="panel-agent"></div>
 
       </div>
     </div>
@@ -886,11 +867,6 @@ function selScene(id){
       <div class="kc-v"><span style="color:${valClr[k.cls]}">${k.v}${k.u?`<small>${k.u}</small>`:''}</span><span class="kc-trend ${k.trendCls}">${k.trend}</span></div>
     </div>`).join('');
 
-  // tab counts
-  document.getElementById('agentTabCount').textContent=s.agentSteps.length;
-  document.getElementById('painTabCount').textContent=s.pains.length;
-  document.getElementById('vodTabCount').textContent=s.vods.length;
-
   // agent panel
   document.getElementById('panel-agent').innerHTML=
     `<div class="agent-lbl">旅程环节 · Agent 逐步评分（近 7 次均值）</div><div class="step-tl">`+
@@ -915,42 +891,8 @@ function selScene(id){
     `<div class="tool-chain"><div class="tool-chain-lbl">工具调用链 · 括号内为调用成功率</div>
       <div class="tool-chips">${s.tools.map((t,i)=>`${i?'<span class="tool-arrow">→</span>':''}<div class="tool-chip ${t.cls}">${t.name}<span>${t.rate}</span></div>`).join('')}</div></div>`;
 
-  // pain panel
-  const catOrder=['doc','tool','api','env'];
-  const catMeta={doc:'文档类',tool:'工具类',api:'API 类',env:'环境类'};
-  const grouped={}; s.pains.forEach(p=>{(grouped[p.cat]=grouped[p.cat]||[]).push(p);});
-  document.getElementById('panel-pain').innerHTML=catOrder.filter(c=>grouped[c]).map(c=>`
-    <div class="pain-cat">
-      <div class="pain-cat-hd"><span class="cat-badge ${c}">${catMeta[c]}</span><span class="cat-count">${grouped[c].length} 条</span></div>
-      ${grouped[c].map(p=>`
-        <div class="pain-item">
-          <div class="pain-top">
-            <span class="pain-score">${p.score}</span>
-            <div class="pain-body"><div class="pain-text">${p.text}</div><div class="pain-meta">${p.meta}</div></div>
-            <span class="pain-status ${p.statusCls}">${p.status}</span>
-          </div>
-          <div class="pain-next"><span class="pain-next-lbl">Next Step</span><span class="pain-next-text">${p.nextStep}</span></div>
-        </div>`).join('')}
-    </div>`).join('');
-
-  // vod panel
-  document.getElementById('panel-vod').innerHTML=s.vods.map(v=>`
-    <div class="vod-item">
-      <div class="vod-vol-row"><span class="vod-vol">${v.vol}</span><span class="vod-unit">条声量</span><span class="vod-trend ${v.trendCls}">${v.trend}</span></div>
-      <div class="jvod-quote">${v.text}</div>
-      <div class="vod-src">${v.src}</div>
-    </div>`).join('');
-
-  switchEvTab('agent',document.querySelector('.ev-tab'));
   // refresh scene list selection highlight
   document.querySelectorAll('.sc').forEach(el=>el.classList.toggle('sel',el.id==='sc'+id));
-}
-
-function switchEvTab(id,btn){
-  document.querySelectorAll('.ev-tab').forEach(b=>b.classList.remove('on'));
-  document.querySelectorAll('.ev-panel').forEach(p=>p.classList.remove('on'));
-  if(btn) btn.classList.add('on'); else document.querySelector('.ev-tab').classList.add('on');
-  document.getElementById('panel-'+id).classList.add('on');
 }
 
 // ── evidence preview popover (痛点 / VOD)：悬浮预览 / 点击锁定 ──
