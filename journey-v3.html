@@ -111,6 +111,22 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .mchip .dot{width:6px;height:6px;border-radius:50%}
 
 /* ═══════════ JOURNEY: FLOOR 1 hero KPI ═══════════ */
+/* glass refraction stage — gradient backdrop makes the translucent cards refract */
+.glass-stage{position:relative;overflow:hidden;border-radius:var(--radius-l);padding:16px;
+  border:1px solid rgba(255,255,255,.7);box-shadow:var(--shadow);
+  background:radial-gradient(circle at 82% 14%,rgba(161,119,255,.22),transparent 46%),
+             radial-gradient(circle at 10% 92%,rgba(46,107,230,.16),transparent 44%),
+             linear-gradient(135deg,#E9E6FF 0%,#E3EEFF 55%,#EAF6FF 100%)}
+.glass-stage::before{content:'';position:absolute;right:-50px;top:-60px;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.55),transparent 70%);pointer-events:none}
+.glass-stage .grid4{position:relative;z-index:1}
+.card.jkpi{background:linear-gradient(135deg,rgba(255,255,255,.62),rgba(255,255,255,.38));
+  backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:0 6px 22px rgba(60,80,160,.12),inset 0 1px 0 rgba(255,255,255,.85);overflow:hidden}
+.card.jkpi::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 42%)}
+.card.jkpi>*{position:relative;z-index:1}
 .jkpi{display:flex;flex-direction:column;min-height:120px}
 .jkpi-l{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--text-3)}
 .jkpi-l svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2}
@@ -332,16 +348,13 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
   <!-- ════════ FLOOR 1 · 总览 ════════ -->
   <section class="floor" id="f-top">
     <div class="floor-hd">
-      <div class="floor-badge" style="background:linear-gradient(135deg,#2E6BE6,#1E4FB8)">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-      </div>
       <div class="floor-title">总览</div>
       <div class="floor-sub">算子开发者视角 · 4 大场景 · 近 7 次 Agentic 评测均值</div>
       <div class="floor-line"></div>
       <span class="fchip on" style="cursor:default">A5 · 算子开发者</span>
     </div>
 
-    <div class="grid4">
+    <div class="glass-stage"><div class="grid4">
       <!-- 整体健康评分 -->
       <div class="card jkpi">
         <div class="jkpi-l"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>整体健康评分</div>
@@ -369,15 +382,12 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
         </div>
         <div class="jkpi-foot">评分 + 痛点密度排序</div>
       </div>
-    </div>
+    </div></div>
   </section>
 
   <!-- ════════ FLOOR 2 · 触点体验矩阵 ════════ -->
   <section class="floor" id="f-matrix">
     <div class="floor-hd">
-      <div class="floor-badge" style="background:linear-gradient(135deg,#1AAFD0,#179D8A)">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      </div>
       <div class="floor-title">触点体验矩阵</div>
       <div class="floor-sub">场景 × 触点类型 · 点击格子查看 Agent 观测</div>
       <div class="floor-line"></div>
@@ -397,11 +407,8 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
   <!-- ════════ FLOOR 3 · 场景深潜 ════════ -->
   <section class="floor" id="f-scene">
     <div class="floor-hd">
-      <div class="floor-badge" style="background:linear-gradient(135deg,#6A67CE,#4F4DA7)">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-      </div>
       <div class="floor-title">场景深潜</div>
-      <div class="floor-sub">选中场景查看 Agentic 指标 · 评测趋势 · 三类证据</div>
+      <div class="floor-sub">选中场景查看 Agentic 指标 · 三类证据</div>
       <div class="floor-line"></div>
     </div>
 
