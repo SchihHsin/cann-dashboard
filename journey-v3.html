@@ -154,6 +154,8 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .hm-cell:hover{border-width:2px;border-color:var(--bd-hover);background:var(--bg-hover);filter:saturate(1.5)}
 .hm-cell.hm-sel{border-color:var(--purple);box-shadow:0 0 0 3px rgba(106,103,206,.15);transform:scale(1.06);z-index:1}
 .hm-cell.hm-overall{cursor:default}
+.hm-cell.hm-empty{cursor:default;background:var(--g1);border-style:dashed;border-color:var(--g3);color:var(--g5);font-family:inherit}
+.hm-cell.hm-empty .cv{font-size:13px;font-weight:600}
 .hm-legend{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-3);font-weight:500}
 .hm-grad{width:120px;height:8px;border-radius:4px;background:linear-gradient(90deg,#FFB9B9 0%,#FFD7B7 35%,#FFF2A5 55%,#C4F3E1 75%,#94E1C8 100%)}
 /* inline detail（matrix.html 风格） */
@@ -340,9 +342,16 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
   <span class="fchip on">算子开发者</span>
   <span class="fchip">AI 框架开发者</span>
   <span class="fchip">应用开发者</span>
+  <div class="fl-sep"></div>
+  <span class="fl-lbl">视图</span>
+  <span class="fchip on" id="vchip-journey" onclick="setView('journey',this)">旅程</span>
+  <span class="fchip" id="vchip-component" onclick="setView('component',this)">组件</span>
 </div>
 
 <div class="page">
+
+ <!-- ━━━━━━━━━━ 视图 A · 旅程 ━━━━━━━━━━ -->
+ <div id="view-journey">
 
   <!-- ════════ FLOOR 1 · 总览 ════════ -->
   <section class="floor" id="f-top">
@@ -384,18 +393,18 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
     </div>
   </section>
 
-  <!-- ════════ FLOOR 2 · 组件体验矩阵 ════════ -->
+  <!-- ════════ FLOOR 2 · 场景体验矩阵 ════════ -->
   <section class="floor" id="f-matrix">
     <div class="floor-hd">
-      <div class="floor-title">组件体验矩阵</div>
-      <div class="floor-sub">场景 × 组件类型 · 点击格子查看 Agent 观测</div>
+      <div class="floor-title">场景体验矩阵</div>
+      <div class="floor-sub">场景 × 旅程阶段 · 点击格子查看阶段详情（不同场景阶段不同，空白表示该场景无此阶段）</div>
       <div class="floor-line"></div>
       <div class="hm-legend">差<div class="hm-grad"></div>优</div>
     </div>
 
     <div class="card">
       <div style="overflow-x:auto">
-        <div id="tpHeatGrid" class="hm-grid" style="grid-template-columns:140px repeat(4,1fr) 80px;min-width:600px"></div>
+        <div id="tpHeatGrid" class="hm-grid" style="grid-template-columns:140px repeat(6,1fr) 80px;min-width:820px"></div>
       </div>
       <div id="tpDetail" style="display:none"></div>
     </div>
@@ -442,6 +451,73 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
       </div>
     </div>
   </section>
+
+ </div><!-- /view-journey -->
+
+ <!-- ━━━━━━━━━━ 视图 B · 组件 ━━━━━━━━━━ -->
+ <div id="view-component" style="display:none">
+
+  <!-- ════════ 组件 · 综览 ════════ -->
+  <section class="floor">
+    <div class="floor-hd">
+      <div class="floor-title">总览</div>
+      <div class="floor-sub">组件评分概览 · 近 7 次 Agentic 评测均值</div>
+      <div class="floor-line"></div>
+      <span class="fchip on" style="cursor:default">A5 · 组件视角</span>
+    </div>
+    <div class="grid4">
+      <div class="card jkpi">
+        <div class="jkpi-l"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>组件总数</div>
+        <div class="jkpi-v">5<small>个</small></div>
+        <div class="jkpi-foot"><span class="dlt neu">通信 / 图像 / 工具 / 优化 / 图引擎</span></div>
+      </div>
+      <div class="card jkpi">
+        <div class="jkpi-l"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>整体平均分</div>
+        <div class="jkpi-v" style="color:var(--coral-dark)">42<small>/100</small></div>
+        <div class="jkpi-foot"><span class="dlt dn"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg>3</span>vs 上期</div>
+      </div>
+      <div class="card jkpi">
+        <div class="jkpi-l"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>严重组件</div>
+        <div class="jkpi-v" style="color:var(--coral-dark)">1<small>个</small></div>
+        <div class="jkpi-foot"><span class="dlt dn"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg>1</span>较上期</div>
+      </div>
+      <div class="card jkpi">
+        <div class="jkpi-l"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>本期优先处理</div>
+        <div class="chip-grp" style="margin:12px 0 auto">
+          <span class="mchip"><span class="dot" style="background:var(--coral)"></span>ge · 图引擎</span>
+          <span class="mchip"><span class="dot" style="background:var(--gold)"></span>amct · 模型优化</span>
+        </div>
+        <div class="jkpi-foot">总分升序排序</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ 组件 · 组件体验矩阵 ════════ -->
+  <section class="floor">
+    <div class="floor-hd">
+      <div class="floor-title">组件体验矩阵</div>
+      <div class="floor-sub">组件 × 评分维度 · 点击格子查看评分详情</div>
+      <div class="floor-line"></div>
+      <div class="hm-legend">差<div class="hm-grad"></div>优</div>
+    </div>
+    <div class="card">
+      <div style="overflow-x:auto">
+        <div id="compHeatGrid" class="hm-grid" style="grid-template-columns:140px repeat(9,1fr);min-width:980px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ 组件 · 组件评分详情 ════════ -->
+  <section class="floor">
+    <div class="floor-hd">
+      <div class="floor-title">组件评分详情</div>
+      <div class="floor-sub">点击上方矩阵选择组件查看</div>
+      <div class="floor-line"></div>
+    </div>
+    <div class="card" id="compDetail"></div>
+  </section>
+
+ </div><!-- /view-component -->
 
 </div>
 
@@ -540,94 +616,65 @@ function tpHist(score,trend){
   return deltas.map(d=>Math.max(0,Math.min(100,s+d)));
 }
 
-// ══════════ TOUCHPOINT DATA ══════════
-const touchpointData=[
-  {id:0,sceneName:'算子复现部署',overallScore:57,overallCls:'bad',
-   cells:{
-     doc:{s:47,cls:'bad',t:'d',obs:['文档检索有效率仅 47%，大量结果无关','文档准确率 58%，版本与代码不同步，21% 的开发者在此放弃']},
-     api:{s:63,cls:'mid',t:'f',obs:['API 文档覆盖 63%，部分参数说明缺失']},
-     tool:{s:34,cls:'bad',t:'d',obs:['AIC 日志不显示报错指令，错误可读性 52%','错误自愈成功率仅 23%，强依赖人工排查']},
-     env:{s:71,cls:'mid',t:'u',obs:['装包平均重试 2.4 次，安装失败率 18%']}
-   }},
-  {id:1,sceneName:'算子迁移部署',overallScore:72,overallCls:'mid',
-   cells:{
-     doc:{s:68,cls:'mid',t:'u',obs:['迁移指南完整度 68%，高级场景示例不足']},
-     api:{s:72,cls:'mid',t:'f',obs:['迁移 API 覆盖 72%，shape 限制未提前提示']},
-     tool:{s:65,cls:'mid',t:'u',obs:['迁移工具可用，约 35% shape 异常需手动处理']},
-     env:{s:83,cls:'ok',t:'f',obs:['环境兼容性较好，偶发版本冲突']}
-   }},
-  {id:2,sceneName:'Builtin 算子定制',overallScore:62,overallCls:'bad',
-   cells:{
-     doc:{s:51,cls:'bad',t:'d',obs:['Builtin 文档更新滞后，VOD 声量 61 条','参数描述错误率高，社区反复反馈']},
-     api:{s:88,cls:'ok',t:'u',obs:['Builtin API 完备性强，开发者普遍认可']},
-     tool:{s:42,cls:'bad',t:'f',obs:['调试工具对 Builtin 场景支持弱，排查耗时 3.2×']},
-     env:{s:77,cls:'mid',t:'u',obs:['编译环境稳定，但首次配置成本偏高']}
-   }},
-  {id:3,sceneName:'算子基本功能实现',overallScore:78,overallCls:'mid',
-   cells:{
-     doc:{s:74,cls:'mid',t:'u',obs:['基础文档质量较好，编程指南覆盖主要场景']},
-     api:{s:85,cls:'ok',t:'f',obs:['核心 API 完备，边界场景偶有文档缺失']},
-     tool:{s:69,cls:'mid',t:'u',obs:['基础调试可用，高级性能分析功能有限']},
-     env:{s:91,cls:'ok',t:'u',obs:['环境配置成功率高，部署体验最佳']}
-   }}
-];
-const tpCols=['doc','api','tool','env'];
-const tpColLabels={doc:'文档',api:'API',tool:'工具',env:'环境'};
-
+// ══════════ 场景体验矩阵：场景 × 旅程阶段（数据取自 scenarios[].agentSteps）══════════
+const STAGE_UNION=['感知学习','环境准备','环境验证','算子设计与实现','算子迁移','功能调测'];
+const STAGE_HEADER={'算子设计与实现':'设计实现'}; // 表头缩写
 function tpCellHtml(score,trend,clickAttr){
   const bg=heatColor(score),fg=textColor(score),bd=borderColor(score);
   const bgH=heatColorHover(score),bdH=borderColorHover(score);
   return `<div class="hm-cell${clickAttr?'':' hm-overall'}" ${clickAttr||''} style="background:${bg};color:${fg};border-color:${bd};--bg-hover:${bgH};--bd-hover:${bdH}">
     <div class="cv">${faceIcon(score)}${Math.round(score)}${trend?cellTrendSvg(trend):''}</div></div>`;
 }
+function _sceneStage(sc,stage){ return sc.agentSteps.find(st=>st.name===stage); }
 function renderTpMatrix(){
-  const grid=document.getElementById('tpHeatGrid');
-  let html=`<div class="hm-corner"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="#EFF0F1" stroke-width="1"/></svg><span class="hc-col">维度</span><span class="hc-row">场景</span></div>`;
-  html+=['文档','API','工具','环境','综合'].map(h=>`<div class="hm-header">${h}</div>`).join('');
-  touchpointData.forEach(row=>{
-    const dotC=GRADE_COLOR[row.overallCls];
-    const dotG=row.overallCls==='bad'?'rgba(230,56,56,.2)':row.overallCls==='mid'?'rgba(253,154,0,.2)':'rgba(55,197,151,.2)';
-    html+=`<div class="hm-row-label"><div class="rl-dot" style="background:${dotC};box-shadow:0 0 0 2px ${dotG}"></div><div>${row.sceneName}</div></div>`;
-    tpCols.forEach(col=>{
-      const c=row.cells[col];
-      html+=tpCellHtml(c.s,c.t,`onclick="selectTpCell(${row.id},'${col}',this)"`);
+  const grid=document.getElementById('tpHeatGrid'); if(!grid)return;
+  let html=`<div class="hm-corner"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="#EFF0F1" stroke-width="1"/></svg><span class="hc-col">阶段</span><span class="hc-row">场景</span></div>`;
+  html+=STAGE_UNION.map(s=>`<div class="hm-header">${STAGE_HEADER[s]||s}</div>`).join('')+`<div class="hm-header">综合</div>`;
+  scenarios.forEach(sc=>{
+    const dotG=sc.grade==='bad'?'rgba(230,56,56,.2)':sc.grade==='mid'?'rgba(253,154,0,.2)':'rgba(55,197,151,.2)';
+    html+=`<div class="hm-row-label"><div class="rl-dot" style="background:${GRADE_COLOR[sc.grade]};box-shadow:0 0 0 2px ${dotG}"></div><div>${sc.name}</div></div>`;
+    STAGE_UNION.forEach((stage,si)=>{
+      const st=_sceneStage(sc,stage);
+      if(st) html+=tpCellHtml(st.score,null,`onclick="selectStageCell(${sc.id},${si},this)"`);
+      else html+=`<div class="hm-cell hm-empty"><div class="cv">–</div></div>`;
     });
-    html+=tpCellHtml(row.overallScore,null,null);
+    html+=tpCellHtml(sc.score,null,null);
   });
   grid.innerHTML=html;
   const det=document.getElementById('tpDetail'); if(det) det.style.display='none';
 }
-function selectTpCell(sceneId,col,el){
+function selectStageCell(sceneId,stageIdx,el){
   document.querySelectorAll('#tpHeatGrid .hm-cell').forEach(c=>c.classList.remove('hm-sel'));
   el.classList.add('hm-sel');
-  const row=touchpointData.find(r=>r.id===sceneId),c=row.cells[col];
-  const bg=heatColor(c.s),fg=textColor(c.s);
-  const dims=[['doc','文档'],['api','API'],['tool','工具'],['env','环境'],['__overall','综合']];
-  const dimsHtml=dims.map(([k,label])=>{
-    const sc=k==='__overall'?row.overallScore:row.cells[k].s;
-    const active=k===col;
+  const sc=scenarios.find(x=>x.id===sceneId), stage=STAGE_UNION[stageIdx], st=_sceneStage(sc,stage);
+  if(!st)return;
+  const bg=heatColor(st.score),fg=textColor(st.score);
+  const dimsHtml=STAGE_UNION.map((sg,i)=>{
+    const s2=_sceneStage(sc,sg), has=!!s2, active=i===stageIdx;
+    const vbg=has?heatColor(s2.score):'var(--g2)', vfg=has?textColor(s2.score):'var(--g5)';
     return `<div class="tp-d-dim" style="background:${active?'rgba(106,103,206,.08)':'transparent'}">
-      <div class="l">${label}</div>
-      <div class="v" style="background:${heatColor(sc)};color:${textColor(sc)}">${Math.round(sc)}</div>
+      <div class="l">${STAGE_HEADER[sg]||sg}</div>
+      <div class="v" style="background:${vbg};color:${vfg}">${has?Math.round(s2.score):'–'}</div>
     </div>`;
   }).join('');
-  const sparkColor=c.t==='u'?'#6DBD9A':c.t==='d'?'#E89494':'#AAAAAA';
+  const sparkTrend=sc.trendDir==='up'?'u':sc.trendDir==='dn'?'d':'f';
+  const sparkColor=sparkTrend==='u'?'#6DBD9A':sparkTrend==='d'?'#E89494':'#AAAAAA';
   const det=document.getElementById('tpDetail');
   det.className='tp-detail'; det.style.display='block';
   det.innerHTML=`
     <div class="tp-d-row">
-      <div class="tp-d-box" style="background:${bg};color:${fg}">${Math.round(c.s)}</div>
+      <div class="tp-d-box" style="background:${bg};color:${fg}">${Math.round(st.score)}</div>
       <div style="flex-shrink:0">
-        <div class="tp-d-name">${row.sceneName} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${tpColLabels[col]}组件</span></div>
-        <div class="tp-d-sub">综合 ${row.overallScore} · 点击其他格子切换维度</div>
+        <div class="tp-d-name">${sc.name} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${stage}</span></div>
+        <div class="tp-d-sub">场景综合 ${sc.score} · 点击其他格子切换阶段</div>
       </div>
       <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px">
         <span style="font-size:11px;color:var(--text-3)">近 6 期</span>
-        ${miniSparkSvg(tpHist(c.s,c.t),sparkColor,110,40)}
+        ${miniSparkSvg(tpHist(st.score,sparkTrend),sparkColor,110,40)}
       </div>
       <div class="tp-d-dims">${dimsHtml}</div>
     </div>
-    ${c.obs&&c.obs.length?`<div class="tp-d-obs">${c.obs.map(o=>`<div class="tp-d-obs-item">${o}</div>`).join('')}</div>`:''}`;
+    <div class="tp-d-obs"><div class="as-summary" style="margin:0 0 8px"><b>总结</b>${st.summary}</div>${st.observations&&st.observations.length?st.observations.map(o=>`<div class="tp-d-obs-item">${o}</div>`).join(''):''}</div>`;
 }
 
 // ══════════ SCENARIO DATA ══════════
@@ -1063,6 +1110,78 @@ function scheduleHideEvPop(){ if(_popPinned)return; _popHideT=setTimeout(hideEvP
 function hideEvPop(force){ if(_popPinned&&!force)return; _popPinned=false; _evPop.classList.remove('on'); }
 document.addEventListener('click',e=>{ if(_popPinned && !_evPop.contains(e.target) && !e.target.closest('.ev-entry')) hideEvPop(true); });
 window.addEventListener('scroll',()=>{ if(_evPop.classList.contains('on')) hideEvPop(true); },true);
+
+// ══════════ 组件视图：组件评分矩阵（数据沿用 matrix.html）══════════
+const COMP_COLS=['总分','测试评分','开发评分','可理解','可操作','根因','完整','一致','准确'];
+const COMP_ROWS=[
+  {name:'hccl',sub:'通信库',  vals:[47.9,6.0,8.0,4.3,3.6,4.7,2.2,5.0,4.9],trends:['d','f','u','u','d','f','d','f','u']},
+  {name:'dvpp',sub:'图像处理',vals:[47.2,6.0,7.9,4.2,3.5,4.6,2.8,4.1,4.9],trends:['f','u','f','f','u','u','u','d','f']},
+  {name:'dump',sub:'基础工具',vals:[46.4,5.6,8.3,4.8,3.8,4.7,2.0,5.0,5.0],trends:['u','d','u','u','f','f','d','f','f']},
+  {name:'amct',sub:'模型优化',vals:[44.8,6.0,7.5,4.0,3.0,4.3,3.0,4.5,4.3],trends:['d','f','d','d','d','d','f','d','d']},
+  {name:'ge',  sub:'图引擎',  vals:[25.2,3.8,6.6,3.0,2.7,4.3,1.7,5.0,5.0],trends:['d','d','d','d','d','f','d','f','u']},
+];
+function compNorm(ci,v){ return ci===0?v : ci<=2? v*10 : v*20; }
+function renderCompMatrix(){
+  const grid=document.getElementById('compHeatGrid'); if(!grid)return;
+  let html=`<div class="hm-corner"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="#EFF0F1" stroke-width="1"/></svg><span class="hc-col">维度</span><span class="hc-row">组件</span></div>`;
+  html+=COMP_COLS.map(c=>`<div class="hm-header">${c}</div>`).join('');
+  COMP_ROWS.forEach((row,ri)=>{
+    const tot=compNorm(0,row.vals[0]);
+    const dotC=tot<40?'#E63838':tot<60?'#FD9A00':'#37C597';
+    const dotG=tot<40?'rgba(230,56,56,.2)':tot<60?'rgba(253,154,0,.2)':'rgba(55,197,151,.2)';
+    html+=`<div class="hm-row-label"><div class="rl-dot" style="background:${dotC};box-shadow:0 0 0 2px ${dotG}"></div><div>${row.name}<small style="display:block;font-size:9.5px;color:var(--text-3);font-weight:500">${row.sub}</small></div></div>`;
+    COMP_COLS.forEach((c,ci)=>{
+      const sc=compNorm(ci,row.vals[ci]);
+      html+=tpCellHtml(sc,row.trends?row.trends[ci]:null,`onclick="selectCompCell(${ri},${ci},this)"`);
+    });
+  });
+  grid.innerHTML=html;
+}
+function compDetailReset(){
+  const det=document.getElementById('compDetail'); if(!det)return;
+  det.innerHTML=`<div class="det-hint"><svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>点击上方矩阵格子查看组件评分详情（内容待补充）</div>`;
+}
+function selectCompCell(ri,ci,el){
+  document.querySelectorAll('#compHeatGrid .hm-cell').forEach(c=>c.classList.remove('hm-sel'));
+  el.classList.add('hm-sel');
+  const row=COMP_ROWS[ri], col=COMP_COLS[ci], sc=compNorm(ci,row.vals[ci]);
+  const bg=heatColor(sc),fg=textColor(sc);
+  const dimsHtml=COMP_COLS.map((c,i)=>{
+    const v=compNorm(i,row.vals[i]), active=i===ci;
+    return `<div class="tp-d-dim" style="background:${active?'rgba(106,103,206,.08)':'transparent'}">
+      <div class="l">${c}</div><div class="v" style="background:${heatColor(v)};color:${textColor(v)}">${Math.round(v)}</div>
+    </div>`;
+  }).join('');
+  const tr=row.trends?row.trends[ci]:'f';
+  const sparkColor=tr==='u'?'#6DBD9A':tr==='d'?'#E89494':'#AAAAAA';
+  const det=document.getElementById('compDetail');
+  det.innerHTML=`
+    <div class="tp-d-row">
+      <div class="tp-d-box" style="background:${bg};color:${fg}">${Math.round(sc)}</div>
+      <div style="flex-shrink:0">
+        <div class="tp-d-name">${row.name} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${row.sub} · ${col}</span></div>
+        <div class="tp-d-sub">总分 ${Math.round(compNorm(0,row.vals[0]))} · 点击其他格子切换维度</div>
+      </div>
+      <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px">
+        <span style="font-size:11px;color:var(--text-3)">近 6 期</span>
+        ${miniSparkSvg(tpHist(sc,tr),sparkColor,110,40)}
+      </div>
+      <div class="tp-d-dims">${dimsHtml}</div>
+    </div>
+    <div class="tp-d-obs"><div class="tp-d-obs-item" style="color:var(--text-3)">评分详情内容待补充（占位）。</div></div>`;
+}
+
+// ── 视图切换（旅程 / 组件）──
+let _compInited=false;
+function setView(v){
+  const journey=v!=='component';
+  document.getElementById('view-journey').style.display=journey?'block':'none';
+  document.getElementById('view-component').style.display=journey?'none':'block';
+  document.getElementById('vchip-journey').classList.toggle('on',journey);
+  document.getElementById('vchip-component').classList.toggle('on',!journey);
+  if(!journey && !_compInited){ renderCompMatrix(); compDetailReset(); _compInited=true; }
+  window.scrollTo({top:0});
+}
 
 // ── init ──
 renderTpMatrix();
