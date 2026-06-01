@@ -264,15 +264,6 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .step-metric-val{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
 .step-metric-trend{font-size:9.5px;font-weight:800;margin-left:auto}
 .step-metric-trend.up{color:var(--good)}.step-metric-trend.dn{color:var(--bad)}.step-metric-trend.flat{color:var(--text-3)}
-.tool-chain{margin-top:18px;padding-top:15px;border-top:1px dashed var(--border-2)}
-.tool-chain-lbl{font-size:10px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
-.tool-chips{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
-.tool-chip{font-size:11px;font-weight:700;padding:6px 10px;border-radius:8px;display:inline-flex;align-items:center;gap:6px;border:1px solid}
-.tool-chip.ok{background:var(--green-light);border-color:var(--green-bright);color:var(--green-dark)}
-.tool-chip.warn{background:var(--gold-light);border-color:var(--gold-bright);color:var(--gold-dark)}
-.tool-chip.crit{background:var(--coral-light);border-color:var(--coral-bright);color:var(--coral-dark)}
-.tool-chip span{opacity:.7;font-variant-numeric:tabular-nums}
-.tool-arrow{color:var(--g5);font-weight:800}
 
 /* pain panel */
 .pain-cat{margin-bottom:16px}
@@ -1023,9 +1014,7 @@ function selScene(id){
           ${st.observations&&st.observations.length?`<div class="as-obs"><b>Agent 观测</b><div class="as-obs-list">${st.observations.map(o=>`<div class="as-obs-item">${o}</div>`).join('')}</div></div>`:''}
           ${metricsHtml}
         </div></div>`;
-    }).join('')+`</div>`+
-    `<div class="tool-chain"><div class="tool-chain-lbl">工具调用链 · 括号内为调用成功率</div>
-      <div class="tool-chips">${s.tools.map((t,i)=>`${i?'<span class="tool-arrow">→</span>':''}<div class="tool-chip ${t.cls}">${t.name}<span>${t.rate}</span></div>`).join('')}</div></div>`;
+    }).join('')+`</div>`;
 
   // refresh scene list selection highlight
   document.querySelectorAll('.sc').forEach(el=>el.classList.toggle('sel',el.id==='sc'+id));
