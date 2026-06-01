@@ -101,12 +101,22 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .callout svg{width:15px;height:15px;stroke:var(--blue);flex-shrink:0;margin-top:1px;fill:none;stroke-width:2}
 
 /* ── KPI strip ── */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius-s);overflow:hidden}
-.kpi-cell{padding:13px 15px;border-right:1px solid var(--g2)}
-.kpi-cell:last-child{border-right:none}
-.kpi-cell .kc-l{font-size:10.5px;color:var(--text-3);font-weight:600;margin-bottom:5px}
-.kpi-cell .kc-v{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1;display:flex;align-items:baseline;gap:6px}
-.kpi-cell .kc-v small{font-size:11px;color:var(--text-3);font-weight:600}
+/* Agentic 指标卡（参考 reference/阶段的指标卡片.jpg）：图标+近7次数据 / 标签 / 数值+占比+趋势 / 迷你图 */
+.mk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.mk-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-m);box-shadow:var(--shadow);padding:13px 15px;min-width:0;display:flex;flex-direction:column}
+.mk-top{display:flex;align-items:center;margin-bottom:9px}
+.mk-icon{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--mk-soft);flex-shrink:0}
+.mk-icon svg{width:15px;height:15px;stroke:var(--mk-accent);fill:none;stroke-width:2}
+.mk-7d{margin-left:auto;font-size:10px;color:var(--text-3);font-weight:500}
+.mk-l{font-size:11.5px;color:var(--text-2);font-weight:600;margin-bottom:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mk-main{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-top:auto}
+.mk-vline{display:flex;align-items:baseline;gap:5px;flex-wrap:wrap;min-width:0}
+.mk-v{font-size:25px;font-weight:800;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums;color:var(--text)}
+.mk-v small{font-size:12px;font-weight:600;color:var(--text-3);margin-left:1px}
+.mk-frac{font-size:11px;color:var(--text-3);font-weight:600}
+.mk-trend{font-size:10.5px;font-weight:800;white-space:nowrap}
+.mk-trend.up{color:var(--good)}.mk-trend.dn{color:var(--bad)}.mk-trend.flat{color:var(--text-3)}
+.mk-chart{flex-shrink:0}
 
 /* ── chips ── */
 .chip-grp{display:flex;flex-wrap:wrap;gap:7px}
@@ -428,7 +438,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
         </div>
 
         <!-- Agentic KPI strip -->
-        <div class="kpi-row" id="detKpis" style="margin-bottom:18px"></div>
+        <div class="mk-grid" id="detKpis" style="margin-bottom:18px"></div>
 
         <!-- Agent 逐步评分（痛点 / VOD 走卡片证据速览 popover） -->
         <div id="panel-agent"></div>
@@ -626,6 +636,33 @@ function selectTpCell(sceneId,col,el){
 
 // ══════════ SCENARIO DATA ══════════
 const KPI_DIMS=['开发成功率','平均复杂度','平均任务执行时长','用例执行通过率'];
+// 指标卡元信息（按 kpis 顺序）：图标 / 主色 / 迷你图类型 / 占比类型
+const KPI_META=[
+  {ic:'<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>', accent:'#2E6BE6', soft:'rgba(46,107,230,.12)', chart:'bar',  frac:'succ'},
+  {ic:'<line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="9"/>', accent:'#2E6BE6', soft:'rgba(46,107,230,.12)', chart:'line', frac:null},
+  {ic:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>', accent:'#6A67CE', soft:'rgba(106,103,206,.12)', chart:'line', frac:null},
+  {ic:'<path d="M9 11l3 3L20 6"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>', accent:'#6A67CE', soft:'rgba(106,103,206,.12)', chart:'bar',  frac:'pass'},
+];
+function kpiFrac(kind,vStr){ const pct=parseFloat(vStr); if(isNaN(pct))return''; const d=kind==='succ'?47:300; return `(${Math.round(pct/100*d)} /${d})`; }
+function kpiSeries(base,trendCls){
+  const rel=trendCls==='dn'?[1.08,1.05,1.07,1.03,1.04,1.01,1.0]
+    :trendCls==='up'?[0.90,0.94,0.92,0.96,0.95,0.98,1.0]
+    :[0.97,1.01,0.98,1.02,0.99,1.01,1.0];
+  return rel.map(m=>Math.max(0.01,base*m));
+}
+function kpiBars(series,accent){
+  const W=92,H=32,n=series.length,gap=3,bw=(W-gap*(n-1))/n,max=Math.max(...series)||1;
+  let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none">`;
+  series.forEach((v,i)=>{const h=Math.max(3,v/max*(H-2)),x=i*(bw+gap),y=H-h;
+    s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${i===n-1?accent:'#DDE2EA'}"/>`;});
+  return s+`</svg>`;
+}
+function kpiLineChart(series,accent){
+  const W=92,H=32,n=series.length,pad=3,min=Math.min(...series),max=Math.max(...series),range=max-min||1;
+  const xs=series.map((_,i)=>i/(n-1)*W), ys=series.map(v=>H-pad-(v-min)/range*(H-pad*2));
+  const pts=xs.map((x,i)=>`${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none"><polyline points="${pts}" stroke="${accent}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+}
 const scenarios=[
   {
     id:0, name:'算子复现部署', score:57, grade:'bad', gradeLabel:'严重',
@@ -633,7 +670,7 @@ const scenarios=[
     painCount:8, vodCount:71,
     kpis:[
       {l:'开发成功率', v:'58%', trend:'↓-4%', trendCls:'dn', cls:'bad'},
-      {l:'平均复杂度', v:'52', u:'万tok', trend:'↑+6万', trendCls:'dn', cls:'bad'},
+      {l:'平均复杂度（tokens消耗量）', v:'52', u:'万tok', trend:'↑+6万', trendCls:'dn', cls:'bad'},
       {l:'平均任务执行时长', v:'32', u:'min', trend:'↑+4min', trendCls:'dn', cls:'bad'},
       {l:'用例执行通过率', v:'52%', trend:'↓-3%', trendCls:'dn', cls:'bad'},
     ],
@@ -696,7 +733,7 @@ const scenarios=[
     painCount:6, vodCount:40,
     kpis:[
       {l:'开发成功率', v:'63%', trend:'↓-3%', trendCls:'dn', cls:'mid'},
-      {l:'平均复杂度', v:'47', u:'万tok', trend:'↑+3万', trendCls:'dn', cls:'bad'},
+      {l:'平均复杂度（tokens消耗量）', v:'47', u:'万tok', trend:'↑+3万', trendCls:'dn', cls:'bad'},
       {l:'平均任务执行时长', v:'28', u:'min', trend:'→持平', trendCls:'flat', cls:'mid'},
       {l:'用例执行通过率', v:'60%', trend:'→持平', trendCls:'flat', cls:'mid'},
     ],
@@ -755,7 +792,7 @@ const scenarios=[
     painCount:5, vodCount:33,
     kpis:[
       {l:'开发成功率', v:'74%', trend:'↑+3%', trendCls:'up', cls:'mid'},
-      {l:'平均复杂度', v:'38', u:'万tok', trend:'→持平', trendCls:'flat', cls:'mid'},
+      {l:'平均复杂度（tokens消耗量）', v:'38', u:'万tok', trend:'→持平', trendCls:'flat', cls:'mid'},
       {l:'平均任务执行时长', v:'21', u:'min', trend:'↓-2min', trendCls:'up', cls:'ok'},
       {l:'用例执行通过率', v:'71%', trend:'↑+2%', trendCls:'up', cls:'mid'},
     ],
@@ -817,7 +854,7 @@ const scenarios=[
     painCount:2, vodCount:40,
     kpis:[
       {l:'开发成功率', v:'88%', trend:'↑+3%', trendCls:'up', cls:'ok'},
-      {l:'平均复杂度', v:'26', u:'万tok', trend:'↓-3万', trendCls:'up', cls:'ok'},
+      {l:'平均复杂度（tokens消耗量）', v:'26', u:'万tok', trend:'↓-3万', trendCls:'up', cls:'ok'},
       {l:'平均任务执行时长', v:'14', u:'min', trend:'↓-2min', trendCls:'up', cls:'ok'},
       {l:'用例执行通过率', v:'85%', trend:'↑+2%', trendCls:'up', cls:'ok'},
     ],
@@ -944,13 +981,23 @@ function selScene(id){
   const dg=document.getElementById('detGrade'); dg.textContent=s.gradeLabel; dg.className='det-grade '+s.grade;
   const ds=document.getElementById('detScore'); ds.innerHTML=`${s.score}<small>/100</small>`; ds.className='det-score '+s.grade;
 
-  // Agentic KPI strip
-  const valClr={bad:'var(--coral-dark)',mid:'var(--gold-dark)',ok:'var(--green-dark)'};
-  document.getElementById('detKpis').innerHTML=s.kpis.map(k=>`
-    <div class="kpi-cell">
-      <div class="kc-l">${k.l}</div>
-      <div class="kc-v"><span style="color:${valClr[k.cls]}">${k.v}${k.u?`<small>${k.u}</small>`:''}</span><span class="kc-trend ${k.trendCls}">${k.trend}</span></div>
-    </div>`).join('');
+  // Agentic 指标卡
+  document.getElementById('detKpis').innerHTML=s.kpis.map((k,i)=>{
+    const m=KPI_META[i]||KPI_META[0];
+    const series=kpiSeries(parseFloat(k.v)||0,k.trendCls);
+    const chart=m.chart==='bar'?kpiBars(series,m.accent):kpiLineChart(series,m.accent);
+    const frac=m.frac?`<span class="mk-frac">${kpiFrac(m.frac,k.v)}</span>`:'';
+    const num=k.v.replace('%','');
+    const unit=`${k.v.includes('%')?'<small>%</small>':''}${k.u?`<small>${k.u}</small>`:''}`;
+    return `<div class="mk-card" style="--mk-accent:${m.accent};--mk-soft:${m.soft}">
+      <div class="mk-top"><div class="mk-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">${m.ic}</svg></div><div class="mk-7d">近 7 次数据</div></div>
+      <div class="mk-l">${k.l}</div>
+      <div class="mk-main">
+        <div class="mk-vline"><span class="mk-v">${num}${unit}</span>${frac}<span class="mk-trend ${k.trendCls}">${k.trend}</span></div>
+        <div class="mk-chart">${chart}</div>
+      </div>
+    </div>`;
+  }).join('');
 
   // agent panel
   document.getElementById('panel-agent').innerHTML=
