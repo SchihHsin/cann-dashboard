@@ -181,6 +181,17 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .ev-chip.red{background:var(--coral-light);color:var(--coral-dark);border-color:transparent}
 .ev-chip.yellow{background:var(--gold-light);color:var(--gold-dark);border-color:transparent}
 .ev-chip.gray{background:var(--g1);color:var(--text-3)}
+.ev-chip-btn{cursor:pointer;transition:filter .12s,box-shadow .12s}
+.ev-chip-btn:hover{filter:brightness(.96);box-shadow:0 2px 8px rgba(30,60,120,.14)}
+.step-ev-btn{margin-left:6px;font-family:inherit;font-size:10px;font-weight:700;color:var(--text-3);background:var(--g1);border:1px solid var(--border);border-radius:999px;padding:3px 9px;cursor:pointer;white-space:nowrap;transition:all .12s}
+.step-ev-btn:hover{color:var(--primary);border-color:var(--blue-soft);background:var(--blue-light)}
+
+/* evidence preview popover (痛点 / VOD) */
+.evpop{position:fixed;z-index:200;width:368px;max-height:64vh;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-m);box-shadow:0 18px 50px rgba(30,60,120,.24);padding:14px 15px;opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .14s,transform .14s}
+.evpop.on{opacity:1;transform:none;pointer-events:auto}
+.evpop-hd{font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:7px}
+.evpop-hd .evpop-x{margin-left:auto;cursor:pointer;color:var(--text-3);font-weight:700;font-size:14px;line-height:1;padding:2px 4px;border-radius:5px}
+.evpop-hd .evpop-x:hover{background:var(--g2);color:var(--text)}
 
 /* detail */
 .det-hint{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--text-3);font-size:13px;padding:60px 20px;line-height:1.9}
@@ -846,8 +857,8 @@ function renderList(){
         <span class="sc-spark">${sparkSvg(s.runs,68,22,sparkClr[s.grade])}</span>
       </div>
       <div class="sc-evidence">
-        <span class="ev-chip ${s.grade==='ok'?'gray':'red'}">痛点 ${s.painCount}</span>
-        <span class="ev-chip ${s.vodCount>=50?'red':s.vodCount>=30?'yellow':'gray'}">VOD ${s.vodCount}</span>
+        <span class="ev-chip ev-chip-btn ${s.grade==='ok'?'gray':'red'}" onmouseenter="showEvPop(${s.id},this,'pain')" onmouseleave="scheduleHideEvPop()" onclick="event.stopPropagation();showEvPop(${s.id},this,'pain',true)">痛点 ${s.painCount} ›</span>
+        <span class="ev-chip ev-chip-btn ${s.vodCount>=50?'red':s.vodCount>=30?'yellow':'gray'}" onmouseenter="showEvPop(${s.id},this,'vod')" onmouseleave="scheduleHideEvPop()" onclick="event.stopPropagation();showEvPop(${s.id},this,'vod',true)">VOD ${s.vodCount} ›</span>
       </div>
     </div>`;
   }).join('');
@@ -894,7 +905,8 @@ function selScene(id){
         <div class="step-tl-body${isLast?' last':''}">
           <div class="step-tl-hdr"><span class="step-tl-name">${st.name}</span>
             <div class="as-bar-track"><div class="as-bar-fill ${st.cls}" style="width:${st.score}%"></div></div>
-            <span class="as-score ${st.cls}">${st.score}%</span></div>
+            <span class="as-score ${st.cls}">${st.score}%</span>
+            <button class="step-ev-btn" onmouseenter="showEvPop(${s.id},this)" onmouseleave="scheduleHideEvPop()" onclick="showEvPop(${s.id},this,null,true)">痛点·VOD ›</button></div>
           <div class="as-summary"><b>总结</b>${st.summary}</div>
           ${st.observations&&st.observations.length?`<div class="as-obs"><b>Agent 观测</b><div class="as-obs-list">${st.observations.map(o=>`<div class="as-obs-item">${o}</div>`).join('')}</div></div>`:''}
           ${metricsHtml}
@@ -940,6 +952,50 @@ function switchEvTab(id,btn){
   if(btn) btn.classList.add('on'); else document.querySelector('.ev-tab').classList.add('on');
   document.getElementById('panel-'+id).classList.add('on');
 }
+
+// ── evidence preview popover (痛点 / VOD)：悬浮预览 / 点击锁定 ──
+const _evPop=document.createElement('div');
+_evPop.className='evpop'; _evPop.id='evPop';
+document.body.appendChild(_evPop);
+let _popHideT=null,_popPinned=false;
+_evPop.addEventListener('mouseenter',()=>clearTimeout(_popHideT));
+_evPop.addEventListener('mouseleave',()=>{if(!_popPinned)hideEvPop();});
+function _evPainHtml(s){return s.pains.map(p=>`
+    <div class="pain-item">
+      <div class="pain-top">
+        <span class="pain-score">${p.score}</span>
+        <div class="pain-body"><div class="pain-text">${p.text}</div><div class="pain-meta">${p.meta}</div></div>
+        <span class="pain-status ${p.statusCls}">${p.status}</span>
+      </div>
+      <div class="pain-next"><span class="pain-next-lbl">Next Step</span><span class="pain-next-text">${p.nextStep}</span></div>
+    </div>`).join('');}
+function _evVodHtml(s){return s.vods.map(v=>`
+    <div class="vod-item">
+      <div class="vod-vol-row"><span class="vod-vol">${v.vol}</span><span class="vod-unit">条声量</span><span class="vod-trend ${v.trendCls}">${v.trend}</span></div>
+      <div class="jvod-quote">${v.text}</div><div class="vod-src">${v.src}</div>
+    </div>`).join('');}
+function showEvPop(id,anchor,focus,pin){
+  const s=scenarios.find(x=>x.id===id); if(!s)return;
+  clearTimeout(_popHideT);
+  const painSec=`<div class="sub-lbl" style="margin-top:8px">痛点 ${s.pains.length}</div>${_evPainHtml(s)}`;
+  const vodSec=`<div class="sub-lbl">VOD 原声 ${s.vods.length}</div>${_evVodHtml(s)}`;
+  const body=focus==='pain'?painSec:focus==='vod'?vodSec:painSec+vodSec;
+  _evPop.innerHTML=`<div class="evpop-hd">${s.name} · 证据速览${pin?`<span class="evpop-x" onclick="hideEvPop(true)">✕</span>`:''}</div>${body}`;
+  _evPop.classList.add('on');
+  _popPinned=!!pin;
+  _positionEvPop(anchor);
+}
+function _positionEvPop(anchor){
+  const r=anchor.getBoundingClientRect();
+  const pw=_evPop.offsetWidth,ph=_evPop.offsetHeight;
+  let left=r.left; if(left+pw>innerWidth-12)left=innerWidth-12-pw; if(left<12)left=12;
+  let top=r.bottom+8; if(top+ph>innerHeight-12)top=Math.max(12,r.top-8-ph);
+  _evPop.style.left=left+'px'; _evPop.style.top=top+'px';
+}
+function scheduleHideEvPop(){ if(_popPinned)return; _popHideT=setTimeout(hideEvPop,180); }
+function hideEvPop(force){ if(_popPinned&&!force)return; _popPinned=false; _evPop.classList.remove('on'); }
+document.addEventListener('click',e=>{ if(_popPinned && !_evPop.contains(e.target) && !e.target.closest('.ev-chip-btn,.step-ev-btn')) hideEvPop(true); });
+window.addEventListener('scroll',()=>{ if(_evPop.classList.contains('on')) hideEvPop(true); },true);
 
 // ── init ──
 renderTpMatrix();
