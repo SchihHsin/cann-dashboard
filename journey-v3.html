@@ -384,11 +384,11 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
     </div>
   </section>
 
-  <!-- ════════ FLOOR 2 · 触点体验矩阵 ════════ -->
+  <!-- ════════ FLOOR 2 · 组件体验矩阵 ════════ -->
   <section class="floor" id="f-matrix">
     <div class="floor-hd">
-      <div class="floor-title">触点体验矩阵</div>
-      <div class="floor-sub">场景 × 触点类型 · 点击格子查看 Agent 观测</div>
+      <div class="floor-title">组件体验矩阵</div>
+      <div class="floor-sub">场景 × 组件类型 · 点击格子查看 Agent 观测</div>
       <div class="floor-line"></div>
       <div class="hm-legend">差<div class="hm-grad"></div>优</div>
     </div>
@@ -618,7 +618,7 @@ function selectTpCell(sceneId,col,el){
     <div class="tp-d-row">
       <div class="tp-d-box" style="background:${bg};color:${fg}">${Math.round(c.s)}</div>
       <div style="flex-shrink:0">
-        <div class="tp-d-name">${row.sceneName} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${tpColLabels[col]}触点</span></div>
+        <div class="tp-d-name">${row.sceneName} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${tpColLabels[col]}组件</span></div>
         <div class="tp-d-sub">综合 ${row.overallScore} · 点击其他格子切换维度</div>
       </div>
       <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px">
