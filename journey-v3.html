@@ -1252,12 +1252,20 @@ function _compScoreBreakdown(k,base){
   const r=SCORE_RUBRIC.find(x=>x.key===k);
   if(!r) return `<div class="cs-wrap"><div class="rub-todo">该维度逐项评分明细待补充。</div></div>`;
   let salt=0; for(let i=0;i<k.length;i++) salt+=k.charCodeAt(i);
-  return `<div class="cs-wrap">`+r.groups.map((g,gi)=>`
-    <div class="rub-group">
-      <div class="rub-group-hd"><span class="rub-badge">${g.sub}</span><span class="rub-cnt">${g.items.length} 项</span></div>
-      <div class="cs-head"><div>检查项</div><div>量化指标</div><div>得分</div></div>
-      ${g.items.map((it,i)=>{const sv=_itemScore(base,salt+gi*7,i);return `<div class="cs-row"><div class="rub-chk">${it[0]}</div><div class="rub-metric">${it[1]}</div><div class="cs-score" style="background:${heatColor(sv)};color:${textColor(sv)}">${sv}</div></div>`;}).join('')}
-    </div>`).join('')+`</div>`;
+  // 与场景页一致：子维度做成环形时间线，检查项做成指标卡
+  return `<div class="agent-lbl" style="margin-top:16px">评分明细 · 按子维度逐项打分（依评分制度）</div><div class="step-tl">`+
+    r.groups.map((g,gi)=>{
+      const items=g.items.map((it,i)=>({name:it[0],metric:it[1],sv:_itemScore(base,salt+gi*7,i)}));
+      const avg=Math.round(items.reduce((a,x)=>a+x.sv,0)/items.length), cls=_clsOf(avg), isLast=gi===r.groups.length-1;
+      const cards=items.map(x=>{const mn=x.metric.split(/[=（(]/)[0].trim();
+        return `<div class="step-metric" title="${x.name}｜${x.metric}"><div class="step-metric-lbl">${mn}</div><div class="step-metric-bottom"><span class="step-metric-val" style="color:${textColor(x.sv)}">${x.sv}</span></div></div>`;}).join('');
+      return `<div class="step-tl-item">
+        <div class="step-tl-node"><div class="step-tl-dot ${cls}">${stepRing(avg,cls)}<span class="sd-num">${avg}</span></div>${isLast?'':'<div class="step-tl-line"></div>'}</div>
+        <div class="step-tl-body${isLast?' last':''}">
+          <div class="step-tl-hdr"><span class="step-tl-name">${g.sub}</span><span class="rub-cnt" style="margin-left:2px">${items.length} 项</span></div>
+          <div class="step-metrics">${cards}</div>
+        </div></div>`;
+    }).join('')+`</div>`;
 }
 
 // ══════════ 组件评分制度（整理自 reference/组件评分制度.CSV）══════════
