@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CANN 体验看板 · 用户旅程 v3.0</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   /* palette */
@@ -126,33 +129,36 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .jkpi-v small{font-size:13px;font-weight:600;color:var(--text-3);margin-left:2px}
 .jkpi-foot{margin-top:auto;padding-top:11px;display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--text-3);font-weight:600}
 
-/* ═══════════ FLOOR 2 touchpoint heatmap ═══════════ */
-.hm-wrap{display:grid;grid-template-columns:1fr clamp(210px,27%,300px);gap:14px;align-items:stretch}
-.hm-grid{display:grid;gap:5px}
-.hm-corner{position:relative;border-radius:7px;background:var(--g2);overflow:hidden}
+/* ═══════════ FLOOR 2 touchpoint heatmap（matrix.html 样式重绘）═══════════ */
+.hm-grid{display:grid;gap:8px}
+.hm-corner{position:relative;overflow:hidden;border-radius:12px;background:#fff;border:1px solid #EFF0F1;height:48px}
 .hm-corner svg{position:absolute;inset:0;width:100%;height:100%}
-.hm-corner .hc-col{position:absolute;top:5px;right:8px;font-size:9px;font-weight:700;color:var(--text-3)}
-.hm-corner .hc-row{position:absolute;bottom:5px;left:8px;font-size:9px;font-weight:700;color:var(--text-3)}
-.hm-header{font-size:11px;font-weight:700;color:var(--text-2);text-align:center;display:flex;align-items:center;justify-content:center;padding:4px 0}
-.hm-row-label{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:700;color:var(--text);padding:0 8px}
+.hm-corner .hc-col{position:absolute;top:24%;right:16%;font-size:11px;font-weight:700;color:#3D4452;letter-spacing:.04em}
+.hm-corner .hc-row{position:absolute;bottom:24%;left:16%;font-size:11px;font-weight:700;color:#3D4452;letter-spacing:.04em}
+.hm-header{font-size:12px;font-weight:700;color:#3D4452;text-align:center;letter-spacing:.04em;white-space:nowrap;background:#fff;border:1px solid rgba(223,223,223,.5);border-radius:12px;height:48px;display:flex;align-items:center;justify-content:center}
+.hm-row-label{display:flex;align-items:center;gap:10px;padding:0 10px;font-size:12.5px;font-weight:700;color:var(--text);background:#fff;border:1px solid rgba(223,223,223,.5);border-radius:12px;height:48px}
 .hm-row-label .rl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.hm-cell{border-radius:7px;padding:7px 4px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:48px;transition:transform .1s,box-shadow .1s;border:1.5px solid transparent}
-.hm-cell .cv{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:3px}
-.hm-cell .ct{font-size:8.5px;font-weight:700;opacity:.78}
-.hm-cell:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(30,60,120,.14)}
-.hm-cell.hm-sel{border-color:var(--blue);box-shadow:0 5px 16px rgba(46,107,230,.24)}
-.hm-cell.hm-overall{font-weight:900}
-.hm-legend{display:flex;align-items:center;gap:7px}
-.hm-grad{width:84px;height:8px;border-radius:99px;background:linear-gradient(90deg,#FFB9B9,#FFF2A5,#94E1C8)}
-.tp-detail-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--text-3);font-size:12px;background:var(--g1);border:1px dashed var(--border-2);border-radius:var(--radius-m);line-height:1.9;padding:20px}
-.tp-detail-empty svg{width:26px;height:26px;stroke:var(--border-2);stroke-width:1.5;fill:none;margin-bottom:8px}
-.tp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-m);overflow:hidden;height:100%;display:flex;flex-direction:column}
-.tp-card-hd{padding:12px 14px;background:linear-gradient(135deg,rgba(208,184,255,.22),rgba(128,230,255,.16));border-bottom:1px solid var(--border)}
-.tp-card-hd .tp-scene{font-size:11px;font-weight:700;color:var(--text-3)}
-.tp-card-hd .tp-dim{font-size:14px;font-weight:900;color:var(--text);margin-top:2px;display:flex;align-items:center;gap:8px}
-.tp-card-hd .tp-score{margin-left:auto;font-size:20px;font-weight:800;letter-spacing:-.02em}
-.tp-obs{padding:11px 14px;display:flex;flex-direction:column;gap:8px}
-.tp-obs-item{font-size:11.5px;line-height:1.55;color:var(--text-2);font-weight:500;padding:9px 11px;border-radius:8px;background:var(--g1)}
+.hm-cell{border-radius:12px;height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;border:1px solid #EFF0F1;position:relative;font-family:'JetBrains Mono','PingFang SC','Microsoft YaHei',monospace}
+.hm-cell .cv{font-size:14px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:3px}
+.hm-cell .cv>svg{flex-shrink:0}
+.hm-cell:hover{border-width:2px;border-color:var(--bd-hover);background:var(--bg-hover);filter:saturate(1.5)}
+.hm-cell.hm-sel{border-color:var(--purple);box-shadow:0 0 0 3px rgba(106,103,206,.15);transform:scale(1.06);z-index:1}
+.hm-cell.hm-overall{cursor:default}
+.hm-legend{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-3);font-weight:500}
+.hm-grad{width:120px;height:8px;border-radius:4px;background:linear-gradient(90deg,#FFB9B9 0%,#FFD7B7 35%,#FFF2A5 55%,#C4F3E1 75%,#94E1C8 100%)}
+/* inline detail（matrix.html 风格） */
+.tp-detail{margin-top:14px;padding:14px 18px;background:#fff;border:1px solid #EFF0F1;border-radius:var(--radius-m)}
+.tp-d-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.tp-d-box{width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.tp-d-name{font-size:16px;font-weight:800;color:var(--text)}
+.tp-d-sub{font-size:12.5px;color:var(--text-3);margin-top:3px}
+.tp-d-dims{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end}
+.tp-d-dim{text-align:center;min-width:46px;padding:4px 4px 6px;border-radius:7px}
+.tp-d-dim .l{font-size:11px;color:var(--text-3);margin-bottom:3px;white-space:nowrap}
+.tp-d-dim .v{padding:3px 5px;border-radius:5px;font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.tp-d-obs{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border-2);display:flex;flex-direction:column;gap:7px}
+.tp-d-obs-item{font-size:11.5px;line-height:1.55;color:var(--text-2);font-weight:500;padding-left:16px;position:relative}
+.tp-d-obs-item::before{content:'';position:absolute;left:3px;top:7px;width:5px;height:5px;border-radius:50%;background:var(--purple-bright)}
 
 /* ═══════════ FLOOR 3 scene deep-dive ═══════════ */
 .scene-list-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -378,16 +384,14 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
       <div class="floor-title">触点体验矩阵</div>
       <div class="floor-sub">场景 × 触点类型 · 点击格子查看 Agent 观测</div>
       <div class="floor-line"></div>
-      <div class="hm-legend"><span style="font-size:11px;color:var(--text-3)">低</span><div class="hm-grad"></div><span style="font-size:11px;color:var(--text-3)">高</span></div>
+      <div class="hm-legend">差<div class="hm-grad"></div>优</div>
     </div>
 
     <div class="card">
-      <div class="hm-wrap">
-        <div style="min-width:0;overflow:auto">
-          <div id="tpHeatGrid" class="hm-grid" style="grid-template-columns:118px repeat(4,1fr) 66px;min-width:480px"></div>
-        </div>
-        <div id="tpDetail"></div>
+      <div style="overflow-x:auto">
+        <div id="tpHeatGrid" class="hm-grid" style="grid-template-columns:140px repeat(4,1fr) 80px;min-width:600px"></div>
       </div>
+      <div id="tpDetail" style="display:none"></div>
     </div>
   </section>
 
@@ -459,21 +463,56 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 const AX={axisLine:{lineStyle:{color:'#E6EAF1'}},axisTick:{show:false},axisLabel:{color:'#9AA1AE',fontSize:10},splitLine:{lineStyle:{color:'#F2F5F9'}}};
 const GRADE_COLOR={bad:'#E63838',mid:'#FD9A00',ok:'#37C597'};
 
-// ── heatmap color (问题优先：低分=红 高分=绿) ──
+// ── heatmap 色阶（沿用 matrix.html：低→红 / 橙 / 绿 / 青 / 蓝←高，淡底+同色描边与字）──
 function heatColor(score){
-  const stops=[[0,[255,185,185]],[35,[255,215,183]],[55,[255,242,165]],[75,[196,243,225]],[100,[148,225,200]]];
-  let a=stops[0],b=stops[stops.length-1];
-  for(let i=0;i<stops.length-1;i++){if(score>=stops[i][0]&&score<=stops[i+1][0]){a=stops[i];b=stops[i+1];break;}}
-  const t=(score-a[0])/(b[0]-a[0]||1);
-  const rgb=a[1].map((v,j)=>Math.round(v+(b[1][j]-v)*t));
-  return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+  if(score<20) return 'rgba(224,33,40,0.05)';
+  if(score<40) return 'rgba(244,132,12,0.05)';
+  if(score<60) return 'rgba(5,131,88,0.05)';
+  if(score<80) return 'rgba(18,113,128,0.05)';
+  return 'rgba(57,121,249,0.05)';
 }
-function textColor(score){ return score<40?'#B03030':score<60?'#8B6200':'#1A7055'; }
+function borderColor(score){
+  if(score<20) return 'rgba(224,33,40,0.1)';
+  if(score<40) return 'rgba(244,132,12,0.1)';
+  if(score<60) return 'rgba(5,131,88,0.1)';
+  if(score<80) return 'rgba(18,113,128,0.1)';
+  return 'rgba(57,121,249,0.1)';
+}
+function borderColorHover(score){
+  if(score<20) return '#E02128';
+  if(score<40) return '#F4840C';
+  if(score<60) return '#058358';
+  if(score<80) return '#127180';
+  return '#3979F9';
+}
+function heatColorHover(score){
+  if(score<20) return 'rgba(224,33,40,0.2)';
+  if(score<40) return 'rgba(244,132,12,0.2)';
+  if(score<60) return 'rgba(5,131,88,0.2)';
+  if(score<80) return 'rgba(18,113,128,0.2)';
+  return 'rgba(57,121,249,0.2)';
+}
+function textColor(score){
+  if(score<20) return '#E02128';
+  if(score<40) return '#F4840C';
+  if(score<60) return '#058358';
+  if(score<80) return '#127180';
+  return '#3979F9';
+}
 function cellTrendSvg(t){
   if(!t) return '';
-  if(t==='u') return `<svg width="7" height="5" viewBox="0 0 8 8"><polyline points="1,7 4,3 7,7" stroke="#1A7055" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  if(t==='d') return `<svg width="7" height="5" viewBox="0 0 8 8"><polyline points="1,1 4,5 7,1" stroke="#B03030" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  return `<svg width="7" height="5" viewBox="0 0 8 8"><line x1="1" y1="4" x2="7" y2="4" stroke="#8a8f99" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+  if(t==='u') return `<svg width="7" height="5" viewBox="0 0 8 8" fill="none"><polyline points="1,7 4,3 7,7" stroke="#6DBD9A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  if(t==='d') return `<svg width="7" height="5" viewBox="0 0 8 8" fill="none"><polyline points="1,1 4,5 7,1" stroke="#E89494" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  return `<svg width="7" height="5" viewBox="0 0 8 8" fill="none"><line x1="1" y1="4" x2="7" y2="4" stroke="#AAAAAA" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+}
+// 表情脸（沿用 matrix.html：>=80 大笑 / >=60 微笑 / >=40 中性 / >=20 不悦 / <20 哭）
+function faceIcon(score){
+  const c='currentColor',a='width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"';
+  if(score>=80) return `<svg ${a}><circle cx="12" cy="12" r="10"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><path d="M6 15h12M6 15c3 5 9 5 12 0"/></svg>`;
+  if(score>=60) return `<svg ${a}><circle cx="12" cy="12" r="10"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><path d="M6 16c3 2 9 2 12 0"/></svg>`;
+  if(score>=40) return `<svg ${a}><circle cx="12" cy="12" r="10"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><line x1="6" y1="16" x2="18" y2="16"/></svg>`;
+  if(score>=20) return `<svg ${a}><circle cx="12" cy="12" r="10"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><path d="M6 17c3-2 9-2 12 0"/></svg>`;
+  return `<svg ${a}><circle cx="12" cy="12" r="10"/><line x1="7" y1="8" x2="11" y2="10"/><line x1="13" y1="10" x2="17" y2="8"/><path d="M6 16c3-3 9-3 12 0"/></svg>`;
 }
 
 // ══════════ TOUCHPOINT DATA ══════════
@@ -510,43 +549,55 @@ const touchpointData=[
 const tpCols=['doc','api','tool','env'];
 const tpColLabels={doc:'文档',api:'API',tool:'工具',env:'环境'};
 
+function tpCellHtml(score,trend,clickAttr){
+  const bg=heatColor(score),fg=textColor(score),bd=borderColor(score);
+  const bgH=heatColorHover(score),bdH=borderColorHover(score);
+  return `<div class="hm-cell${clickAttr?'':' hm-overall'}" ${clickAttr||''} style="background:${bg};color:${fg};border-color:${bd};--bg-hover:${bgH};--bd-hover:${bdH}">
+    <div class="cv">${faceIcon(score)}${Math.round(score)}${trend?cellTrendSvg(trend):''}</div></div>`;
+}
 function renderTpMatrix(){
   const grid=document.getElementById('tpHeatGrid');
-  const headers=['文档','API','工具','环境','综合'];
-  let html=`<div class="hm-corner"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="#fff" stroke-width="2.5"/></svg><span class="hc-col">维度</span><span class="hc-row">场景</span></div>`;
-  html+=headers.map(h=>`<div class="hm-header">${h}</div>`).join('');
+  let html=`<div class="hm-corner"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="#EFF0F1" stroke-width="1"/></svg><span class="hc-col">维度</span><span class="hc-row">场景</span></div>`;
+  html+=['文档','API','工具','环境','综合'].map(h=>`<div class="hm-header">${h}</div>`).join('');
   touchpointData.forEach(row=>{
-    html+=`<div class="hm-row-label"><div class="rl-dot" style="background:${GRADE_COLOR[row.overallCls]}"></div><div>${row.sceneName}</div></div>`;
+    const dotC=GRADE_COLOR[row.overallCls];
+    const dotG=row.overallCls==='bad'?'rgba(230,56,56,.2)':row.overallCls==='mid'?'rgba(253,154,0,.2)':'rgba(55,197,151,.2)';
+    html+=`<div class="hm-row-label"><div class="rl-dot" style="background:${dotC};box-shadow:0 0 0 2px ${dotG}"></div><div>${row.sceneName}</div></div>`;
     tpCols.forEach(col=>{
-      const c=row.cells[col],bg=heatColor(c.s),fg=textColor(c.s);
-      html+=`<div class="hm-cell" onclick="selectTpCell(${row.id},'${col}',this)" style="background:${bg};color:${fg}">
-        <div class="cv">${c.s}${cellTrendSvg(c.t)}</div>
-        <div class="ct">${c.cls==='bad'?'严重':c.cls==='mid'?'关注':'健康'}</div></div>`;
+      const c=row.cells[col];
+      html+=tpCellHtml(c.s,c.t,`onclick="selectTpCell(${row.id},'${col}',this)"`);
     });
-    const obg=heatColor(row.overallScore),ofg=textColor(row.overallScore);
-    html+=`<div class="hm-cell hm-overall" style="background:${obg};color:${ofg};cursor:default"><div class="cv">${row.overallScore}</div><div class="ct">综合</div></div>`;
+    html+=tpCellHtml(row.overallScore,null,null);
   });
   grid.innerHTML=html;
-  resetTpDetail();
-}
-function resetTpDetail(){
-  document.getElementById('tpDetail').innerHTML=`<div class="tp-detail-empty">
-    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h4"/></svg>
-    点击矩阵格子<br>查看 Agent 观测</div>`;
+  const det=document.getElementById('tpDetail'); if(det) det.style.display='none';
 }
 function selectTpCell(sceneId,col,el){
   document.querySelectorAll('#tpHeatGrid .hm-cell').forEach(c=>c.classList.remove('hm-sel'));
   el.classList.add('hm-sel');
   const row=touchpointData.find(r=>r.id===sceneId),c=row.cells[col];
-  const sideC=GRADE_COLOR[c.cls];
-  document.getElementById('tpDetail').innerHTML=`
-    <div class="tp-card">
-      <div class="tp-card-hd">
-        <div class="tp-scene">${row.sceneName}</div>
-        <div class="tp-dim"><span style="width:9px;height:9px;border-radius:2px;background:${sideC};display:inline-block"></span>${tpColLabels[col]}触点<span class="tp-score" style="color:${textColor(c.s)}">${c.s}</span></div>
-      </div>
-      <div class="tp-obs">${c.obs.map(o=>`<div class="tp-obs-item">${o}</div>`).join('')}</div>
+  const bg=heatColor(c.s),fg=textColor(c.s);
+  const dims=[['doc','文档'],['api','API'],['tool','工具'],['env','环境'],['__overall','综合']];
+  const dimsHtml=dims.map(([k,label])=>{
+    const sc=k==='__overall'?row.overallScore:row.cells[k].s;
+    const active=k===col;
+    return `<div class="tp-d-dim" style="background:${active?'rgba(106,103,206,.08)':'transparent'}">
+      <div class="l">${label}</div>
+      <div class="v" style="background:${heatColor(sc)};color:${textColor(sc)}">${Math.round(sc)}</div>
     </div>`;
+  }).join('');
+  const det=document.getElementById('tpDetail');
+  det.className='tp-detail'; det.style.display='block';
+  det.innerHTML=`
+    <div class="tp-d-row">
+      <div class="tp-d-box" style="background:${bg};color:${fg}">${Math.round(c.s)}</div>
+      <div style="flex-shrink:0">
+        <div class="tp-d-name">${row.sceneName} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${tpColLabels[col]}触点</span></div>
+        <div class="tp-d-sub">综合 ${row.overallScore} · 点击其他格子切换维度</div>
+      </div>
+      <div class="tp-d-dims">${dimsHtml}</div>
+    </div>
+    ${c.obs&&c.obs.length?`<div class="tp-d-obs">${c.obs.map(o=>`<div class="tp-d-obs-item">${o}</div>`).join('')}</div>`:''}`;
 }
 
 // ══════════ SCENARIO DATA ══════════
