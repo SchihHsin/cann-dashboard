@@ -176,7 +176,12 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .sort-btn{font-size:11px;font-weight:700;color:var(--text-3);border:none;background:none;padding:5px 13px;border-radius:999px;cursor:pointer;font-family:inherit;transition:all .15s}
 .sort-btn.on{background:#fff;color:var(--primary);box-shadow:0 1px 4px rgba(30,60,120,.12)}
 
-.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-m);box-shadow:var(--shadow);cursor:pointer;overflow:hidden;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;flex-direction:column}
+.sc{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-m);box-shadow:var(--shadow);cursor:pointer;overflow:hidden;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;flex-direction:column}
+/* 左上状态色光晕：从 rank 徽章下方同色扩散 */
+.sc::before{content:'';position:absolute;top:-46px;left:-46px;width:230px;height:230px;border-radius:50%;pointer-events:none;z-index:0;filter:blur(8px);
+  background:radial-gradient(circle,rgba(var(--sc-glow),.30) 0%,rgba(var(--sc-glow),.14) 34%,rgba(var(--sc-glow),0) 68%)}
+.sc.bad{--sc-glow:252,99,107}.sc.mid{--sc-glow:253,154,0}.sc.ok{--sc-glow:55,197,151}
+.sc>*{position:relative;z-index:1}
 .sc:hover{transform:translateY(-2px);box-shadow:var(--shadow-pop)}
 .sc.sel{box-shadow:var(--shadow-pop)}
 .sc.sel.bad{border-color:var(--coral-bright)}.sc.sel.mid{border-color:var(--gold-bright)}.sc.sel.ok{border-color:var(--green-bright)}
