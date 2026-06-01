@@ -154,9 +154,11 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 
 .sc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-m);box-shadow:var(--shadow);cursor:pointer;overflow:hidden;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;flex-direction:column}
 .sc:hover{transform:translateY(-2px);box-shadow:var(--shadow-pop)}
-.sc.sel{box-shadow:var(--shadow-pop);border-color:var(--purple-bright)}
+.sc.sel{box-shadow:var(--shadow-pop)}
+.sc.sel.bad{border-color:var(--coral-bright)}.sc.sel.mid{border-color:var(--gold-bright)}.sc.sel.ok{border-color:var(--green-bright)}
 .sc-top{display:flex;align-items:center;gap:10px;padding:13px 14px 8px}
-.sc-rank{font-size:13px;font-weight:900;min-width:34px;height:34px;padding:0 6px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;background:linear-gradient(135deg,#6A67CE,#4F4DA7)}
+.sc-rank{font-size:13px;font-weight:900;min-width:34px;height:34px;padding:0 6px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.sc-rank.bad{background:linear-gradient(135deg,#FC636B,#E63838)}.sc-rank.mid{background:linear-gradient(135deg,#FFB900,#E08700)}.sc-rank.ok{background:linear-gradient(135deg,#3BE8B0,#1FA97C)}
 .sc-name{font-size:13.5px;font-weight:800;letter-spacing:-.01em}
 .grade-tag{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;margin-top:3px}
 .grade-tag.bad{background:var(--coral-light);color:var(--coral-dark)}.grade-tag.mid{background:var(--gold-light);color:var(--gold-dark)}.grade-tag.ok{background:var(--green-light);color:var(--green-dark)}
@@ -179,7 +181,8 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .det-name{font-size:19px;font-weight:900;letter-spacing:-.01em}
 .det-grade{font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px}
 .det-grade.bad{background:var(--coral-light);color:var(--coral-dark)}.det-grade.mid{background:var(--gold-light);color:var(--gold-dark)}.det-grade.ok{background:var(--green-light);color:var(--green-dark)}
-.det-score{margin-left:auto;font-size:42px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;color:var(--purple-dark)}
+.det-score{margin-left:auto;font-size:42px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.det-score.bad{color:var(--coral-dark)}.det-score.mid{color:var(--gold-dark)}.det-score.ok{color:var(--green-dark)}
 .det-score small{font-size:14px;color:var(--text-3);font-weight:600}
 
 .rank-pill{display:inline-block;font-size:11px;font-weight:800;padding:4px 11px;border-radius:999px;background:var(--coral-light);color:var(--coral-dark)}
@@ -260,7 +263,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .pain-item{border:1px solid var(--border);border-radius:var(--radius-s);overflow:hidden;margin-bottom:9px}
 .pain-item:last-child{margin-bottom:0}
 .pain-top{display:flex;gap:11px;padding:12px 14px;align-items:flex-start}
-.pain-score{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--purple-dark);flex-shrink:0;width:30px;text-align:center}
+.pain-score{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--coral-dark);flex-shrink:0;width:30px;text-align:center}
 .pain-body{flex:1;min-width:0}
 .pain-text{font-size:12px;font-weight:600;color:var(--text);line-height:1.55}
 .pain-meta{font-size:10.5px;color:var(--text-3);font-weight:500;margin-top:5px}
@@ -863,13 +866,14 @@ function selScene(id){
 
   document.getElementById('detName').textContent=s.name;
   const dg=document.getElementById('detGrade'); dg.textContent=s.gradeLabel; dg.className='det-grade '+s.grade;
-  const ds=document.getElementById('detScore'); ds.innerHTML=`${s.score}<small>/100</small>`; ds.className='det-score';
+  const ds=document.getElementById('detScore'); ds.innerHTML=`${s.score}<small>/100</small>`; ds.className='det-score '+s.grade;
 
   // Agentic KPI strip
+  const valClr={bad:'var(--coral-dark)',mid:'var(--gold-dark)',ok:'var(--green-dark)'};
   document.getElementById('detKpis').innerHTML=s.kpis.map(k=>`
     <div class="kpi-cell">
       <div class="kc-l">${k.l}</div>
-      <div class="kc-v"><span style="color:var(--purple-dark)">${k.v}${k.u?`<small>${k.u}</small>`:''}</span><span class="kc-trend ${k.trendCls}">${k.trend}</span></div>
+      <div class="kc-v"><span style="color:${valClr[k.cls]}">${k.v}${k.u?`<small>${k.u}</small>`:''}</span><span class="kc-trend ${k.trendCls}">${k.trend}</span></div>
     </div>`).join('');
 
   // tab counts
