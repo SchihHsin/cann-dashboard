@@ -515,6 +515,25 @@ function faceIcon(score){
   return `<svg ${a}><circle cx="12" cy="12" r="10"/><line x1="7" y1="8" x2="11" y2="10"/><line x1="13" y1="10" x2="17" y2="8"/><path d="M6 16c3-3 9-3 12 0"/></svg>`;
 }
 
+// 近 6 期迷你折线（沿用 matrix.html miniSparkSvg）；无真实历史，按当前分+趋势合成 6 点
+let _spkIdx=0;
+function miniSparkSvg(data,color,W=110,H=42){
+  const n=data.length,min=Math.min(...data),max=Math.max(...data),range=max-min||1,pad=3;
+  const xs=data.map((_,i)=>i/(n-1)*W);
+  const ys=data.map(v=>H-(v-min)/range*(H-pad*2)-pad);
+  const pts=xs.map((x,i)=>`${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+  const areaPts=pts+` ${xs[n-1].toFixed(1)},${H} 0,${H}`;
+  const last=data[n-1],prev=data[n-2];
+  const dotC=last>prev?'#6DBD9A':last<prev?'#E89494':'#AAAAAA';
+  const gid='tpspk'+(_spkIdx++);
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none" style="vertical-align:middle"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${color}" stop-opacity="0.3"/><stop offset="100%" stop-color="${color}" stop-opacity="0"/></linearGradient></defs><polygon points="${areaPts}" fill="url(#${gid})"/><polyline points="${pts}" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="${xs[n-1].toFixed(1)}" cy="${ys[n-1].toFixed(1)}" r="2.2" fill="${dotC}"/></svg>`;
+}
+function tpHist(score,trend){
+  const s=Math.round(score);
+  const deltas=trend==='u'?[-9,-7,-6,-4,-2,0]:trend==='d'?[9,7,5,4,2,0]:[-2,1,-1,2,-1,0];
+  return deltas.map(d=>Math.max(0,Math.min(100,s+d)));
+}
+
 // ══════════ TOUCHPOINT DATA ══════════
 const touchpointData=[
   {id:0,sceneName:'算子复现部署',overallScore:57,overallCls:'bad',
@@ -586,6 +605,7 @@ function selectTpCell(sceneId,col,el){
       <div class="v" style="background:${heatColor(sc)};color:${textColor(sc)}">${Math.round(sc)}</div>
     </div>`;
   }).join('');
+  const sparkColor=c.t==='u'?'#6DBD9A':c.t==='d'?'#E89494':'#AAAAAA';
   const det=document.getElementById('tpDetail');
   det.className='tp-detail'; det.style.display='block';
   det.innerHTML=`
@@ -594,6 +614,10 @@ function selectTpCell(sceneId,col,el){
       <div style="flex-shrink:0">
         <div class="tp-d-name">${row.sceneName} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${tpColLabels[col]}触点</span></div>
         <div class="tp-d-sub">综合 ${row.overallScore} · 点击其他格子切换维度</div>
+      </div>
+      <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px">
+        <span style="font-size:11px;color:var(--text-3)">近 6 期</span>
+        ${miniSparkSvg(tpHist(c.s,c.t),sparkColor,110,40)}
       </div>
       <div class="tp-d-dims">${dimsHtml}</div>
     </div>
