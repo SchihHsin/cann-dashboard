@@ -502,6 +502,10 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
       <div class="floor-title">组件体验矩阵</div>
       <div class="floor-sub">组件 × 评分维度（文档 / API / 工具 / 环境）· 点击格子查看评分详情</div>
       <div class="floor-line"></div>
+      <div class="sort-toggle" style="margin-right:12px">
+        <button class="sort-btn on" id="compSortAlpha" onclick="setCompSort('alpha')">字母</button>
+        <button class="sort-btn" id="compSortScore" onclick="setCompSort('score')">问题优先</button>
+      </div>
       <div class="hm-legend">差<div class="hm-grad"></div>优</div>
     </div>
     <div class="card">
@@ -1152,11 +1156,21 @@ const touchpointData=[
   {id:10,sceneName:'编译库&OS',         overallScore:59,overallCls:'mid',cells:{doc:{s:56,t:'f'},api:{s:60,t:'u'},tool:{s:50,t:'d'},env:{s:68,t:'f'}}},
 ];
 const COMP_CATS=[['doc','文档'],['api','API'],['tool','工具'],['env','环境']];
+let compSort='alpha'; // 默认字母排序，可切换 问题优先（综合升序）
+function setCompSort(mode){
+  compSort=mode;
+  document.getElementById('compSortAlpha').classList.toggle('on',mode==='alpha');
+  document.getElementById('compSortScore').classList.toggle('on',mode==='score');
+  renderCompMatrix();
+}
 function renderCompMatrix(){
   const grid=document.getElementById('compHeatGrid'); if(!grid)return;
+  const rows=compSort==='score'
+    ? [...touchpointData].sort((a,b)=>a.overallScore-b.overallScore)
+    : [...touchpointData].sort((a,b)=>a.sceneName.localeCompare(b.sceneName,'zh'));
   let html=`<div class="hm-corner"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="#EFF0F1" stroke-width="1"/></svg><span class="hc-col">维度</span><span class="hc-row">组件</span></div>`;
   html+=COMP_CATS.map(([k,l])=>`<div class="hm-header">${l}</div>`).join('')+`<div class="hm-header">综合</div>`;
-  touchpointData.forEach(row=>{
+  rows.forEach(row=>{
     const dotG=row.overallCls==='bad'?'rgba(230,56,56,.2)':row.overallCls==='mid'?'rgba(253,154,0,.2)':'rgba(55,197,151,.2)';
     html+=`<div class="hm-row-label"><div class="rl-dot" style="background:${GRADE_COLOR[row.overallCls]};box-shadow:0 0 0 2px ${dotG}"></div><div>${row.sceneName}</div></div>`;
     COMP_CATS.forEach(([k])=>{ const c=row.cells[k]; html+=tpCellHtml(c.s,c.t,`onclick="selectCompCell(${row.id},'${k}',this)"`); });
