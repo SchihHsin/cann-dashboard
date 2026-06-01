@@ -167,6 +167,8 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .sc-top{display:flex;align-items:center;gap:10px;padding:13px 14px 8px}
 .sc-rank{font-size:13px;font-weight:900;min-width:34px;height:34px;padding:0 6px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
 .sc-rank.bad{background:linear-gradient(135deg,#FC636B,#E63838)}.sc-rank.mid{background:linear-gradient(135deg,#FFB900,#E08700)}.sc-rank.ok{background:linear-gradient(135deg,#3BE8B0,#1FA97C)}
+.sc-title{flex:1;min-width:0}
+.sc-name-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .sc-name{font-size:13.5px;font-weight:800;letter-spacing:-.01em}
 .grade-tag{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;margin-top:3px}
 .grade-tag.bad{background:var(--coral-light);color:var(--coral-dark)}.grade-tag.mid{background:var(--gold-light);color:var(--gold-dark)}.grade-tag.ok{background:var(--green-light);color:var(--green-dark)}
@@ -176,15 +178,12 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .sc-trend{font-size:10px;font-weight:800}
 .sc-trend.up{color:var(--good)}.sc-trend.dn{color:var(--bad)}.sc-trend.flat{color:var(--text-3)}
 .sc-spark{margin-left:auto}
-.sc-evidence{display:flex;gap:6px;padding:0 14px 13px;margin-top:auto}
-.ev-chip{font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid var(--border)}
-.ev-chip.red{background:var(--coral-light);color:var(--coral-dark);border-color:transparent}
-.ev-chip.yellow{background:var(--gold-light);color:var(--gold-dark);border-color:transparent}
-.ev-chip.gray{background:var(--g1);color:var(--text-3)}
-.ev-chip-btn{cursor:pointer;transition:filter .12s,box-shadow .12s}
-.ev-chip-btn:hover{filter:brightness(.96);box-shadow:0 2px 8px rgba(30,60,120,.14)}
-.step-ev-btn{margin-left:auto;font-family:inherit;font-size:10px;font-weight:700;color:var(--text-3);background:var(--g1);border:1px solid var(--border);border-radius:999px;padding:3px 9px;cursor:pointer;white-space:nowrap;transition:all .12s}
-.step-ev-btn:hover{color:var(--primary);border-color:var(--blue-soft);background:var(--blue-light)}
+/* 痛点 / VOD 证据入口（区别于 grade-tag：方角 + 描边 + 图标 + 虚线下划线感的可点样式） */
+.ev-entry{display:inline-flex;align-items:center;gap:4px;font-family:inherit;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;border:1px dashed var(--border-2);background:var(--g1);color:var(--text-2);cursor:pointer;white-space:nowrap;transition:all .12s;line-height:1.6}
+.ev-entry svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+.ev-entry .n{font-variant-numeric:tabular-nums;font-weight:800}
+.ev-entry.pain:hover{border-color:var(--coral-bright);color:var(--coral-dark);background:var(--coral-light);border-style:solid}
+.ev-entry.vod:hover{border-color:var(--teal-bright);color:var(--teal-dark);background:var(--teal-light);border-style:solid}
 
 /* evidence preview popover (痛点 / VOD) */
 .evpop{position:fixed;z-index:200;width:368px;max-height:64vh;overflow-y:auto;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-m);box-shadow:0 18px 50px rgba(30,60,120,.24);padding:14px 15px;opacity:0;transform:translateY(6px);pointer-events:none;transition:opacity .14s,transform .14s}
@@ -810,6 +809,14 @@ function stepRing(score,cls){
   const col={bad:'#FC636B',mid:'#FD9A00',ok:'#37C597'}[cls]||'#6E9BF0';
   return `<svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--g2)" stroke-width="3.4"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="${col}" stroke-width="3.4" stroke-linecap="round" pathLength="100" stroke-dasharray="${score} 100"/></svg>`;
 }
+// 痛点 / VOD 证据入口（kind = 'pain' | 'vod'）
+const EV_ICON={
+  pain:'<svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  vod:'<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'
+};
+function evEntry(id,kind,label,count){
+  return `<span class="ev-entry ${kind}" onmouseenter="showEvPop(${id},this,'${kind}')" onmouseleave="scheduleHideEvPop()" onclick="event.stopPropagation();showEvPop(${id},this,'${kind}',true)">${EV_ICON[kind]}${label} <span class="n">${count}</span></span>`;
+}
 
 // ── scene list ──
 function setSort(mode){
@@ -830,16 +837,19 @@ function renderList(){
     return `<div class="sc ${s.grade}${s.id===_selectedId?' sel':''}" id="sc${s.id}" onclick="selScene(${s.id})">
       <div class="sc-top">
         <div class="sc-rank ${s.grade}">${rankLabel}</div>
-        <div><div class="sc-name">${s.name}</div><span class="grade-tag ${s.grade}">${s.gradeLabel}</span></div>
+        <div class="sc-title">
+          <div class="sc-name-row">
+            <span class="sc-name">${s.name}</span>
+            ${evEntry(s.id,'pain','痛点',s.painCount)}
+            ${evEntry(s.id,'vod','VOD',s.vodCount)}
+          </div>
+          <span class="grade-tag ${s.grade}">${s.gradeLabel}</span>
+        </div>
       </div>
       <div class="sc-score-row">
         <span class="sc-score ${s.grade}">${s.score}</span>
         <span class="sc-trend ${s.trendDir}">${td}</span>
         <span class="sc-spark">${sparkSvg(s.runs,68,22,sparkClr[s.grade])}</span>
-      </div>
-      <div class="sc-evidence">
-        <span class="ev-chip ev-chip-btn ${s.grade==='ok'?'gray':'red'}" onmouseenter="showEvPop(${s.id},this,'pain')" onmouseleave="scheduleHideEvPop()" onclick="event.stopPropagation();showEvPop(${s.id},this,'pain',true)">痛点 ${s.painCount} ›</span>
-        <span class="ev-chip ev-chip-btn ${s.vodCount>=50?'red':s.vodCount>=30?'yellow':'gray'}" onmouseenter="showEvPop(${s.id},this,'vod')" onmouseleave="scheduleHideEvPop()" onclick="event.stopPropagation();showEvPop(${s.id},this,'vod',true)">VOD ${s.vodCount} ›</span>
       </div>
     </div>`;
   }).join('');
@@ -880,7 +890,8 @@ function selScene(id){
         <div class="step-tl-node"><div class="step-tl-dot ${st.cls}">${stepRing(st.score,st.cls)}<span class="sd-num">${st.score}</span></div>${isLast?'':'<div class="step-tl-line"></div>'}</div>
         <div class="step-tl-body${isLast?' last':''}">
           <div class="step-tl-hdr"><span class="step-tl-name">${st.name}</span>
-            <button class="step-ev-btn" onmouseenter="showEvPop(${s.id},this)" onmouseleave="scheduleHideEvPop()" onclick="showEvPop(${s.id},this,null,true)">痛点·VOD ›</button></div>
+            ${evEntry(s.id,'pain','痛点',s.painCount)}
+            ${evEntry(s.id,'vod','VOD',s.vodCount)}</div>
           <div class="as-summary"><b>总结</b>${st.summary}</div>
           ${st.observations&&st.observations.length?`<div class="as-obs"><b>Agent 观测</b><div class="as-obs-list">${st.observations.map(o=>`<div class="as-obs-item">${o}</div>`).join('')}</div></div>`:''}
           ${metricsHtml}
@@ -934,7 +945,7 @@ function _positionEvPop(anchor){
 }
 function scheduleHideEvPop(){ if(_popPinned)return; _popHideT=setTimeout(hideEvPop,180); }
 function hideEvPop(force){ if(_popPinned&&!force)return; _popPinned=false; _evPop.classList.remove('on'); }
-document.addEventListener('click',e=>{ if(_popPinned && !_evPop.contains(e.target) && !e.target.closest('.ev-chip-btn,.step-ev-btn')) hideEvPop(true); });
+document.addEventListener('click',e=>{ if(_popPinned && !_evPop.contains(e.target) && !e.target.closest('.ev-entry')) hideEvPop(true); });
 window.addEventListener('scroll',()=>{ if(_evPop.classList.contains('on')) hideEvPop(true); },true);
 
 // ── init ──
