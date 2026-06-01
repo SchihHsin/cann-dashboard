@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CANN 体验看板 · 用户旅程 v3.0</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+:root{
+  /* palette */
+  --blue-deep:#1E4FB8;--blue:#2E6BE6;--blue-soft:#6E9BF0;--blue-light:#EAF1FE;
+  --purple-dark:#4F4DA7;--purple:#6A67CE;--purple-bright:#A177FF;--purple-light:#F0EFFA;
+  --teal-dark:#179D8A;--teal:#1AAFD0;--teal-bright:#02CEFF;--teal-light:#E8F7FB;
+  --green-dark:#1FA97C;--green:#37C597;--green-bright:#3BE8B0;--green-light:#EAFBF5;
+  --gold-dark:#E08700;--gold:#FD9A00;--gold-bright:#FFB900;--gold-light:#FFF7E6;
+  --coral-dark:#E63838;--coral:#FC636B;--coral-bright:#FF8AA3;--coral-light:#FEEFF1;
+  --g1:#F7F9FC;--g2:#EFF2F7;--g3:#E6EAF1;--g4:#D7DCE6;--g5:#BFC6D2;
+  --g6:#9AA1AE;--g7:#727A88;--g8:#525A68;--g9:#363E4C;--g10:#1B2330;
+  /* semantic */
+  --bg:#F2F5FA;--card:#FFFFFF;--border:#E9ECF3;--border-2:#DCE1EB;
+  --text:var(--g10);--text-2:var(--g8);--text-3:var(--g6);
+  --primary:var(--blue);--good:var(--green-dark);--warn:var(--gold-dark);--bad:var(--coral-dark);
+  --radius-l:18px;--radius-m:14px;--radius-s:9px;
+  --shadow:0 1px 2px rgba(30,60,120,.04),0 6px 20px rgba(30,60,120,.05);
+  --shadow-pop:0 12px 34px rgba(46,107,230,.16);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-serif;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;line-height:1.4}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+/* ── decorative network bg ── */
+.deco{position:fixed;top:-60px;right:-40px;width:620px;height:480px;pointer-events:none;z-index:0;opacity:.5;filter:blur(.4px)}
+
+/* ── TOPBAR ── */
+.topbar{background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:0 30px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 14px rgba(30,60,120,.05)}
+.tb-logo{font-size:16px;font-weight:900;letter-spacing:-.02em;background:linear-gradient(120deg,var(--blue-deep),var(--purple-bright));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tb-sep{color:var(--g4);margin:0 9px}
+.tb-title{font-size:12px;color:var(--text-3);font-weight:500}
+.tb-dims{display:flex;margin-left:30px}
+.dim-tab{padding:0 17px;height:56px;font-size:13px;font-weight:600;color:var(--text-3);border:none;background:none;cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;font-family:inherit;transition:all .15s}
+.dim-tab:hover{color:var(--text)}
+.dim-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
+.tb-right{display:flex;align-items:center;gap:9px;margin-left:auto}
+.period-pill{font-size:11.5px;color:var(--text-2);background:#fff;border:1px solid var(--border-2);border-radius:999px;padding:6px 13px;cursor:pointer;display:flex;align-items:center;gap:7px;font-weight:600}
+.period-pill svg{width:13px;height:13px;stroke:var(--text-3)}
+.export-btn{font-size:11.5px;font-weight:700;color:#fff;background:linear-gradient(120deg,var(--blue),var(--blue-deep));border:none;border-radius:999px;padding:7px 15px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+.export-btn svg{width:13px;height:13px;stroke:#fff}
+
+/* ── FILTER BAR ── */
+.filter-bar{background:rgba(255,255,255,.7);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:9px 30px;display:flex;align-items:center;gap:9px;position:sticky;top:56px;z-index:99}
+.fl-lbl{font-size:10px;color:var(--text-3);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.fchip{padding:5px 13px;border-radius:999px;font-size:11.5px;font-weight:600;border:1px solid var(--border-2);background:#fff;color:var(--text-2);cursor:pointer;transition:all .12s}
+.fchip:hover{border-color:var(--blue-soft);color:var(--primary)}
+.fchip.on{background:var(--blue-light);color:var(--blue-deep);border-color:var(--blue-soft)}
+.fl-sep{width:1px;height:15px;background:var(--border);margin:0 3px}
+
+/* ── LAYOUT ── */
+.page{position:relative;z-index:1;max-width:1640px;margin:0 auto;padding:22px 30px 90px}
+
+/* ── FLOOR ── */
+.floor{margin-bottom:30px;scroll-margin-top:124px}
+.floor-hd{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.floor-badge{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(30,60,120,.16)}
+.floor-badge svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.1}
+.floor-title{font-size:17px;font-weight:900;letter-spacing:-.01em;color:var(--text)}
+.floor-sub{font-size:11.5px;color:var(--text-3);font-weight:500;margin-left:2px}
+.floor-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+.more-link{font-size:11.5px;color:var(--text-3);font-weight:600;cursor:pointer;display:flex;align-items:center;gap:3px;white-space:nowrap;text-decoration:none;transition:color .15s}
+.more-link:hover{color:var(--primary)}
+
+/* ── CARD ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-m);box-shadow:var(--shadow);padding:16px 18px;min-width:0}
+.card-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:13px;gap:8px}
+.card-hd-l{display:flex;align-items:baseline;gap:8px;min-width:0}
+.card-title{font-size:13px;font-weight:800;letter-spacing:-.01em;color:var(--text);white-space:nowrap}
+.card-meta{font-size:10.5px;color:var(--text-3);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-more{font-size:10.5px;color:var(--text-3);font-weight:600;cursor:pointer;white-space:nowrap}
+.card-more:hover{color:var(--primary)}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:1180px){.grid4{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:1fr 1fr}}
+
+/* ── delta chips ── */
+.dlt{display:inline-flex;align-items:center;gap:2px;font-size:10px;font-weight:800;padding:1px 6px;border-radius:999px;vertical-align:middle}
+.dlt.up{color:var(--good);background:var(--green-light)}
+.dlt.dn{color:var(--bad);background:var(--coral-light)}
+.dlt.neu{color:var(--text-3);background:var(--g2)}
+.dlt svg{width:8px;height:8px;stroke-width:3.4;fill:none}
+
+/* ── sub label ── */
+.sub-lbl{font-size:10.5px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 9px;display:flex;align-items:center;gap:7px}
+.sub-lbl::after{content:'';flex:1;height:1px;background:var(--g2)}
+
+/* ── callout ── */
+.callout{display:flex;gap:9px;align-items:flex-start;background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:10px 13px;font-size:11.5px;color:var(--blue-deep);font-weight:600;line-height:1.6}
+.callout svg{width:15px;height:15px;stroke:var(--blue);flex-shrink:0;margin-top:1px;fill:none;stroke-width:2}
+
+/* ── KPI strip ── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius-s);overflow:hidden}
+.kpi-cell{padding:13px 15px;border-right:1px solid var(--g2)}
+.kpi-cell:last-child{border-right:none}
+.kpi-cell .kc-l{font-size:10.5px;color:var(--text-3);font-weight:600;margin-bottom:5px}
+.kpi-cell .kc-v{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1;display:flex;align-items:baseline;gap:6px}
+.kpi-cell .kc-v small{font-size:11px;color:var(--text-3);font-weight:600}
+
+/* ── chips ── */
+.chip-grp{display:flex;flex-wrap:wrap;gap:7px}
+.mchip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:6px 11px;border-radius:8px;background:var(--g1);border:1px solid var(--border);color:var(--text)}
+.mchip .dot{width:6px;height:6px;border-radius:50%}
+
+/* ═══════════ JOURNEY: FLOOR 1 hero KPI ═══════════ */
+.jkpi{display:flex;flex-direction:column;min-height:120px}
+.jkpi-l{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--text-3)}
+.jkpi-l svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2}
+.jkpi-v{font-size:30px;font-weight:800;letter-spacing:-.025em;line-height:1;margin-top:12px}
+.jkpi-v small{font-size:13px;font-weight:600;color:var(--text-3);margin-left:2px}
+.jkpi-foot{margin-top:auto;padding-top:11px;display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--text-3);font-weight:600}
+
+/* ═══════════ FLOOR 2 touchpoint heatmap ═══════════ */
+.hm-wrap{display:grid;grid-template-columns:1fr clamp(210px,27%,300px);gap:14px;align-items:stretch}
+.hm-grid{display:grid;gap:5px}
+.hm-corner{position:relative;border-radius:7px;background:var(--g2);overflow:hidden}
+.hm-corner svg{position:absolute;inset:0;width:100%;height:100%}
+.hm-corner .hc-col{position:absolute;top:5px;right:8px;font-size:9px;font-weight:700;color:var(--text-3)}
+.hm-corner .hc-row{position:absolute;bottom:5px;left:8px;font-size:9px;font-weight:700;color:var(--text-3)}
+.hm-header{font-size:11px;font-weight:700;color:var(--text-2);text-align:center;display:flex;align-items:center;justify-content:center;padding:4px 0}
+.hm-row-label{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:700;color:var(--text);padding:0 8px}
+.hm-row-label .rl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.hm-cell{border-radius:7px;padding:7px 4px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:48px;transition:transform .1s,box-shadow .1s;border:1.5px solid transparent}
+.hm-cell .cv{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:3px}
+.hm-cell .ct{font-size:8.5px;font-weight:700;opacity:.78}
+.hm-cell:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(30,60,120,.14)}
+.hm-cell.hm-sel{border-color:var(--blue);box-shadow:0 5px 16px rgba(46,107,230,.24)}
+.hm-cell.hm-overall{font-weight:900}
+.hm-legend{display:flex;align-items:center;gap:7px}
+.hm-grad{width:84px;height:8px;border-radius:99px;background:linear-gradient(90deg,#FFB9B9,#FFF2A5,#94E1C8)}
+.tp-detail-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--text-3);font-size:12px;background:var(--g1);border:1px dashed var(--border-2);border-radius:var(--radius-m);line-height:1.9;padding:20px}
+.tp-detail-empty svg{width:26px;height:26px;stroke:var(--border-2);stroke-width:1.5;fill:none;margin-bottom:8px}
+.tp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-m);overflow:hidden;border-left:3px solid var(--blue);height:100%;display:flex;flex-direction:column}
+.tp-card-hd{padding:12px 14px;background:linear-gradient(135deg,rgba(208,184,255,.22),rgba(128,230,255,.16));border-bottom:1px solid var(--border)}
+.tp-card-hd .tp-scene{font-size:11px;font-weight:700;color:var(--text-3)}
+.tp-card-hd .tp-dim{font-size:14px;font-weight:900;color:var(--text);margin-top:2px;display:flex;align-items:center;gap:8px}
+.tp-card-hd .tp-score{margin-left:auto;font-size:20px;font-weight:800;letter-spacing:-.02em}
+.tp-obs{padding:11px 14px;display:flex;flex-direction:column;gap:8px}
+.tp-obs-item{font-size:11.5px;line-height:1.55;color:var(--text-2);font-weight:500;padding:9px 11px;border-radius:8px;border-left:3px solid;background:var(--g1)}
+
+/* ═══════════ FLOOR 3 scene deep-dive ═══════════ */
+.scene-list-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sort-toggle{display:inline-flex;background:var(--g2);border-radius:999px;padding:2px}
+.sort-btn{font-size:11px;font-weight:700;color:var(--text-3);border:none;background:none;padding:5px 13px;border-radius:999px;cursor:pointer;font-family:inherit;transition:all .15s}
+.sort-btn.on{background:#fff;color:var(--primary);box-shadow:0 1px 4px rgba(30,60,120,.12)}
+
+.sc{background:var(--card);border:1px solid var(--border);border-top:3px solid var(--border-2);border-radius:var(--radius-m);box-shadow:var(--shadow);cursor:pointer;overflow:hidden;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;flex-direction:column}
+.sc:hover{transform:translateY(-2px);box-shadow:var(--shadow-pop)}
+.sc.sel{box-shadow:var(--shadow-pop)}
+.sc.bad{border-top-color:var(--coral)}.sc.mid{border-top-color:var(--gold)}.sc.ok{border-top-color:var(--green)}
+.sc.sel.bad{border-color:var(--coral-bright)}.sc.sel.mid{border-color:var(--gold-bright)}.sc.sel.ok{border-color:var(--green-bright)}
+.sc-top{display:flex;align-items:center;gap:10px;padding:13px 14px 8px}
+.sc-rank{font-size:13px;font-weight:900;min-width:34px;height:34px;padding:0 6px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.sc-rank.bad{background:linear-gradient(135deg,#FC636B,#E63838)}.sc-rank.mid{background:linear-gradient(135deg,#FFB900,#E08700)}.sc-rank.ok{background:linear-gradient(135deg,#3BE8B0,#1FA97C)}
+.sc-name{font-size:13.5px;font-weight:800;letter-spacing:-.01em}
+.grade-tag{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;margin-top:3px}
+.grade-tag.bad{background:var(--coral-light);color:var(--coral-dark)}.grade-tag.mid{background:var(--gold-light);color:var(--gold-dark)}.grade-tag.ok{background:var(--green-light);color:var(--green-dark)}
+.sc-score-row{display:flex;align-items:center;gap:9px;padding:0 14px 9px}
+.sc-score{font-size:27px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.sc-score.bad{color:var(--coral-dark)}.sc-score.mid{color:var(--gold-dark)}.sc-score.ok{color:var(--green-dark)}
+.sc-trend{font-size:10px;font-weight:800}
+.sc-trend.up{color:var(--good)}.sc-trend.dn{color:var(--bad)}.sc-trend.flat{color:var(--text-3)}
+.sc-spark{margin-left:auto}
+.sc-evidence{display:flex;gap:6px;padding:0 14px 13px;margin-top:auto}
+.ev-chip{font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid var(--border)}
+.ev-chip.red{background:var(--coral-light);color:var(--coral-dark);border-color:transparent}
+.ev-chip.yellow{background:var(--gold-light);color:var(--gold-dark);border-color:transparent}
+.ev-chip.gray{background:var(--g1);color:var(--text-3)}
+
+/* detail */
+.det-hint{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--text-3);font-size:13px;padding:60px 20px;line-height:1.9}
+.det-hint svg{width:34px;height:34px;stroke:var(--purple-bright);stroke-width:1.5;fill:none;margin-bottom:10px}
+.det-hd{display:flex;align-items:center;gap:14px;padding:16px 20px;border-radius:var(--radius-m);background:linear-gradient(135deg,rgba(208,184,255,.22),rgba(128,230,255,.14));border:1px solid var(--border);margin-bottom:14px}
+.det-name{font-size:19px;font-weight:900;letter-spacing:-.01em}
+.det-grade{font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px}
+.det-grade.bad{background:var(--coral-light);color:var(--coral-dark)}.det-grade.mid{background:var(--gold-light);color:var(--gold-dark)}.det-grade.ok{background:var(--green-light);color:var(--green-dark)}
+.det-score{margin-left:auto;font-size:42px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.det-score.bad{color:var(--coral-dark)}.det-score.mid{color:var(--gold-dark)}.det-score.ok{color:var(--green-dark)}
+.det-score small{font-size:14px;color:var(--text-3);font-weight:600}
+
+.rank-pill{display:inline-block;font-size:11px;font-weight:800;padding:4px 11px;border-radius:999px;background:var(--coral-light);color:var(--coral-dark)}
+.rank-pill.mid{background:var(--gold-light);color:var(--gold-dark)}.rank-pill.ok{background:var(--green-light);color:var(--green-dark)}
+.rank-desc{font-size:11.5px;color:var(--text-2);font-weight:600;margin-top:8px;line-height:1.5}
+.rank-bars{display:flex;align-items:flex-end;gap:6px;height:42px;margin-top:12px}
+.rank-bar{flex:1;border-radius:4px 4px 0 0;background:var(--g4);position:relative;min-height:4px}
+.rank-bar.bad{background:var(--coral-bright)}.rank-bar.mid{background:var(--gold-bright)}.rank-bar.ok{background:var(--green-bright)}
+.rank-bar.cur{outline:2px solid var(--text);outline-offset:1px}
+.rank-bar .rb-v{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;color:var(--text-3)}
+
+.kc-trend{font-size:10px;font-weight:800;margin-left:auto}
+.kc-trend.up{color:var(--good)}.kc-trend.dn{color:var(--bad)}.kc-trend.flat{color:var(--text-3)}
+
+/* evidence tabs */
+.ev-tabs{display:flex;gap:6px;border-bottom:1px solid var(--border);margin:4px 0 0}
+.ev-tab{position:relative;font-size:12.5px;font-weight:700;color:var(--text-3);border:none;background:none;padding:10px 14px 11px;cursor:pointer;font-family:inherit;border-bottom:2.5px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:7px;transition:color .15s}
+.ev-tab:hover{color:var(--text)}
+.ev-tab.on{color:var(--primary);border-bottom-color:var(--primary)}
+.ev-tab-count{font-size:10px;font-weight:800;background:var(--g2);color:var(--text-3);padding:1px 7px;border-radius:999px}
+.ev-tab.on .ev-tab-count{background:var(--blue-light);color:var(--blue-deep)}
+.ev-panel{display:none;padding-top:16px}
+.ev-panel.on{display:block}
+
+/* agent timeline */
+.agent-lbl{font-size:11px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px}
+.step-tl{display:flex;flex-direction:column}
+.step-tl-item{display:flex;gap:13px}
+.step-tl-node{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.step-tl-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;border:2px solid;font-variant-numeric:tabular-nums}
+.step-tl-dot.bad{background:var(--coral-light);border-color:var(--coral);color:var(--coral-dark)}
+.step-tl-dot.mid{background:var(--gold-light);border-color:var(--gold);color:var(--gold-dark)}
+.step-tl-dot.ok{background:var(--green-light);border-color:var(--green);color:var(--green-dark)}
+.step-tl-line{width:2px;flex:1;margin:3px 0;border-radius:2px;background:var(--g3)}
+.step-tl-body{padding-bottom:20px;flex:1;min-width:0}
+.step-tl-body.last{padding-bottom:2px}
+.step-tl-hdr{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.step-tl-name{font-size:13px;font-weight:800;white-space:nowrap}
+.as-bar-track{flex:1;height:7px;border-radius:99px;background:var(--g2);overflow:hidden;min-width:40px}
+.as-bar-fill{height:100%;border-radius:99px}
+.as-bar-fill.bad{background:linear-gradient(90deg,#FC636B,#FF8AA3)}.as-bar-fill.mid{background:linear-gradient(90deg,#FD9A00,#FFB900)}.as-bar-fill.ok{background:linear-gradient(90deg,#37C597,#3BE8B0)}
+.as-score{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+.as-score.bad{color:var(--coral-dark)}.as-score.mid{color:var(--gold-dark)}.as-score.ok{color:var(--green-dark)}
+.as-summary{font-size:11.5px;line-height:1.6;color:var(--text-2);font-weight:500;background:var(--g1);border-radius:8px;padding:9px 12px;margin-bottom:8px}
+.as-summary b{color:var(--text);font-weight:800;margin-right:6px}
+.as-obs{margin-bottom:9px}
+.as-obs>b{font-size:10px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em}
+.as-obs-list{display:flex;flex-direction:column;gap:5px;margin-top:6px}
+.as-obs-item{font-size:11px;line-height:1.5;color:var(--text-2);font-weight:500;padding-left:14px;position:relative}
+.as-obs-item::before{content:'';position:absolute;left:2px;top:7px;width:5px;height:5px;border-radius:50%;background:var(--purple-bright)}
+.step-metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:7px}
+.step-metric{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+.step-metric-lbl{font-size:9.5px;color:var(--text-3);font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step-metric-bottom{display:flex;align-items:baseline;gap:5px}
+.step-metric-val{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.step-metric-trend{font-size:9.5px;font-weight:800;margin-left:auto}
+.step-metric-trend.up{color:var(--good)}.step-metric-trend.dn{color:var(--bad)}.step-metric-trend.flat{color:var(--text-3)}
+.tool-chain{margin-top:18px;padding-top:15px;border-top:1px dashed var(--border-2)}
+.tool-chain-lbl{font-size:10px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+.tool-chips{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.tool-chip{font-size:11px;font-weight:700;padding:6px 10px;border-radius:8px;display:inline-flex;align-items:center;gap:6px;border:1px solid}
+.tool-chip.ok{background:var(--green-light);border-color:var(--green-bright);color:var(--green-dark)}
+.tool-chip.warn{background:var(--gold-light);border-color:var(--gold-bright);color:var(--gold-dark)}
+.tool-chip.crit{background:var(--coral-light);border-color:var(--coral-bright);color:var(--coral-dark)}
+.tool-chip span{opacity:.7;font-variant-numeric:tabular-nums}
+.tool-arrow{color:var(--g5);font-weight:800}
+
+/* pain panel */
+.pain-cat{margin-bottom:16px}
+.pain-cat:last-child{margin-bottom:0}
+.pain-cat-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cat-badge{font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:7px}
+.cat-badge.doc{background:var(--blue-light);color:var(--blue-deep)}
+.cat-badge.tool{background:var(--purple-light);color:var(--purple-dark)}
+.cat-badge.api{background:var(--teal-light);color:var(--teal-dark)}
+.cat-badge.env{background:var(--gold-light);color:var(--gold-dark)}
+.cat-count{font-size:10.5px;color:var(--text-3);font-weight:600}
+.pain-item{border:1px solid var(--border);border-radius:var(--radius-s);overflow:hidden;margin-bottom:9px}
+.pain-item:last-child{margin-bottom:0}
+.pain-top{display:flex;gap:11px;padding:12px 14px;align-items:flex-start}
+.pain-score{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--coral-dark);flex-shrink:0;width:30px;text-align:center}
+.pain-body{flex:1;min-width:0}
+.pain-text{font-size:12px;font-weight:600;color:var(--text);line-height:1.55}
+.pain-meta{font-size:10.5px;color:var(--text-3);font-weight:500;margin-top:5px}
+.pain-status{font-size:10px;font-weight:800;padding:3px 9px;border-radius:999px;white-space:nowrap;flex-shrink:0}
+.pain-status.progress{background:var(--blue-light);color:var(--blue-deep)}
+.pain-status.planned{background:var(--gold-light);color:var(--gold-dark)}
+.pain-next{display:flex;align-items:center;gap:8px;padding:9px 14px;background:var(--green-light);border-top:1px solid var(--border)}
+.pain-next-lbl{font-size:9.5px;font-weight:800;color:var(--green-dark);text-transform:uppercase;letter-spacing:.05em;padding:2px 8px;background:#fff;border-radius:999px;flex-shrink:0}
+.pain-next-text{font-size:11px;font-weight:600;color:var(--green-dark);line-height:1.5}
+
+/* vod panel */
+.vod-item{border:1px solid var(--border);border-radius:var(--radius-s);padding:13px 15px;margin-bottom:10px;border-left:3px solid var(--teal)}
+.vod-item:last-child{margin-bottom:0}
+.vod-vol-row{display:flex;align-items:baseline;gap:7px;margin-bottom:8px}
+.vod-vol{font-size:20px;font-weight:900;color:var(--teal-dark);font-variant-numeric:tabular-nums}
+.vod-unit{font-size:10.5px;color:var(--text-3);font-weight:600}
+.vod-trend{font-size:10px;font-weight:800;margin-left:auto}
+.vod-trend.dn{color:var(--bad)}.vod-trend.up{color:var(--good)}.vod-trend.flat{color:var(--text-3)}
+.jvod-quote{font-size:12px;line-height:1.65;color:var(--text);font-style:italic;padding-left:13px;border-left:2px solid var(--g3)}
+.vod-src{font-size:10px;color:var(--text-3);font-weight:600;margin-top:9px}
+
+.ec{width:100%}
+</style>
+</head>
+<body>
+
+<!-- decorative network -->
+<svg class="deco" viewBox="0 0 620 480" fill="none">
+  <defs><radialGradient id="dg" cx="70%" cy="20%" r="80%">
+    <stop offset="0%" stop-color="#9DC0FF"/><stop offset="60%" stop-color="#C9DBFF"/><stop offset="100%" stop-color="#F2F5FA" stop-opacity="0"/>
+  </radialGradient></defs>
+  <g id="netLines" stroke="#7AA0E8" stroke-width="1" opacity=".55"></g>
+  <g id="netDots"></g>
+</svg>
+
+<!-- topbar -->
+<div class="topbar">
+  <span class="tb-logo">CANN</span>
+  <span class="tb-sep">/</span>
+  <span class="tb-title">开发者体验全景看板</span>
+  <div class="tb-dims">
+    <button class="dim-tab" onclick="location.href='overview-v3.html'">总览</button>
+    <button class="dim-tab" onclick="alert('体验测试 Tab 在 v2.0 中，本页为 v3.0 用户旅程重构')">体验测试</button>
+    <button class="dim-tab on">用户旅程</button>
+  </div>
+  <div class="tb-right">
+    <div class="period-pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>2026 年 5 月</div>
+    <button class="export-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>导出</button>
+  </div>
+</div>
+
+<!-- filter -->
+<div class="filter-bar">
+  <span class="fl-lbl">芯片</span>
+  <span class="fchip on">A5</span>
+  <span class="fchip">A2 &amp; A3</span>
+  <div class="fl-sep"></div>
+  <span class="fl-lbl">角色</span>
+  <span class="fchip on">算子开发者</span>
+  <span class="fchip">AI 框架开发者</span>
+  <span class="fchip">应用开发者</span>
+</div>
+
+<div class="page">
+
+  <!-- ════════ FLOOR 1 · 总览 ════════ -->
+  <section class="floor" id="f-top">
+    <div class="floor-hd">
+      <div class="floor-badge" style="background:linear-gradient(135deg,#2E6BE6,#1E4FB8)">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      </div>
+      <div class="floor-title">总览</div>
+      <div class="floor-sub">算子开发者视角 · 4 大场景 · 近 7 次 Agentic 评测均值</div>
+      <div class="floor-line"></div>
+      <span class="fchip on" style="cursor:default">A5 · 算子开发者</span>
+    </div>
+
+    <div class="grid4">
+      <!-- 整体健康评分 -->
+      <div class="card jkpi">
+        <div class="jkpi-l"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>整体健康评分</div>
+        <div class="jkpi-v" style="color:var(--gold-dark)">68<small>/100</small></div>
+        <div class="jkpi-foot"><span class="dlt dn"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg>4</span>vs 上期</div>
+      </div>
+      <!-- 严重场景 -->
+      <div class="card jkpi">
+        <div class="jkpi-l"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>严重场景</div>
+        <div class="jkpi-v" style="color:var(--coral-dark)">2<small>个</small></div>
+        <div class="jkpi-foot"><span class="dlt dn"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg>1</span>较上期</div>
+      </div>
+      <!-- 活跃痛点 -->
+      <div class="card jkpi">
+        <div class="jkpi-l"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>活跃痛点</div>
+        <div class="jkpi-v">12<small>条</small></div>
+        <div class="jkpi-foot"><span class="dlt neu">8 条有行动</span>Next Step</div>
+      </div>
+      <!-- 本期优先处理 -->
+      <div class="card jkpi">
+        <div class="jkpi-l"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>本期优先处理</div>
+        <div class="chip-grp" style="margin:12px 0 auto">
+          <a class="mchip" href="#f-scene" onclick="setTimeout(()=>selScene(0),350)" style="text-decoration:none;cursor:pointer"><span class="dot" style="background:var(--coral)"></span>算子复现部署</a>
+          <a class="mchip" href="#f-scene" onclick="setTimeout(()=>selScene(1),350)" style="text-decoration:none;cursor:pointer"><span class="dot" style="background:var(--coral)"></span>Builtin 算子定制</a>
+        </div>
+        <div class="jkpi-foot">评分 + 痛点密度排序</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FLOOR 2 · 触点体验矩阵 ════════ -->
+  <section class="floor" id="f-matrix">
+    <div class="floor-hd">
+      <div class="floor-badge" style="background:linear-gradient(135deg,#1AAFD0,#179D8A)">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </div>
+      <div class="floor-title">触点体验矩阵</div>
+      <div class="floor-sub">场景 × 触点类型 · 点击格子查看 Agent 观测</div>
+      <div class="floor-line"></div>
+      <div class="hm-legend"><span style="font-size:11px;color:var(--text-3)">低</span><div class="hm-grad"></div><span style="font-size:11px;color:var(--text-3)">高</span></div>
+    </div>
+
+    <div class="card">
+      <div class="hm-wrap">
+        <div style="min-width:0;overflow:auto">
+          <div id="tpHeatGrid" class="hm-grid" style="grid-template-columns:118px repeat(4,1fr) 66px;min-width:480px"></div>
+        </div>
+        <div id="tpDetail"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FLOOR 3 · 场景深潜 ════════ -->
+  <section class="floor" id="f-scene">
+    <div class="floor-hd">
+      <div class="floor-badge" style="background:linear-gradient(135deg,#6A67CE,#4F4DA7)">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      </div>
+      <div class="floor-title">场景深潜</div>
+      <div class="floor-sub">选中场景查看 Agentic 指标 · 评测趋势 · 三类证据</div>
+      <div class="floor-line"></div>
+    </div>
+
+    <!-- scene list -->
+    <div class="scene-list-hd">
+      <div style="font-size:11.5px;font-weight:700;color:var(--text-3)">场景 · 按评分排序（最差在前）</div>
+      <div class="sort-toggle">
+        <button class="sort-btn on" id="sortScore" onclick="setSort('score')">问题优先</button>
+        <button class="sort-btn" id="sortCatalog" onclick="setSort('catalog')">目录顺序</button>
+      </div>
+    </div>
+    <div id="sceneListCards" class="grid4" style="margin-bottom:14px"></div>
+
+    <!-- scene detail -->
+    <div class="card" id="sceneDetail">
+      <div class="det-hint" id="sdHint">
+        <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+        点击上方场景查看三类证据
+      </div>
+      <div id="sdContent" style="display:none">
+
+        <div class="det-hd">
+          <div class="det-name" id="detName"></div>
+          <span class="det-grade" id="detGrade"></span>
+          <div class="det-score" id="detScore"></div>
+        </div>
+
+        <!-- Agentic KPI strip -->
+        <div class="kpi-row" id="detKpis" style="margin-bottom:14px"></div>
+
+        <!-- rank context + trend -->
+        <div class="grid2" style="grid-template-columns:0.92fr 1.08fr;margin-bottom:6px;align-items:stretch">
+          <div class="card" style="box-shadow:none;background:var(--g1)">
+            <div class="card-hd"><div class="card-hd-l"><span class="card-title">排名对照</span><span class="card-meta">角色内 4 场景</span></div></div>
+            <div id="rankPill" class="rank-pill"></div>
+            <div class="rank-desc" id="rankDesc"></div>
+            <div class="rank-bars" id="rankBars"></div>
+          </div>
+          <div class="card" style="box-shadow:none;background:var(--g1)">
+            <div class="card-hd"><div class="card-hd-l"><span class="card-title">近 7 次评测趋势</span><span class="card-meta" id="trendMeta"></span></div></div>
+            <div id="trendChart" class="ec" style="height:172px"></div>
+          </div>
+        </div>
+
+        <!-- evidence tabs -->
+        <div class="ev-tabs">
+          <button class="ev-tab on" onclick="switchEvTab('agent',this)">Agent 评分<span class="ev-tab-count" id="agentTabCount"></span></button>
+          <button class="ev-tab" onclick="switchEvTab('pain',this)">痛点分析<span class="ev-tab-count" id="painTabCount"></span></button>
+          <button class="ev-tab" onclick="switchEvTab('vod',this)">VOD 原声<span class="ev-tab-count" id="vodTabCount"></span></button>
+        </div>
+        <div>
+          <div class="ev-panel on" id="panel-agent"></div>
+          <div class="ev-panel" id="panel-pain"></div>
+          <div class="ev-panel" id="panel-vod"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+// ── decorative network ──
+(function(){
+  const dots=document.getElementById('netDots'),lines=document.getElementById('netLines');
+  const pts=[];const N=22;
+  for(let i=0;i<N;i++){pts.push([60+Math.random()*540,20+Math.random()*420]);}
+  pts.forEach(p=>{
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',p[0]);c.setAttribute('cy',p[1]);c.setAttribute('r',2.2);
+    c.setAttribute('fill','#5E86DC');c.setAttribute('opacity',.7);dots.appendChild(c);
+  });
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+    const dx=pts[i][0]-pts[j][0],dy=pts[i][1]-pts[j][1];
+    if(Math.hypot(dx,dy)<130){
+      const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+      l.setAttribute('x1',pts[i][0]);l.setAttribute('y1',pts[i][1]);
+      l.setAttribute('x2',pts[j][0]);l.setAttribute('y2',pts[j][1]);lines.appendChild(l);
+    }
+  }
+})();
+
+const AX={axisLine:{lineStyle:{color:'#E6EAF1'}},axisTick:{show:false},axisLabel:{color:'#9AA1AE',fontSize:10},splitLine:{lineStyle:{color:'#F2F5F9'}}};
+const GRADE_COLOR={bad:'#E63838',mid:'#FD9A00',ok:'#37C597'};
+
+// ── heatmap color (问题优先：低分=红 高分=绿) ──
+function heatColor(score){
+  const stops=[[0,[255,185,185]],[35,[255,215,183]],[55,[255,242,165]],[75,[196,243,225]],[100,[148,225,200]]];
+  let a=stops[0],b=stops[stops.length-1];
+  for(let i=0;i<stops.length-1;i++){if(score>=stops[i][0]&&score<=stops[i+1][0]){a=stops[i];b=stops[i+1];break;}}
+  const t=(score-a[0])/(b[0]-a[0]||1);
+  const rgb=a[1].map((v,j)=>Math.round(v+(b[1][j]-v)*t));
+  return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+}
+function textColor(score){ return score<40?'#B03030':score<60?'#8B6200':'#1A7055'; }
+function cellTrendSvg(t){
+  if(!t) return '';
+  if(t==='u') return `<svg width="7" height="5" viewBox="0 0 8 8"><polyline points="1,7 4,3 7,7" stroke="#1A7055" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  if(t==='d') return `<svg width="7" height="5" viewBox="0 0 8 8"><polyline points="1,1 4,5 7,1" stroke="#B03030" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  return `<svg width="7" height="5" viewBox="0 0 8 8"><line x1="1" y1="4" x2="7" y2="4" stroke="#8a8f99" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+}
+
+// ══════════ TOUCHPOINT DATA ══════════
+const touchpointData=[
+  {id:0,sceneName:'算子复现部署',overallScore:57,overallCls:'bad',
+   cells:{
+     doc:{s:47,cls:'bad',t:'d',obs:['文档检索有效率仅 47%，大量结果无关','文档准确率 58%，版本与代码不同步，21% 的开发者在此放弃']},
+     api:{s:63,cls:'mid',t:'f',obs:['API 文档覆盖 63%，部分参数说明缺失']},
+     tool:{s:34,cls:'bad',t:'d',obs:['AIC 日志不显示报错指令，错误可读性 52%','错误自愈成功率仅 23%，强依赖人工排查']},
+     env:{s:71,cls:'mid',t:'u',obs:['装包平均重试 2.4 次，安装失败率 18%']}
+   }},
+  {id:1,sceneName:'算子迁移部署',overallScore:72,overallCls:'mid',
+   cells:{
+     doc:{s:68,cls:'mid',t:'u',obs:['迁移指南完整度 68%，高级场景示例不足']},
+     api:{s:72,cls:'mid',t:'f',obs:['迁移 API 覆盖 72%，shape 限制未提前提示']},
+     tool:{s:65,cls:'mid',t:'u',obs:['迁移工具可用，约 35% shape 异常需手动处理']},
+     env:{s:83,cls:'ok',t:'f',obs:['环境兼容性较好，偶发版本冲突']}
+   }},
+  {id:2,sceneName:'Builtin 算子定制',overallScore:62,overallCls:'bad',
+   cells:{
+     doc:{s:51,cls:'bad',t:'d',obs:['Builtin 文档更新滞后，VOD 声量 61 条','参数描述错误率高，社区反复反馈']},
+     api:{s:88,cls:'ok',t:'u',obs:['Builtin API 完备性强，开发者普遍认可']},
+     tool:{s:42,cls:'bad',t:'f',obs:['调试工具对 Builtin 场景支持弱，排查耗时 3.2×']},
+     env:{s:77,cls:'mid',t:'u',obs:['编译环境稳定，但首次配置成本偏高']}
+   }},
+  {id:3,sceneName:'算子基本功能实现',overallScore:78,overallCls:'mid',
+   cells:{
+     doc:{s:74,cls:'mid',t:'u',obs:['基础文档质量较好，编程指南覆盖主要场景']},
+     api:{s:85,cls:'ok',t:'f',obs:['核心 API 完备，边界场景偶有文档缺失']},
+     tool:{s:69,cls:'mid',t:'u',obs:['基础调试可用，高级性能分析功能有限']},
+     env:{s:91,cls:'ok',t:'u',obs:['环境配置成功率高，部署体验最佳']}
+   }}
+];
+const tpCols=['doc','api','tool','env'];
+const tpColLabels={doc:'文档',api:'API',tool:'工具',env:'环境'};
+
+function renderTpMatrix(){
+  const grid=document.getElementById('tpHeatGrid');
+  const headers=['文档','API','工具','环境','综合'];
+  let html=`<div class="hm-corner"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="#fff" stroke-width="2.5"/></svg><span class="hc-col">维度</span><span class="hc-row">场景</span></div>`;
+  html+=headers.map(h=>`<div class="hm-header">${h}</div>`).join('');
+  touchpointData.forEach(row=>{
+    html+=`<div class="hm-row-label"><div class="rl-dot" style="background:${GRADE_COLOR[row.overallCls]}"></div><div>${row.sceneName}</div></div>`;
+    tpCols.forEach(col=>{
+      const c=row.cells[col],bg=heatColor(c.s),fg=textColor(c.s);
+      html+=`<div class="hm-cell" onclick="selectTpCell(${row.id},'${col}',this)" style="background:${bg};color:${fg}">
+        <div class="cv">${c.s}${cellTrendSvg(c.t)}</div>
+        <div class="ct">${c.cls==='bad'?'严重':c.cls==='mid'?'关注':'健康'}</div></div>`;
+    });
+    const obg=heatColor(row.overallScore),ofg=textColor(row.overallScore);
+    html+=`<div class="hm-cell hm-overall" style="background:${obg};color:${ofg};cursor:default"><div class="cv">${row.overallScore}</div><div class="ct">综合</div></div>`;
+  });
+  grid.innerHTML=html;
+  resetTpDetail();
+}
+function resetTpDetail(){
+  document.getElementById('tpDetail').innerHTML=`<div class="tp-detail-empty">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h4"/></svg>
+    点击矩阵格子<br>查看 Agent 观测</div>`;
+}
+function selectTpCell(sceneId,col,el){
+  document.querySelectorAll('#tpHeatGrid .hm-cell').forEach(c=>c.classList.remove('hm-sel'));
+  el.classList.add('hm-sel');
+  const row=touchpointData.find(r=>r.id===sceneId),c=row.cells[col];
+  const sideC=GRADE_COLOR[c.cls];
+  document.getElementById('tpDetail').innerHTML=`
+    <div class="tp-card" style="border-left-color:${sideC}">
+      <div class="tp-card-hd">
+        <div class="tp-scene">${row.sceneName}</div>
+        <div class="tp-dim"><span style="width:9px;height:9px;border-radius:2px;background:${sideC};display:inline-block"></span>${tpColLabels[col]}触点<span class="tp-score" style="color:${textColor(c.s)}">${c.s}</span></div>
+      </div>
+      <div class="tp-obs">${c.obs.map(o=>`<div class="tp-obs-item" style="border-left-color:${sideC}">${o}</div>`).join('')}</div>
+    </div>`;
+}
+
+// ══════════ SCENARIO DATA ══════════
+const KPI_DIMS=['开发成功率','平均复杂度','平均任务执行时长','用例执行通过率'];
+const scenarios=[
+  {
+    id:0, name:'算子复现部署', score:57, grade:'bad', gradeLabel:'严重',
+    runs:[63,59,61,54,58,60,57], trend:-3, trendDir:'dn',
+    painCount:8, vodCount:71,
+    kpis:[
+      {l:'开发成功率', v:'58%', trend:'↓-4%', trendCls:'dn', cls:'bad'},
+      {l:'平均复杂度', v:'52', u:'万tok', trend:'↑+6万', trendCls:'dn', cls:'bad'},
+      {l:'平均任务执行时长', v:'32', u:'min', trend:'↑+4min', trendCls:'dn', cls:'bad'},
+      {l:'用例执行通过率', v:'52%', trend:'↓-3%', trendCls:'dn', cls:'bad'},
+    ],
+    agentSteps:[
+      {name:'感知学习', score:54, cls:'bad',
+       summary:'感知学习阶段阻力最大，文档质量是根本瓶颈。开发者平均需 8.3 轮检索才能获取有效信息，整体自助解决率不足 50%。',
+       observations:['文档与代码版本不同步，准确率仅 58%，开发者被迫依赖口口相传','文档检索有效率 47%，大量时间被无效结果消耗','21% 的开发者在感知学习阶段直接放弃'],
+       metrics:[
+         {l:'总检索次数',      v:'8.3 次', trend:'↑+1.2', trendCls:'dn'},
+         {l:'文档检索有效率',  v:'47%',    trend:'↓-6%',  trendCls:'dn'},
+         {l:'文档完整性',      v:'61%',    trend:'↓-3%',  trendCls:'dn'},
+         {l:'文档准确率',      v:'58%',    trend:'↓-5%',  trendCls:'dn'},
+         {l:'文档易理解性',    v:'67%',    trend:'→持平',  trendCls:'flat'},
+         {l:'自助解决率',      v:'41%',    trend:'↓-4%',  trendCls:'dn'},
+         {l:'知识覆盖率',      v:'68%',    trend:'→持平',  trendCls:'flat'},
+         {l:'放弃率',          v:'21%',    trend:'↑+3%',  trendCls:'dn'},
+       ]},
+      {name:'环境准备', score:71, cls:'mid',
+       summary:'环境准备阶段主要受版本依赖问题拖累，整体可完成但需多次重试，流程引导不足。',
+       observations:['版本依赖矛盾导致装包平均重试 2.4 次，安装失败率 18%','部署步骤数比预期多出 3.2 步，流程缺乏引导','装包耗时 18 分钟，高于合理预期'],
+       metrics:[
+         {l:'代码仓拉取尝试次数', v:'1.2 次', trend:'→持平', trendCls:'flat'},
+         {l:'下载包尝试次数',     v:'1.8 次', trend:'↑+0.3',trendCls:'dn'},
+         {l:'装包尝试次数',       v:'2.4 次', trend:'↑+0.6',trendCls:'dn'},
+         {l:'装包耗时',           v:'18 min', trend:'↑+2min',trendCls:'dn'},
+         {l:'安装步骤数(超预期)', v:'+3.2 步',trend:'↑',    trendCls:'dn'},
+         {l:'部署时间',           v:'45 min', trend:'↑+5min',trendCls:'dn'},
+         {l:'安装失败率',         v:'18%',    trend:'↑+2%', trendCls:'dn'},
+       ]},
+      {name:'环境验证', score:68, cls:'mid',
+       summary:'环境验证阶段编译总成功率尚可，但首次通过率低，错误信息质量差，开发者难以自主定位问题。',
+       observations:['一次编译通过率仅 44%，多数开发者需重复编译才能通过','AIC error 日志未显示报错指令，错误信息可读性 52%','错误自愈成功率仅 23%，强依赖人工介入排查'],
+       metrics:[
+         {l:'平均算子编译耗时',   v:'12 min', trend:'↑+1min',trendCls:'dn'},
+         {l:'算子编译成功率',     v:'79%',    trend:'→持平', trendCls:'flat'},
+         {l:'一次编译通过率',     v:'44%',    trend:'↓-5%', trendCls:'dn'},
+         {l:'错误信息可读性',     v:'52%',    trend:'→持平', trendCls:'flat'},
+         {l:'平均重编译次数',     v:'2.1 次', trend:'↑+0.3',trendCls:'dn'},
+         {l:'用例验证尝试次数',   v:'2.1 次', trend:'↑+0.3',trendCls:'dn'},
+         {l:'错误自愈成功率',     v:'23%',    trend:'↑+2%', trendCls:'up'},
+         {l:'放弃率',             v:'5%',     trend:'→持平', trendCls:'flat'},
+       ]},
+    ],
+    tools:[
+      {name:'WebSearch',rate:'91%',cls:'ok'},{name:'BrowserNavigate',rate:'88%',cls:'ok'},
+      {name:'DocFetch',rate:'54%',cls:'warn'},{name:'CompileCmd',rate:'44%',cls:'crit'},
+    ],
+    pains:[
+      {cat:'tool', score:92, text:'AIC error 日志未显示报错指令，开发者无法自主定位，全链路依赖华为工程师介入排查', meta:'腾讯 · 蚂蚁 | 算子分队 | 优先级：高', status:'特性开发中', statusCls:'progress', nextStep:'立项 AIC-2341：增加错误上下文输出及日志定位指引（Q2）'},
+      {cat:'doc', score:78, text:'文档与代码版本不同步，参数描述多处错误，仅靠官方文档无法完成复现，依赖口口相传', meta:'美团 | 资料分队 | 优先级：高', status:'规划中', statusCls:'planned', nextStep:'文档同步检查纳入发版流程，Q2 覆盖率达 100%'},
+    ],
+    vods:[
+      {vol:71, trend:'↑+8', trendCls:'dn', text:'多算子层存在空指针校验缺失、编译失败、core dump、精度异常、内存越界等稳定性问题', src:'算子仓 · 社区 issue · 社区开发者'},
+      {vol:61, trend:'↑+5', trendCls:'dn', text:'CANN 多算子仓文档参数错误、格式错误、描述不一致及内容缺失，多处版本对不上', src:'资料仓库 · 社区 issue · 社区开发者'},
+    ]
+  },
+  {
+    id:1, name:'Builtin 算子定制修改', score:62, grade:'bad', gradeLabel:'严重',
+    runs:[68,65,63,60,62,64,62], trend:-5, trendDir:'dn',
+    painCount:6, vodCount:40,
+    kpis:[
+      {l:'开发成功率', v:'63%', trend:'↓-3%', trendCls:'dn', cls:'mid'},
+      {l:'平均复杂度', v:'47', u:'万tok', trend:'↑+3万', trendCls:'dn', cls:'bad'},
+      {l:'平均任务执行时长', v:'28', u:'min', trend:'→持平', trendCls:'flat', cls:'mid'},
+      {l:'用例执行通过率', v:'60%', trend:'→持平', trendCls:'flat', cls:'mid'},
+    ],
+    agentSteps:[
+      {name:'感知学习', score:61, cls:'bad',
+       summary:'感知学习阶段文档覆盖严重不足，Builtin 算子定制缺乏完整参考体系，开发者无法独立建立知识框架。',
+       observations:['关键接口说明完整性仅 48%，核心 API 缺乏有效说明','参考样例可获取性 42%，开发者无从参照实现','自助解决率 38%，18% 的开发者中途放弃'],
+       metrics:[
+         {l:'文档覆盖率',         v:'61%',    trend:'↓-4%', trendCls:'dn'},
+         {l:'关键接口说明完整性', v:'48%',    trend:'↓-7%', trendCls:'dn'},
+         {l:'文档检索有效率',     v:'58%',    trend:'↓-3%', trendCls:'dn'},
+         {l:'参考样例可获取性',   v:'42%',    trend:'↓-8%', trendCls:'dn'},
+         {l:'文档易理解性',       v:'64%',    trend:'→持平', trendCls:'flat'},
+         {l:'自助解决率',         v:'38%',    trend:'↓-5%', trendCls:'dn'},
+         {l:'放弃率',             v:'18%',    trend:'↑+2%', trendCls:'dn'},
+       ]},
+      {name:'算子设计与实现', score:58, cls:'bad',
+       summary:'算子设计与实现阶段问题最严重，图模式支持缺失导致开发者在关键设计决策上无法自主推进。',
+       observations:['图模式适配率仅 52%，常见使用场景未覆盖','首次实现成功率 38%，平均需重试 3.1 次','14% 的开发者在此阶段放弃，高于其他环节'],
+       metrics:[
+         {l:'图模式适配率',     v:'52%',    trend:'↓-8%', trendCls:'dn'},
+         {l:'样例参考可用性',   v:'44%',    trend:'↓-6%', trendCls:'dn'},
+         {l:'接口调用成功率',   v:'71%',    trend:'→持平', trendCls:'flat'},
+         {l:'首次实现成功率',   v:'38%',    trend:'↓-7%', trendCls:'dn'},
+         {l:'平均重试次数',     v:'3.1 次', trend:'↑+0.4',trendCls:'dn'},
+         {l:'放弃率',           v:'14%',    trend:'↑+2%', trendCls:'dn'},
+       ]},
+      {name:'功能调测', score:71, cls:'mid',
+       summary:'功能调测阶段精度通过率可接受，但调试信息质量差阻碍了开发者自主定位错误，仍需依赖外部支持。',
+       observations:['错误日志可定位性 47%，开发者无法将日志映射到具体代码行','调试信息可读性 52%，需依赖经验猜测问题根因','平均调测轮次 2.8 次，定位成本偏高'],
+       metrics:[
+         {l:'功能调测成功率',   v:'71%',    trend:'→持平', trendCls:'flat'},
+         {l:'调试信息可读性',   v:'52%',    trend:'→持平', trendCls:'flat'},
+         {l:'错误日志可定位性', v:'47%',    trend:'↓-3%', trendCls:'dn'},
+         {l:'精度通过率',       v:'79%',    trend:'↑+2%', trendCls:'up'},
+         {l:'平均调测轮次',     v:'2.8 次', trend:'↑+0.2',trendCls:'dn'},
+         {l:'放弃率',           v:'8%',     trend:'→持平', trendCls:'flat'},
+       ]},
+    ],
+    tools:[
+      {name:'DocSearch',rate:'61%',cls:'warn'},{name:'GraphCompile',rate:'58%',cls:'crit'},
+      {name:'DebugLog',rate:'52%',cls:'crit'},{name:'AccuracyCheck',rate:'88%',cls:'ok'},
+    ],
+    pains:[
+      {cat:'doc', score:88, text:'图模式类型缺失，算子设计与实现阶段缺乏参考样例，开发者无从下手', meta:'京东 | 算子分队 | 优先级：高', status:'特性开发中', statusCls:'progress', nextStep:'补充图模式 Builtin 算子完整样例库（Q2 Q3）'},
+      {cat:'tool', score:72, text:'Builtin 算子定制文档覆盖率低，关键接口说明缺失，调试信息不可读', meta:'美团 | 资料分队 | 优先级：中', status:'规划中', statusCls:'planned', nextStep:'接口文档覆盖率提升至 90%，纳入 Q3 里程碑'},
+    ],
+    vods:[
+      {vol:35, trend:'↑+3', trendCls:'dn', text:'transformer 算子存在图模式类型缺失、编码韧性不足及描述不一致等多类问题', src:'算子仓 · 社区 issue · 社区开发者'},
+      {vol:40, trend:'→持平', trendCls:'flat', text:'算子资料文档格式不规范、参数描述错误、命令目录错误等多类内容错误', src:'资料仓库 · 社区 issue · 社区开发者'},
+    ]
+  },
+  {
+    id:2, name:'算子迁移部署', score:69, grade:'mid', gradeLabel:'待改善',
+    runs:[67,70,68,65,72,69,71], trend:2, trendDir:'up',
+    painCount:5, vodCount:33,
+    kpis:[
+      {l:'开发成功率', v:'74%', trend:'↑+3%', trendCls:'up', cls:'mid'},
+      {l:'平均复杂度', v:'38', u:'万tok', trend:'→持平', trendCls:'flat', cls:'mid'},
+      {l:'平均任务执行时长', v:'21', u:'min', trend:'↓-2min', trendCls:'up', cls:'ok'},
+      {l:'用例执行通过率', v:'71%', trend:'↑+2%', trendCls:'up', cls:'mid'},
+    ],
+    agentSteps:[
+      {name:'感知学习', score:72, cls:'mid',
+       summary:'感知学习阶段总体表现尚可，迁移相关文档有一定基础，但边界场景覆盖不足，开发者仍需自行探索。',
+       observations:['边界场景覆盖率仅 52%，非常规 shape 缺乏指引','部分参数描述与实际行为不一致，需反复验证','自助解决率 64%，仍有约 1/3 开发者依赖外部帮助'],
+       metrics:[
+         {l:'信息可获取性',     v:'74%',    trend:'↑+3%', trendCls:'up'},
+         {l:'文档完整性',       v:'68%',    trend:'↑+2%', trendCls:'up'},
+         {l:'文档准确性',       v:'73%',    trend:'↑+4%', trendCls:'up'},
+         {l:'文档易理解性',     v:'76%',    trend:'↑+3%', trendCls:'up'},
+         {l:'边界场景覆盖率',   v:'52%',    trend:'→持平', trendCls:'flat'},
+         {l:'自助解决率',       v:'64%',    trend:'↑+2%', trendCls:'up'},
+         {l:'放弃率',           v:'9%',     trend:'↓-1%', trendCls:'up'},
+       ]},
+      {name:'算子迁移', score:68, cls:'mid',
+       summary:'算子迁移环节受工具覆盖率限制，复杂 shape 场景无法自动化处理，静默失败是主要风险。',
+       observations:['shape 覆盖率 68%，复杂 shape 需手工处理，平均尝试 3.4 次','静默失败率 18%，失败时无明确错误提示，开发者无法判断原因','边界 case 处理率仅 52%，高风险场景缺乏保护机制'],
+       metrics:[
+         {l:'迁移成功率',       v:'71%',    trend:'↑+2%', trendCls:'up'},
+         {l:'平均尝试次数',     v:'3.4 次', trend:'↑+0.5',trendCls:'dn'},
+         {l:'shape 覆盖率',     v:'68%',    trend:'→持平', trendCls:'flat'},
+         {l:'边界 case 处理率', v:'52%',    trend:'↓-3%', trendCls:'dn'},
+         {l:'静默失败率',       v:'18%',    trend:'↑+2%', trendCls:'dn'},
+         {l:'错误提示可读性',   v:'49%',    trend:'→持平', trendCls:'flat'},
+         {l:'平均迁移耗时',     v:'18 min', trend:'↑+2min',trendCls:'dn'},
+         {l:'放弃率',           v:'8%',     trend:'↑+1%', trendCls:'dn'},
+       ]},
+      {name:'功能调测', score:80, cls:'ok',
+       summary:'功能调测阶段表现良好，精度验证工具完备，L0/L1 达标率高，整体自动化程度较高。',
+       observations:['L2 场景有少量边界 case 需人工介入，占比约 24%','自动化覆盖率 81%，约 1/5 场景仍依赖手动验证'],
+       metrics:[
+         {l:'精度通过率',       v:'88%',    trend:'↑+3%', trendCls:'up'},
+         {l:'L0 达标率',        v:'91%',    trend:'↑+2%', trendCls:'up'},
+         {l:'L1 达标率',        v:'85%',    trend:'↑+1%', trendCls:'up'},
+         {l:'L2 达标率',        v:'76%',    trend:'→持平', trendCls:'flat'},
+         {l:'平均调测耗时',     v:'8 min',  trend:'↓-1min',trendCls:'up'},
+         {l:'自动化覆盖率',     v:'81%',    trend:'↑+4%', trendCls:'up'},
+         {l:'放弃率',           v:'2%',     trend:'→持平', trendCls:'flat'},
+       ]},
+    ],
+    tools:[
+      {name:'MigrateScript',rate:'68%',cls:'warn'},{name:'ShapeCheck',rate:'52%',cls:'crit'},
+      {name:'CompatCheck',rate:'83%',cls:'ok'},{name:'AccuracyCheck',rate:'91%',cls:'ok'},
+    ],
+    pains:[
+      {cat:'tool', score:85, text:'迁移工具对复杂 shape 支持不完整，边界情况静默失败、无明确错误提示，开发者无法判断失败原因', meta:'蚂蚁 | 算子编程分队 | 优先级：高', status:'特性开发中', statusCls:'progress', nextStep:'Q2 完成 shape 覆盖率提升至 85%，增加边界 case 静默失败提示'},
+      {cat:'doc', score:64, text:'文档与代码版本不同步，迁移路径描述缺少边界场景说明，需口耳相传', meta:'腾讯 | 资料分队 | 优先级：中', status:'规划中', statusCls:'planned', nextStep:'边界场景文档专项补充，纳入下期评测验证'},
+    ],
+    vods:[
+      {vol:61, trend:'↑+5', trendCls:'dn', text:'CANN 多算子仓存在文档参数错误、格式错误、描述不一致及内容缺失等多类资料问题', src:'资料仓库 · 社区 issue · 社区开发者'},
+      {vol:33, trend:'→持平', trendCls:'flat', text:'ops-transformer 仓量化适配不足、多算子 shape 拦截缺失、编译依赖缺陷及精度失败', src:'算子仓 · 社区 issue · 社区开发者'},
+    ]
+  },
+  {
+    id:3, name:'算子基本功能实现', score:84, grade:'ok', gradeLabel:'健康',
+    runs:[82,85,83,86,84,83,84], trend:4, trendDir:'up',
+    painCount:2, vodCount:40,
+    kpis:[
+      {l:'开发成功率', v:'88%', trend:'↑+3%', trendCls:'up', cls:'ok'},
+      {l:'平均复杂度', v:'26', u:'万tok', trend:'↓-3万', trendCls:'up', cls:'ok'},
+      {l:'平均任务执行时长', v:'14', u:'min', trend:'↓-2min', trendCls:'up', cls:'ok'},
+      {l:'用例执行通过率', v:'85%', trend:'↑+2%', trendCls:'up', cls:'ok'},
+    ],
+    agentSteps:[
+      {name:'感知学习', score:85, cls:'ok',
+       summary:'感知学习阶段整体健康，文档质量良好，开发者可高效获取所需信息。',
+       observations:['少量高级 API 说明待补充，文档覆盖率未达 100%'],
+       metrics:[
+         {l:'文档完整性',       v:'84%',    trend:'↑+3%', trendCls:'up'},
+         {l:'文档准确率',       v:'88%',    trend:'↑+2%', trendCls:'up'},
+         {l:'文档检索有效率',   v:'82%',    trend:'↑+4%', trendCls:'up'},
+         {l:'文档易理解性',     v:'86%',    trend:'↑+2%', trendCls:'up'},
+         {l:'自助解决率',       v:'79%',    trend:'↑+5%', trendCls:'up'},
+         {l:'知识覆盖率',       v:'91%',    trend:'↑+3%', trendCls:'up'},
+         {l:'放弃率',           v:'4%',     trend:'↓-1%', trendCls:'up'},
+       ]},
+      {name:'算子设计与实现', score:88, cls:'ok',
+       summary:'算子设计与实现阶段参考样例完备，开发者整体顺畅，首次尝试成功率高，重试成本低。',
+       observations:['极少数复杂场景首次实现失败，平均重试 1.4 次'],
+       metrics:[
+         {l:'首次实现成功率',   v:'79%',    trend:'↑+3%', trendCls:'up'},
+         {l:'接口调用成功率',   v:'91%',    trend:'↑+1%', trendCls:'up'},
+         {l:'样例可用性',       v:'88%',    trend:'↑+4%', trendCls:'up'},
+         {l:'平均重试次数',     v:'1.4 次', trend:'↓-0.2',trendCls:'up'},
+         {l:'放弃率',           v:'3%',     trend:'→持平', trendCls:'flat'},
+       ]},
+      {name:'功能调测', score:91, cls:'ok',
+       summary:'功能调测阶段自动化完善，L0/L1/L2 全面达标，放弃率仅 2%，是 4 个场景中最健康的环节。',
+       observations:['自动化覆盖率 81%，约 19% 场景尚需手动验证'],
+       metrics:[
+         {l:'精度通过率',       v:'91%',    trend:'↑+3%', trendCls:'up'},
+         {l:'L0 达标率',        v:'94%',    trend:'↑+2%', trendCls:'up'},
+         {l:'L1 达标率',        v:'89%',    trend:'↑+1%', trendCls:'up'},
+         {l:'L2 达标率',        v:'82%',    trend:'↑+2%', trendCls:'up'},
+         {l:'自动化覆盖率',     v:'81%',    trend:'↑+4%', trendCls:'up'},
+         {l:'平均调测耗时',     v:'6 min',  trend:'↓-1min',trendCls:'up'},
+         {l:'放弃率',           v:'2%',     trend:'→持平', trendCls:'flat'},
+       ]},
+    ],
+    tools:[
+      {name:'DocSearch',rate:'85%',cls:'ok'},{name:'CodeCompile',rate:'82%',cls:'ok'},
+      {name:'AccuracyCheck',rate:'94%',cls:'ok'},{name:'PerfAnalyzer',rate:'88%',cls:'ok'},
+    ],
+    pains:[
+      {cat:'tool', score:45, text:'性能调优阶段缺少自动化工具，VEC ratio 调优建议不够具体，开发者难以直接落地', meta:'腾讯 | 工具链分队 | 优先级：低', status:'规划中', statusCls:'planned', nextStep:'调优建议可操作化改造，纳入 Q3 规划'},
+    ],
+    vods:[
+      {vol:40, trend:'→持平', trendCls:'flat', text:'算子资料文档格式不规范、参数描述错误等多类内容错误，主要为低优先级遗留问题', src:'资料仓库 · 社区 issue · 社区开发者'},
+    ]
+  },
+];
+const catalogOrder=[0,2,1,3]; // 复现部署→迁移部署→Builtin定制→基本功能实现
+const meanScore=Math.round(scenarios.reduce((a,s)=>a+s.score,0)/scenarios.length);
+let sortMode='score';
+
+// ── tiny sparkline ──
+function sparkSvg(data,w,h,color){
+  const min=Math.min(...data),max=Math.max(...data),range=max-min||1;
+  const pts=data.map((v,i)=>`${(i/(data.length-1))*w},${h-2-((v-min)/range)*(h-5)}`).join(' ');
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${w}" cy="${h-2-((data[data.length-1]-min)/range)*(h-5)}" r="2.5" fill="${color}"/></svg>`;
+}
+
+// ── scene list ──
+function setSort(mode){
+  sortMode=mode;
+  document.getElementById('sortScore').classList.toggle('on',mode==='score');
+  document.getElementById('sortCatalog').classList.toggle('on',mode==='catalog');
+  renderList();
+}
+let _selectedId=null;
+function renderList(){
+  const sorted=sortMode==='catalog'
+    ? catalogOrder.map(id=>scenarios.find(s=>s.id===id))
+    : [...scenarios].sort((a,b)=>a.score-b.score);
+  const sparkClr={bad:'#E63838',mid:'#FD9A00',ok:'#37C597'};
+  document.getElementById('sceneListCards').innerHTML=sorted.map((s,rank)=>{
+    const td=s.trend>0?`↑ +${s.trend}`:s.trend<0?`↓ ${s.trend}`:'→ 持平';
+    const rankLabel=sortMode==='catalog'?`S${rank+1}`:`#${rank+1}`;
+    return `<div class="sc ${s.grade}${s.id===_selectedId?' sel':''}" id="sc${s.id}" onclick="selScene(${s.id})">
+      <div class="sc-top">
+        <div class="sc-rank ${s.grade}">${rankLabel}</div>
+        <div><div class="sc-name">${s.name}</div><span class="grade-tag ${s.grade}">${s.gradeLabel}</span></div>
+      </div>
+      <div class="sc-score-row">
+        <span class="sc-score ${s.grade}">${s.score}</span>
+        <span class="sc-trend ${s.trendDir}">${td}</span>
+        <span class="sc-spark">${sparkSvg(s.runs,68,22,sparkClr[s.grade])}</span>
+      </div>
+      <div class="sc-evidence">
+        <span class="ev-chip ${s.grade==='ok'?'gray':'red'}">痛点 ${s.painCount}</span>
+        <span class="ev-chip ${s.vodCount>=50?'red':s.vodCount>=30?'yellow':'gray'}">VOD ${s.vodCount}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── trend chart (ECharts) ──
+let _trendChart=null;
+function renderTrend(s){
+  const el=document.getElementById('trendChart');
+  if(!el||typeof echarts==='undefined')return;
+  if(_trendChart){_trendChart.dispose();_trendChart=null;}
+  const last=s.runs.length-1;
+  _trendChart=echarts.init(el,null,{renderer:'svg'});
+  _trendChart.setOption({
+    grid:{top:22,right:18,bottom:24,left:32},
+    tooltip:{trigger:'axis'},
+    xAxis:{type:'category',data:['T-6','T-5','T-4','T-3','T-2','T-1','本次'],...AX,axisLabel:{color:'#9AA1AE',fontSize:9.5}},
+    yAxis:{type:'value',scale:true,...AX},
+    series:[{type:'line',smooth:true,symbolSize:6,
+      lineStyle:{color:'#6A67CE',width:2.5},itemStyle:{color:'#6A67CE'},
+      areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(106,103,206,.22)'},{offset:1,color:'rgba(106,103,206,0)'}])},
+      data:s.runs.map((v,i)=>i===last?{value:v,symbolSize:10,itemStyle:{color:GRADE_COLOR[s.grade],borderColor:'#fff',borderWidth:2}}:v),
+      markLine:{silent:true,symbol:'none',lineStyle:{color:'#B8BDC8',type:'dashed',width:1},
+        data:[{type:'average'}],label:{formatter:p=>`均 ${Math.round(p.value)}`,color:'#9AA1AE',fontSize:9,position:'insideEndTop'}}
+    }]
+  });
+}
+window.addEventListener('resize',()=>_trendChart&&_trendChart.resize());
+
+// ── scene detail ──
+function selScene(id){
+  _selectedId=id;
+  document.querySelectorAll('.sc').forEach(el=>el.classList.remove('sel'));
+  const card=document.getElementById('sc'+id); if(card) card.classList.add('sel');
+  document.getElementById('sdHint').style.display='none';
+  document.getElementById('sdContent').style.display='block';
+
+  const s=scenarios.find(x=>x.id===id);
+  const sorted=[...scenarios].sort((a,b)=>a.score-b.score);
+  const rank=sorted.findIndex(x=>x.id===id)+1;
+
+  document.getElementById('detName').textContent=s.name;
+  const dg=document.getElementById('detGrade'); dg.textContent=s.gradeLabel; dg.className='det-grade '+s.grade;
+  const ds=document.getElementById('detScore'); ds.innerHTML=`${s.score}<small>/100</small>`; ds.className='det-score '+s.grade;
+
+  // Agentic KPI strip
+  const valClr={bad:'var(--coral-dark)',mid:'var(--gold-dark)',ok:'var(--green-dark)'};
+  document.getElementById('detKpis').innerHTML=s.kpis.map(k=>`
+    <div class="kpi-cell">
+      <div class="kc-l">${k.l}</div>
+      <div class="kc-v"><span style="color:${valClr[k.cls]}">${k.v}${k.u?`<small>${k.u}</small>`:''}</span><span class="kc-trend ${k.trendCls}">${k.trend}</span></div>
+    </div>`).join('');
+
+  // rank context
+  const rp=document.getElementById('rankPill');
+  rp.textContent=`${scenarios.length} 场景中第 ${rank} 差`;
+  rp.className='rank-pill '+s.grade;
+  const diff=s.score-meanScore;
+  document.getElementById('rankDesc').textContent=`${diff<0?'低于':diff>0?'高于':'持平'}角色均分 ${Math.abs(diff)} 分（均分 ${meanScore}）`;
+  document.getElementById('rankBars').innerHTML=sorted.map(x=>
+    `<div class="rank-bar ${x.grade}${x.id===id?' cur':''}" style="height:${Math.round((x.score/100)*40)+4}px" title="${x.name}: ${x.score}"><span class="rb-v">${x.score}</span></div>`).join('');
+
+  // trend
+  const spread=Math.max(...s.runs)-Math.min(...s.runs);
+  document.getElementById('trendMeta').textContent=spread<=6?'波动小 · 稳定':spread<=12?'中等波动':'波动大 · 不稳定';
+  renderTrend(s);
+
+  // tab counts
+  document.getElementById('agentTabCount').textContent=s.agentSteps.length;
+  document.getElementById('painTabCount').textContent=s.pains.length;
+  document.getElementById('vodTabCount').textContent=s.vods.length;
+
+  // agent panel
+  document.getElementById('panel-agent').innerHTML=
+    `<div class="agent-lbl">旅程环节 · Agent 逐步评分（近 7 次均值）</div><div class="step-tl">`+
+    s.agentSteps.map((st,idx)=>{
+      const isLast=idx===s.agentSteps.length-1;
+      const metricsHtml=st.metrics?`<div class="step-metrics">${st.metrics.map(m=>`
+        <div class="step-metric"><div class="step-metric-lbl">${m.l}</div>
+          <div class="step-metric-bottom"><span class="step-metric-val">${m.v}</span><span class="step-metric-trend ${m.trendCls}">${m.trend}</span></div>
+        </div>`).join('')}</div>`:'';
+      return `<div class="step-tl-item">
+        <div class="step-tl-node"><div class="step-tl-dot ${st.cls}">${st.score}</div>${isLast?'':'<div class="step-tl-line"></div>'}</div>
+        <div class="step-tl-body${isLast?' last':''}">
+          <div class="step-tl-hdr"><span class="step-tl-name">${st.name}</span>
+            <div class="as-bar-track"><div class="as-bar-fill ${st.cls}" style="width:${st.score}%"></div></div>
+            <span class="as-score ${st.cls}">${st.score}%</span></div>
+          <div class="as-summary"><b>总结</b>${st.summary}</div>
+          ${st.observations&&st.observations.length?`<div class="as-obs"><b>Agent 观测</b><div class="as-obs-list">${st.observations.map(o=>`<div class="as-obs-item">${o}</div>`).join('')}</div></div>`:''}
+          ${metricsHtml}
+        </div></div>`;
+    }).join('')+`</div>`+
+    `<div class="tool-chain"><div class="tool-chain-lbl">工具调用链 · 括号内为调用成功率</div>
+      <div class="tool-chips">${s.tools.map((t,i)=>`${i?'<span class="tool-arrow">→</span>':''}<div class="tool-chip ${t.cls}">${t.name}<span>${t.rate}</span></div>`).join('')}</div></div>`;
+
+  // pain panel
+  const catOrder=['doc','tool','api','env'];
+  const catMeta={doc:'文档类',tool:'工具类',api:'API 类',env:'环境类'};
+  const grouped={}; s.pains.forEach(p=>{(grouped[p.cat]=grouped[p.cat]||[]).push(p);});
+  document.getElementById('panel-pain').innerHTML=catOrder.filter(c=>grouped[c]).map(c=>`
+    <div class="pain-cat">
+      <div class="pain-cat-hd"><span class="cat-badge ${c}">${catMeta[c]}</span><span class="cat-count">${grouped[c].length} 条</span></div>
+      ${grouped[c].map(p=>`
+        <div class="pain-item">
+          <div class="pain-top">
+            <span class="pain-score">${p.score}</span>
+            <div class="pain-body"><div class="pain-text">${p.text}</div><div class="pain-meta">${p.meta}</div></div>
+            <span class="pain-status ${p.statusCls}">${p.status}</span>
+          </div>
+          <div class="pain-next"><span class="pain-next-lbl">Next Step</span><span class="pain-next-text">${p.nextStep}</span></div>
+        </div>`).join('')}
+    </div>`).join('');
+
+  // vod panel
+  document.getElementById('panel-vod').innerHTML=s.vods.map(v=>`
+    <div class="vod-item">
+      <div class="vod-vol-row"><span class="vod-vol">${v.vol}</span><span class="vod-unit">条声量</span><span class="vod-trend ${v.trendCls}">${v.trend}</span></div>
+      <div class="jvod-quote">${v.text}</div>
+      <div class="vod-src">${v.src}</div>
+    </div>`).join('');
+
+  switchEvTab('agent',document.querySelector('.ev-tab'));
+  // refresh scene list selection highlight
+  document.querySelectorAll('.sc').forEach(el=>el.classList.toggle('sel',el.id==='sc'+id));
+}
+
+function switchEvTab(id,btn){
+  document.querySelectorAll('.ev-tab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.ev-panel').forEach(p=>p.classList.remove('on'));
+  if(btn) btn.classList.add('on'); else document.querySelector('.ev-tab').classList.add('on');
+  document.getElementById('panel-'+id).classList.add('on');
+}
+
+// ── init ──
+renderTpMatrix();
+renderList();
+selScene(0); // 默认展开最差场景
+
+// smooth anchor for #links
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}
+  });
+});
+</script>
+</body>
+</html>
