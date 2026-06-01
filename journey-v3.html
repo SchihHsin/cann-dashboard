@@ -179,7 +179,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .sc{position:relative;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-m);box-shadow:var(--shadow);cursor:pointer;overflow:hidden;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;flex-direction:column}
 /* 左上状态色光晕：从 rank 徽章下方同色扩散 */
 .sc::before{content:'';position:absolute;top:-84px;left:-84px;width:240px;height:240px;border-radius:50%;pointer-events:none;z-index:0;filter:blur(8px);
-  background:radial-gradient(circle,rgba(var(--sc-glow),.20) 0%,rgba(var(--sc-glow),.09) 36%,rgba(var(--sc-glow),0) 68%)}
+  background:radial-gradient(circle,rgba(var(--sc-glow),.13) 0%,rgba(var(--sc-glow),.055) 36%,rgba(var(--sc-glow),0) 68%)}
 .sc.bad{--sc-glow:252,99,107}.sc.mid{--sc-glow:253,154,0}.sc.ok{--sc-glow:55,197,151}
 .sc>*{position:relative;z-index:1}
 .sc:hover{transform:translateY(-2px);box-shadow:var(--shadow-pop)}
@@ -257,7 +257,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .as-obs-list{display:flex;flex-direction:column;gap:5px;margin-top:6px}
 .as-obs-item{font-size:11px;line-height:1.5;color:var(--text-2);font-weight:500;padding-left:14px;position:relative}
 .as-obs-item::before{content:'';position:absolute;left:2px;top:7px;width:5px;height:5px;border-radius:50%;background:var(--purple-bright)}
-.step-metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:7px}
+.step-metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:7px;margin-bottom:9px}
 .step-metric{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
 .step-metric-lbl{font-size:9.5px;color:var(--text-3);font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .step-metric-bottom{display:flex;align-items:baseline;gap:5px}
@@ -1010,9 +1010,9 @@ function selScene(id){
           <div class="step-tl-hdr"><span class="step-tl-name">${st.name}</span>
             ${evEntry(s.id,'pain','痛点',s.painCount)}
             ${evEntry(s.id,'vod','VOD',s.vodCount)}</div>
+          ${metricsHtml}
           <div class="as-summary"><b>总结</b>${st.summary}</div>
           ${st.observations&&st.observations.length?`<div class="as-obs"><b>Agent 观测</b><div class="as-obs-list">${st.observations.map(o=>`<div class="as-obs-item">${o}</div>`).join('')}</div></div>`:''}
-          ${metricsHtml}
         </div></div>`;
     }).join('')+`</div>`;
 
