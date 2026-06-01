@@ -471,27 +471,27 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
     </div>
     <div class="grid4">
       <div class="card jkpi">
-        <div class="jkpi-l"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>组件数</div>
-        <div class="jkpi-v">4<small>类</small></div>
-        <div class="jkpi-foot"><span class="dlt neu">文档 / API / 工具 / 环境</span></div>
+        <div class="jkpi-l"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>组件总数</div>
+        <div class="jkpi-v">11<small>个</small></div>
+        <div class="jkpi-foot"><span class="dlt neu">含算子开发 / 图引擎 / 通信库…</span></div>
       </div>
       <div class="card jkpi">
         <div class="jkpi-l"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>整体平均分</div>
-        <div class="jkpi-v" style="color:var(--gold-dark)">68<small>/100</small></div>
+        <div class="jkpi-v" style="color:var(--gold-dark)">63<small>/100</small></div>
         <div class="jkpi-foot"><span class="dlt dn"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg>2</span>vs 上期</div>
       </div>
       <div class="card jkpi">
-        <div class="jkpi-l"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>最弱组件</div>
-        <div class="jkpi-v" style="color:var(--coral-dark)">工具</div>
-        <div class="jkpi-foot"><span class="dlt dn">平均 53 分</span>4 类中最低</div>
+        <div class="jkpi-l"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>严重组件</div>
+        <div class="jkpi-v" style="color:var(--coral-dark)">2<small>个</small></div>
+        <div class="jkpi-foot"><span class="dlt dn">图引擎 46 · 工具 49</span></div>
       </div>
       <div class="card jkpi">
         <div class="jkpi-l"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>本期优先处理</div>
         <div class="chip-grp" style="margin:12px 0 auto">
+          <span class="mchip"><span class="dot" style="background:var(--coral)"></span>图引擎</span>
           <span class="mchip"><span class="dot" style="background:var(--coral)"></span>工具</span>
-          <span class="mchip"><span class="dot" style="background:var(--gold)"></span>文档</span>
         </div>
-        <div class="jkpi-foot">平均分升序排序</div>
+        <div class="jkpi-foot">综合分升序排序</div>
       </div>
     </div>
   </section>
@@ -500,7 +500,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
   <section class="floor">
     <div class="floor-hd">
       <div class="floor-title">组件体验矩阵</div>
-      <div class="floor-sub">场景 × 组件类型（文档 / API / 工具 / 环境）· 点击格子查看评分详情</div>
+      <div class="floor-sub">组件 × 评分维度（文档 / API / 工具 / 环境）· 点击格子查看评分详情</div>
       <div class="floor-line"></div>
       <div class="hm-legend">差<div class="hm-grad"></div>优</div>
     </div>
@@ -1137,33 +1137,24 @@ function hideEvPop(force){ if(_popPinned&&!force)return; _popPinned=false; _evPo
 document.addEventListener('click',e=>{ if(_popPinned && !_evPop.contains(e.target) && !e.target.closest('.ev-entry')) hideEvPop(true); });
 window.addEventListener('scroll',()=>{ if(_evPop.classList.contains('on')) hideEvPop(true); },true);
 
-// ══════════ 组件视图：组件体验矩阵（场景 × 文档/API/工具/环境 + 综合）══════════
+// ══════════ 组件视图：组件体验矩阵（组件 × 文档/API/工具/环境 + 综合）══════════
 const touchpointData=[
-  {id:0,sceneName:'算子复现部署',overallScore:57,overallCls:'bad',
-   cells:{doc:{s:47,t:'d',obs:['文档检索有效率仅 47%，大量结果无关','文档准确率 58%，版本与代码不同步，21% 的开发者在此放弃']},
-     api:{s:63,t:'f',obs:['API 文档覆盖 63%，部分参数说明缺失']},
-     tool:{s:34,t:'d',obs:['AIC 日志不显示报错指令，错误可读性 52%','错误自愈成功率仅 23%，强依赖人工排查']},
-     env:{s:71,t:'u',obs:['装包平均重试 2.4 次，安装失败率 18%']}}},
-  {id:1,sceneName:'算子迁移部署',overallScore:72,overallCls:'mid',
-   cells:{doc:{s:68,t:'u',obs:['迁移指南完整度 68%，高级场景示例不足']},
-     api:{s:72,t:'f',obs:['迁移 API 覆盖 72%，shape 限制未提前提示']},
-     tool:{s:65,t:'u',obs:['迁移工具可用，约 35% shape 异常需手动处理']},
-     env:{s:83,t:'f',obs:['环境兼容性较好，偶发版本冲突']}}},
-  {id:2,sceneName:'Builtin 算子定制',overallScore:62,overallCls:'bad',
-   cells:{doc:{s:51,t:'d',obs:['Builtin 文档更新滞后，VOD 声量 61 条','参数描述错误率高，社区反复反馈']},
-     api:{s:88,t:'u',obs:['Builtin API 完备性强，开发者普遍认可']},
-     tool:{s:42,t:'f',obs:['调试工具对 Builtin 场景支持弱，排查耗时 3.2×']},
-     env:{s:77,t:'u',obs:['编译环境稳定，但首次配置成本偏高']}}},
-  {id:3,sceneName:'算子基本功能实现',overallScore:78,overallCls:'mid',
-   cells:{doc:{s:74,t:'u',obs:['基础文档质量较好，编程指南覆盖主要场景']},
-     api:{s:85,t:'f',obs:['核心 API 完备，边界场景偶有文档缺失']},
-     tool:{s:69,t:'u',obs:['基础调试可用，高级性能分析功能有限']},
-     env:{s:91,t:'u',obs:['环境配置成功率高，部署体验最佳']}}}
+  {id:0, sceneName:'算子开发',          overallScore:59,overallCls:'mid',cells:{doc:{s:58,t:'f'},api:{s:62,t:'u'},tool:{s:45,t:'d'},env:{s:70,t:'u'}}},
+  {id:1, sceneName:'Ascend C',          overallScore:60,overallCls:'mid',cells:{doc:{s:64,t:'u'},api:{s:55,t:'f'},tool:{s:50,t:'d'},env:{s:72,t:'u'}}},
+  {id:2, sceneName:'图引擎',            overallScore:46,overallCls:'bad',cells:{doc:{s:40,t:'d'},api:{s:48,t:'d'},tool:{s:35,t:'d'},env:{s:60,t:'f'}}},
+  {id:3, sceneName:'运行时',            overallScore:77,overallCls:'ok', cells:{doc:{s:75,t:'u'},api:{s:80,t:'u'},tool:{s:68,t:'f'},env:{s:85,t:'u'}}},
+  {id:4, sceneName:'算子编程-PyPTO',    overallScore:55,overallCls:'mid',cells:{doc:{s:52,t:'d'},api:{s:58,t:'f'},tool:{s:44,t:'d'},env:{s:66,t:'u'}}},
+  {id:5, sceneName:'算子库',            overallScore:84,overallCls:'ok', cells:{doc:{s:82,t:'u'},api:{s:88,t:'u'},tool:{s:76,t:'f'},env:{s:90,t:'u'}}},
+  {id:6, sceneName:'通信库-集合通信',   overallScore:72,overallCls:'mid',cells:{doc:{s:70,t:'u'},api:{s:74,t:'f'},tool:{s:65,t:'u'},env:{s:80,t:'f'}}},
+  {id:7, sceneName:'通信库-单边通信',   overallScore:63,overallCls:'mid',cells:{doc:{s:60,t:'f'},api:{s:64,t:'u'},tool:{s:55,t:'d'},env:{s:72,t:'u'}}},
+  {id:8, sceneName:'工具',              overallScore:49,overallCls:'bad',cells:{doc:{s:48,t:'d'},api:{s:52,t:'f'},tool:{s:38,t:'d'},env:{s:58,t:'f'}}},
+  {id:9, sceneName:'PTO',               overallScore:68,overallCls:'mid',cells:{doc:{s:66,t:'u'},api:{s:70,t:'f'},tool:{s:60,t:'u'},env:{s:74,t:'u'}}},
+  {id:10,sceneName:'编译库&OS',         overallScore:59,overallCls:'mid',cells:{doc:{s:56,t:'f'},api:{s:60,t:'u'},tool:{s:50,t:'d'},env:{s:68,t:'f'}}},
 ];
 const COMP_CATS=[['doc','文档'],['api','API'],['tool','工具'],['env','环境']];
 function renderCompMatrix(){
   const grid=document.getElementById('compHeatGrid'); if(!grid)return;
-  let html=`<div class="hm-corner"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="#EFF0F1" stroke-width="1"/></svg><span class="hc-col">组件</span><span class="hc-row">场景</span></div>`;
+  let html=`<div class="hm-corner"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="#EFF0F1" stroke-width="1"/></svg><span class="hc-col">维度</span><span class="hc-row">组件</span></div>`;
   html+=COMP_CATS.map(([k,l])=>`<div class="hm-header">${l}</div>`).join('')+`<div class="hm-header">综合</div>`;
   touchpointData.forEach(row=>{
     const dotG=row.overallCls==='bad'?'rgba(230,56,56,.2)':row.overallCls==='mid'?'rgba(253,154,0,.2)':'rgba(55,197,151,.2)';
@@ -1195,8 +1186,8 @@ function selectCompCell(sceneId,k,el){
     <div class="tp-d-row">
       <div class="tp-d-box" style="background:${bg};color:${fg}">${Math.round(c.s)}</div>
       <div style="flex-shrink:0">
-        <div class="tp-d-name">${row.sceneName} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${label}组件</span></div>
-        <div class="tp-d-sub">场景综合 ${row.overallScore} · 点击其他格子切换组件</div>
+        <div class="tp-d-name">${row.sceneName} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${label}</span></div>
+        <div class="tp-d-sub">综合 ${row.overallScore} · 点击其他格子切换维度</div>
       </div>
       <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px">
         <span style="font-size:11px;color:var(--text-3)">近 6 期</span>
@@ -1204,7 +1195,7 @@ function selectCompCell(sceneId,k,el){
       </div>
       <div class="tp-d-dims">${dimsHtml}</div>
     </div>
-    ${c.obs&&c.obs.length?`<div class="tp-d-obs">${c.obs.map(o=>`<div class="tp-d-obs-item">${o}</div>`).join('')}</div>`:''}`;
+    <div class="tp-d-obs">${c.obs&&c.obs.length?c.obs.map(o=>`<div class="tp-d-obs-item">${o}</div>`).join(''):`<div class="tp-d-obs-item" style="color:var(--text-3)">评分详情内容待补充（占位）。</div>`}</div>`;
 }
 
 // ── 视图切换（旅程 / 组件）──
