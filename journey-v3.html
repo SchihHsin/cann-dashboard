@@ -239,7 +239,11 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .kc-trend.up{color:var(--good)}.kc-trend.dn{color:var(--bad)}.kc-trend.flat{color:var(--text-3)}
 
 /* agent timeline */
-.agent-lbl{font-size:11px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px}
+.agent-lbl{font-size:11px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:11px}
+.op-switch{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.op-chip{font-size:11px;font-weight:700;color:var(--text-3);background:var(--g1);border:1px solid var(--border);border-radius:999px;padding:4px 13px;cursor:pointer;font-family:inherit;transition:all .12s}
+.op-chip:hover{border-color:var(--blue-soft);color:var(--primary)}
+.op-chip.on{background:var(--blue-light);color:var(--blue-deep);border-color:var(--blue-soft)}
 .step-tl{display:flex;flex-direction:column}
 .step-tl-item{display:flex;gap:13px}
 .step-tl-node{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
@@ -1042,11 +1046,32 @@ function selScene(id){
     </div>`;
   }).join('');
 
-  // agent panel
+  // agent panel（默认「总体」，可切到各算子）
+  renderAgentPanel(s,'总体');
+
+  // refresh scene list selection highlight
+  document.querySelectorAll('.sc').forEach(el=>el.classList.toggle('sel',el.id==='sc'+id));
+}
+
+// ── Agent 逐步评分：总体 / 各算子切换 ──
+const OPERATORS=['总体','add','grid_sample','matmul','softmax','layer_norm'];
+const OP_DELTA={add:6,grid_sample:-8,matmul:3,softmax:-2,layer_norm:-5}; // 各算子相对总体的评分偏移（模拟）
+function _clsOf(v){return v>=80?'ok':v>=60?'mid':'bad';}
+function _opSteps(s,op){
+  if(op==='总体') return s.agentSteps;
+  const d=OP_DELTA[op]||0;
+  return s.agentSteps.map(st=>{const sc=Math.max(5,Math.min(99,st.score+d));return {...st,score:sc,cls:_clsOf(sc)};});
+}
+function renderAgentPanel(s,op){
+  op=op||'总体';
+  const steps=_opSteps(s,op);
+  const chips=OPERATORS.map(o=>`<button class="op-chip${o===op?' on':''}" onclick="selectOp('${o}',this)">${o}</button>`).join('');
   document.getElementById('panel-agent').innerHTML=
-    `<div class="agent-lbl">旅程环节 · Agent 逐步评分（近 7 次均值）</div><div class="step-tl">`+
-    s.agentSteps.map((st,idx)=>{
-      const isLast=idx===s.agentSteps.length-1;
+    `<div class="agent-lbl">旅程环节 · Agent 逐步评分（近 7 次均值）</div>
+     <div class="op-switch">${chips}</div>
+     <div class="step-tl">`+
+    steps.map((st,idx)=>{
+      const isLast=idx===steps.length-1;
       const metricsHtml=st.metrics?`<div class="step-metrics">${st.metrics.map(m=>`
         <div class="step-metric"><div class="step-metric-lbl">${m.l}</div>
           <div class="step-metric-bottom"><span class="step-metric-val">${m.v}</span><span class="step-metric-trend ${m.trendCls}">${m.trend}</span></div>
@@ -1062,9 +1087,10 @@ function selScene(id){
           ${st.observations&&st.observations.length?`<div class="as-obs"><b>Agent 观测</b><div class="as-obs-list">${st.observations.map(o=>`<div class="as-obs-item">${o}</div>`).join('')}</div></div>`:''}
         </div></div>`;
     }).join('')+`</div>`;
-
-  // refresh scene list selection highlight
-  document.querySelectorAll('.sc').forEach(el=>el.classList.toggle('sel',el.id==='sc'+id));
+}
+function selectOp(op){
+  const s=scenarios.find(x=>x.id===_selectedId); if(!s)return;
+  renderAgentPanel(s,op);
 }
 
 // ── evidence preview popover (痛点 / VOD)：悬浮预览 / 点击锁定 ──
