@@ -153,7 +153,9 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .hm-cell .cv>svg{flex-shrink:0}
 .hm-cell:hover{border-width:2px;border-color:var(--bd-hover);background:var(--bg-hover);filter:saturate(1.5)}
 .hm-cell.hm-sel{border-color:var(--purple);box-shadow:0 0 0 3px rgba(106,103,206,.15);transform:scale(1.06);z-index:1}
-.hm-cell.hm-overall{cursor:default}
+.hm-cell.hm-overall{cursor:default;border-color:var(--border-2)}
+.hm-cell.hm-overall .cv{font-size:16px;font-weight:900}
+.hm-header.sum{background:var(--blue-light);border-color:var(--blue-soft);color:var(--blue-deep);font-weight:800}
 .hm-cell.hm-empty{cursor:default;background:var(--g1);border-style:dashed;border-color:var(--g3);color:var(--g5);font-family:inherit}
 .hm-cell.hm-empty .cv{font-size:13px;font-weight:600}
 .hm-legend{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-3);font-weight:500}
@@ -171,6 +173,26 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .tp-d-obs{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border-2);display:flex;flex-direction:column;gap:7px}
 .tp-d-obs-item{font-size:11.5px;line-height:1.55;color:var(--text-2);font-weight:500;padding-left:16px;position:relative}
 .tp-d-obs-item::before{content:'';position:absolute;left:3px;top:7px;width:5px;height:5px;border-radius:50%;background:var(--purple-bright)}
+/* 组件评分制度 */
+.rub-switch{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.rub-chip{font-size:11.5px;font-weight:700;color:var(--text-3);background:var(--g1);border:1px solid var(--border);border-radius:999px;padding:5px 13px;cursor:pointer;font-family:inherit;transition:all .12s}
+.rub-chip:hover{border-color:var(--blue-soft);color:var(--primary)}
+.rub-chip.on{background:var(--blue-light);color:var(--blue-deep);border-color:var(--blue-soft)}
+.rub-chip.todo{color:var(--g5);cursor:default}
+.rub-chip.todo:hover{border-color:var(--border);color:var(--g5)}
+.rub-note{font-size:11.5px;color:var(--text-3);line-height:1.6;background:var(--g1);border-radius:8px;padding:10px 13px;margin-bottom:14px}
+.rub-group{margin-bottom:16px}
+.rub-group:last-child{margin-bottom:0}
+.rub-group-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.rub-badge{font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:7px;background:var(--purple-light);color:var(--purple-dark)}
+.rub-cnt{font-size:10.5px;color:var(--text-3);font-weight:600}
+.rub-head,.rub-row{display:grid;grid-template-columns:1.1fr 1.7fr 1.1fr;gap:12px;padding:9px 12px}
+.rub-head{font-size:10px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em}
+.rub-row{border-top:1px solid var(--g2);font-size:11.5px;line-height:1.5}
+.rub-chk{font-weight:700;color:var(--text)}
+.rub-metric{color:var(--text-2);font-weight:500}
+.rub-rule{color:var(--text-2);font-weight:600}
+.rub-todo{font-size:12px;color:var(--text-3);padding:20px;text-align:center;background:var(--g1);border:1px dashed var(--border-2);border-radius:8px}
 
 /* ═══════════ FLOOR 3 scene deep-dive ═══════════ */
 .scene-list-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -471,9 +493,9 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
     </div>
     <div class="grid4">
       <div class="card jkpi">
-        <div class="jkpi-l"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>组件总数</div>
-        <div class="jkpi-v">11<small>个</small></div>
-        <div class="jkpi-foot"><span class="dlt neu">含算子开发 / 图引擎 / 通信库…</span></div>
+        <div class="jkpi-l"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>达标组件</div>
+        <div class="jkpi-v" style="color:var(--green-dark)">3<small>/11</small></div>
+        <div class="jkpi-foot"><span class="dlt up"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="18 15 12 9 6 15"/></svg>1</span>综合 ≥70 达标</div>
       </div>
       <div class="card jkpi">
         <div class="jkpi-l"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>整体平均分</div>
@@ -500,7 +522,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
   <section class="floor">
     <div class="floor-hd">
       <div class="floor-title">组件体验矩阵</div>
-      <div class="floor-sub">组件 × 评分维度（文档 / API / 工具 / 环境）· 点击格子查看评分详情</div>
+      <div class="floor-sub">组件 × 评分维度（资料 / API / 源码 / 工具 / 版本 / 运行反馈 / 社区）· 点击格子查看评分详情</div>
       <div class="floor-line"></div>
       <div class="sort-toggle" style="margin-right:12px">
         <button class="sort-btn on" id="compSortAlpha" onclick="setCompSort('alpha')">字母</button>
@@ -510,7 +532,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
     </div>
     <div class="card">
       <div style="overflow-x:auto">
-        <div id="compHeatGrid" class="hm-grid" style="grid-template-columns:140px repeat(4,1fr) 80px;min-width:600px"></div>
+        <div id="compHeatGrid" class="hm-grid" style="grid-template-columns:150px repeat(7,1fr) 80px;min-width:1080px"></div>
       </div>
     </div>
   </section>
@@ -523,6 +545,19 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
       <div class="floor-line"></div>
     </div>
     <div class="card" id="compDetail"></div>
+  </section>
+
+  <!-- ════════ 组件 · 组件评分制度 ════════ -->
+  <section class="floor">
+    <div class="floor-hd">
+      <div class="floor-title">组件评分制度</div>
+      <div class="floor-sub">各评分维度的检查项 · 量化指标 · 打分规则</div>
+      <div class="floor-line"></div>
+    </div>
+    <div class="card">
+      <div class="rub-switch" id="rubSwitch"></div>
+      <div id="rubBody"></div>
+    </div>
   </section>
 
  </div><!-- /view-component -->
@@ -630,14 +665,15 @@ const STAGE_HEADER={'算子设计与实现':'设计实现'}; // 表头缩写
 function tpCellHtml(score,trend,clickAttr){
   const bg=heatColor(score),fg=textColor(score),bd=borderColor(score);
   const bgH=heatColorHover(score),bdH=borderColorHover(score);
-  return `<div class="hm-cell${clickAttr?'':' hm-overall'}" ${clickAttr||''} style="background:${bg};color:${fg};border-color:${bd};--bg-hover:${bgH};--bd-hover:${bdH}">
-    <div class="cv">${faceIcon(score)}${Math.round(score)}${trend?cellTrendSvg(trend):''}</div></div>`;
+  const sum=!clickAttr; // 无点击 = 综合汇总格：去表情、数字加粗放大
+  return `<div class="hm-cell${sum?' hm-overall':''}" ${clickAttr||''} style="background:${bg};color:${fg};border-color:${bd};--bg-hover:${bgH};--bd-hover:${bdH}">
+    <div class="cv">${sum?'':faceIcon(score)}${Math.round(score)}${trend?cellTrendSvg(trend):''}</div></div>`;
 }
 function _sceneStage(sc,stage){ return sc.agentSteps.find(st=>st.name===stage); }
 function renderTpMatrix(){
   const grid=document.getElementById('tpHeatGrid'); if(!grid)return;
   let html=`<div class="hm-corner"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="#EFF0F1" stroke-width="1"/></svg><span class="hc-col">阶段</span><span class="hc-row">场景</span></div>`;
-  html+=STAGE_UNION.map(s=>`<div class="hm-header">${STAGE_HEADER[s]||s}</div>`).join('')+`<div class="hm-header">综合</div>`;
+  html+=STAGE_UNION.map(s=>`<div class="hm-header">${STAGE_HEADER[s]||s}</div>`).join('')+`<div class="hm-header sum">综合</div>`;
   scenarios.forEach(sc=>{
     const dotG=sc.grade==='bad'?'rgba(230,56,56,.2)':sc.grade==='mid'?'rgba(253,154,0,.2)':'rgba(55,197,151,.2)';
     html+=`<div class="hm-row-label"><div class="rl-dot" style="background:${GRADE_COLOR[sc.grade]};box-shadow:0 0 0 2px ${dotG}"></div><div>${sc.name}</div></div>`;
@@ -1142,20 +1178,26 @@ document.addEventListener('click',e=>{ if(_popPinned && !_evPop.contains(e.targe
 window.addEventListener('scroll',()=>{ if(_evPop.classList.contains('on')) hideEvPop(true); },true);
 
 // ══════════ 组件视图：组件体验矩阵（组件 × 文档/API/工具/环境 + 综合）══════════
+// 7 维度：资料/文档(doc) · API/接口(api) · 源码&示例类(src) · 工具(tool) · 版本(ver) · 运行反馈(fb) · 社区(comm)
+const COMP_CATS=[['doc','资料/文档'],['api','API/接口'],['src','源码&示例类'],['tool','工具'],['ver','版本'],['fb','运行反馈'],['comm','社区']];
+function _cc(doc,api,src,tool,ver,fb,comm,trends){
+  const keys=['doc','api','src','tool','ver','fb','comm'],vals=[doc,api,src,tool,ver,fb,comm],o={};
+  keys.forEach((k,i)=>o[k]={s:vals[i],t:(trends&&trends[i])||'f'});
+  return o;
+}
 const touchpointData=[
-  {id:0, sceneName:'算子开发',          overallScore:59,overallCls:'mid',cells:{doc:{s:58,t:'f'},api:{s:62,t:'u'},tool:{s:45,t:'d'},env:{s:70,t:'u'}}},
-  {id:1, sceneName:'Ascend C',          overallScore:60,overallCls:'mid',cells:{doc:{s:64,t:'u'},api:{s:55,t:'f'},tool:{s:50,t:'d'},env:{s:72,t:'u'}}},
-  {id:2, sceneName:'图引擎',            overallScore:46,overallCls:'bad',cells:{doc:{s:40,t:'d'},api:{s:48,t:'d'},tool:{s:35,t:'d'},env:{s:60,t:'f'}}},
-  {id:3, sceneName:'运行时',            overallScore:77,overallCls:'ok', cells:{doc:{s:75,t:'u'},api:{s:80,t:'u'},tool:{s:68,t:'f'},env:{s:85,t:'u'}}},
-  {id:4, sceneName:'算子编程-PyPTO',    overallScore:55,overallCls:'mid',cells:{doc:{s:52,t:'d'},api:{s:58,t:'f'},tool:{s:44,t:'d'},env:{s:66,t:'u'}}},
-  {id:5, sceneName:'算子库',            overallScore:84,overallCls:'ok', cells:{doc:{s:82,t:'u'},api:{s:88,t:'u'},tool:{s:76,t:'f'},env:{s:90,t:'u'}}},
-  {id:6, sceneName:'通信库-集合通信',   overallScore:72,overallCls:'mid',cells:{doc:{s:70,t:'u'},api:{s:74,t:'f'},tool:{s:65,t:'u'},env:{s:80,t:'f'}}},
-  {id:7, sceneName:'通信库-单边通信',   overallScore:63,overallCls:'mid',cells:{doc:{s:60,t:'f'},api:{s:64,t:'u'},tool:{s:55,t:'d'},env:{s:72,t:'u'}}},
-  {id:8, sceneName:'工具',              overallScore:49,overallCls:'bad',cells:{doc:{s:48,t:'d'},api:{s:52,t:'f'},tool:{s:38,t:'d'},env:{s:58,t:'f'}}},
-  {id:9, sceneName:'PTO',               overallScore:68,overallCls:'mid',cells:{doc:{s:66,t:'u'},api:{s:70,t:'f'},tool:{s:60,t:'u'},env:{s:74,t:'u'}}},
-  {id:10,sceneName:'编译库&OS',         overallScore:59,overallCls:'mid',cells:{doc:{s:56,t:'f'},api:{s:60,t:'u'},tool:{s:50,t:'d'},env:{s:68,t:'f'}}},
+  {id:0, sceneName:'算子开发',        overallScore:59,overallCls:'mid',cells:_cc(56,62,50,45,64,58,68,['f','u','d','d','u','f','u'])},
+  {id:1, sceneName:'Ascend C',        overallScore:60,overallCls:'mid',cells:_cc(64,55,58,50,66,56,70,['u','f','f','d','u','f','u'])},
+  {id:2, sceneName:'图引擎',          overallScore:46,overallCls:'bad',cells:_cc(40,48,42,35,52,44,58,['d','d','d','d','f','d','f'])},
+  {id:3, sceneName:'运行时',          overallScore:77,overallCls:'ok', cells:_cc(75,80,72,68,82,74,85,['u','u','f','f','u','u','u'])},
+  {id:4, sceneName:'算子编程-PyPTO',  overallScore:55,overallCls:'mid',cells:_cc(52,58,48,44,60,54,64,['d','f','d','d','u','f','u'])},
+  {id:5, sceneName:'算子库',          overallScore:84,overallCls:'ok', cells:_cc(82,88,80,76,86,82,90,['u','u','u','f','u','u','u'])},
+  {id:6, sceneName:'通信库-集合通信', overallScore:72,overallCls:'mid',cells:_cc(70,74,68,65,76,70,80,['u','f','u','u','f','u','f'])},
+  {id:7, sceneName:'通信库-单边通信', overallScore:63,overallCls:'mid',cells:_cc(60,64,58,55,68,62,72,['f','u','d','d','u','f','u'])},
+  {id:8, sceneName:'工具',            overallScore:49,overallCls:'bad',cells:_cc(48,52,44,38,54,46,58,['d','f','d','d','f','d','f'])},
+  {id:9, sceneName:'PTO',             overallScore:68,overallCls:'mid',cells:_cc(66,70,62,60,72,66,76,['u','f','u','u','u','f','u'])},
+  {id:10,sceneName:'编译库&OS',       overallScore:59,overallCls:'mid',cells:_cc(56,60,52,50,64,56,66,['f','u','d','d','u','f','u'])},
 ];
-const COMP_CATS=[['doc','文档'],['api','API'],['tool','工具'],['env','环境']];
 let compSort='alpha'; // 默认字母排序，可切换 问题优先（综合升序）
 function setCompSort(mode){
   compSort=mode;
@@ -1169,7 +1211,7 @@ function renderCompMatrix(){
     ? [...touchpointData].sort((a,b)=>a.overallScore-b.overallScore)
     : [...touchpointData].sort((a,b)=>a.sceneName.localeCompare(b.sceneName,'zh'));
   let html=`<div class="hm-corner"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100" stroke="#EFF0F1" stroke-width="1"/></svg><span class="hc-col">维度</span><span class="hc-row">组件</span></div>`;
-  html+=COMP_CATS.map(([k,l])=>`<div class="hm-header">${l}</div>`).join('')+`<div class="hm-header">综合</div>`;
+  html+=COMP_CATS.map(([k,l])=>`<div class="hm-header">${l}</div>`).join('')+`<div class="hm-header sum">综合</div>`;
   rows.forEach(row=>{
     const dotG=row.overallCls==='bad'?'rgba(230,56,56,.2)':row.overallCls==='mid'?'rgba(253,154,0,.2)':'rgba(55,197,151,.2)';
     html+=`<div class="hm-row-label"><div class="rl-dot" style="background:${GRADE_COLOR[row.overallCls]};box-shadow:0 0 0 2px ${dotG}"></div><div>${row.sceneName}</div></div>`;
@@ -1212,6 +1254,93 @@ function selectCompCell(sceneId,k,el){
     <div class="tp-d-obs">${c.obs&&c.obs.length?c.obs.map(o=>`<div class="tp-d-obs-item">${o}</div>`).join(''):`<div class="tp-d-obs-item" style="color:var(--text-3)">评分详情内容待补充（占位）。</div>`}</div>`;
 }
 
+// ══════════ 组件评分制度（整理自 reference/组件评分制度.CSV）══════════
+const SCORE_RUBRIC=[
+  {key:'doc',dim:'资料/文档',note:'README、安装文档、教程、API 手册、架构文档、FAQ、排障指南、贡献文档等所有静态文本知识载体。',groups:[
+    {sub:'完备性',items:[
+      ['公共 API 是否都有对应文档条目','接口文档覆盖率 = 已在 docs/03_api_ref 出现的接口数 / 公共接口总数','100% 满分；缺 1 例扣 1 分'],
+      ['错误码是否成体系地被描述','错误码文档化率 = 已说明错误码数 / 定义错误码总数','100% 满分；缺 1 例扣 1 分'],
+      ['数据结构 / 枚举是否有文档','数据类型文档覆盖率 = 已描述 struct/enum/typedef 数 / 公共类型总数','100% 满分；缺 1 例扣 1 分'],
+      ['关键交付物是否齐备','章节齐全度 = 实际存在目录数 / 6（quick_start·dev_guide·api_ref·FAQ·troubleshooting·release_notes）','全齐满分；每缺一项扣 1 分'],
+    ]},
+    {sub:'准确性',items:[
+      ['文档签名是否与头文件一致','接口签名一致率 = 与头文件一致的接口数 / 接口总数','100% 满分；每错 1 例扣 1 分'],
+      ['链接是否有效','内 / 外链有效率 = 可正常跳转链接数 / 总链接数','≥98% 满分；每降 2% 扣 1 分'],
+    ]},
+    {sub:'一致性',items:[
+      ['接口文档模板是否统一','模板一致率（含 描述/参数/返回值/约束/示例 五要素）','≥90% 满分；每降 10% 扣 1 分'],
+      ['命名风格是否一致','命名风格一致率（文档拼写与头文件一致）','100% 满分；每错 1 例扣 0.5 分'],
+      ['同一概念跨文档是否冲突','跨文档冲突数（quick_start/dev_guide/api_ref 描述矛盾）','0 处满分；每出现 1 处扣 1 分'],
+    ]},
+    {sub:'易获取性',items:[
+      ['从 README 抵达 API 文档难度','入口可达层级 = README 到 API 详情页最少跳转数','≤3 跳满分；4–5 跳减 1 分；>5 跳 0 分'],
+      ['是否有索引 / 目录','API 索引覆盖率 = 索引页列出接口数 / 接口总数','≥95% 满分；每降 5% 扣 1 分'],
+      ['关键词搜索可达性','高频任务关键词命中率（可定位到对应章节比例）','≥90% 满分；每降 10% 扣 1 分'],
+      ['多入口分流','多入口可达率（README / 目录 / 索引 三种方式）','≥80% 满分；每降 10% 扣 1 分'],
+    ]},
+    {sub:'易用性',items:[
+      ['是否提供常见问题解答','FAQ 命中率 = 近 N 个 Issue 可被 FAQ 解答比例','≥60% 满分；每降 10% 扣 1 分'],
+      ['阅读门槛','可读性指数 = 术语密度 + 长句率综合（越低越好）','设定基线，高于基线扣分'],
+    ]},
+  ]},
+  {key:'api',dim:'API/接口',note:'对外暴露函数、结构体、枚举、环境变量、配置项、扩展接口等编码契约型交互入口。',groups:[
+    {sub:'完备性',items:[
+      ['对标 CUDA Runtime 原子 API 是否齐','CUDA 原子 API 覆盖率 = 已提供等价能力数 / CUDA 原子 API 总数','≥90% 满分；每降 5% 扣 1 分；<70% 计 0 分'],
+      ['关键能力是否齐','关键能力覆盖度 = 已提供 ≥1 接口的能力类数 / 18 类','每缺一类扣 1 分'],
+      ['接口注释完备','Doxygen 注释覆盖率（含 @brief/@param/@return）','≥95% 满分；每降 5% 扣 1 分'],
+    ]},
+    {sub:'易获取性',items:[
+      ['命名可猜测','命名规范率（符合 aclrt + 动词 + 名词 规则）','≥95% 满分；每降 5% 扣 1 分'],
+      ['模块分组清晰','分组注释率（按能力模块带分隔注释）','≥80% 满分；每降 10% 扣 1 分'],
+    ]},
+    {sub:'易用性',items:[
+      ['签名简洁','平均入参数 = 参数总数 / 接口数','≤5 满分；6–7 扣 1 分；≥8 扣 2 分'],
+      ['错误处理一致','错误返回一致率（统一以 aclError 返回）','100% 满分；每错 1 例扣 0.5 分'],
+    ]},
+    {sub:'准确性',items:[
+      ['接口注释准确率','准确接口数 / 接口全集','每错一个减一分'],
+    ]},
+  ]},
+  {key:'src',dim:'源码&示例类',note:'核心源码、examples 样例、Demo 工程、模板工程、适配层代码——可阅读、可运行、可模仿、可复用的实操样本。',groups:[
+    {sub:'易实践性',items:[
+      ['运行命令数','单样例运行命令条数','≤3 条满分（10 分）；每多 1 条扣 1 分'],
+      ['执行耗时','单样例执行耗时','≤1 分钟满分；每多 1 分钟扣 1 分'],
+      ['示例输出可对照','README 示例输出与实际日志关键字段一致','100% 满分；每错 1 例扣 1 分'],
+    ]},
+    {sub:'易学 / 易理解（认知负荷）',items:[
+      ['风格一致','编译 / 代码 / 日志打印风格结果一致','全覆盖满分（10 分）；缺 1 处扣 1 分'],
+      ['注释密度合理','核心逻辑注释覆盖（初始化·申请资源·核心调用·校验·清理）','全覆盖满分；缺 1 处扣 1 分'],
+      ['日志对应流程','日志可映射 初始化·申请资源·核心调用·校验·清理','全覆盖满分；缺 1 处扣 1 分'],
+    ]},
+    {sub:'完备性',items:[
+      ['关键 API 覆盖率','样例覆盖 API 比例','≥80% 满分；每降 10% 扣 1 分'],
+    ]},
+    {sub:'稳定性',items:[
+      ['多次执行一致性','多次执行结果一致','100% 满分；每 1 例不满足扣 1 分'],
+      ['资源清理','成功 / 失败路径都能清理已申请资源','100% 满分；每 1 例不满足扣 1 分'],
+    ]},
+  ]},
+];
+let _rubKey='doc';
+function renderRubric(key){
+  _rubKey=key;
+  const sw=document.getElementById('rubSwitch'); if(!sw)return;
+  const defined=new Set(SCORE_RUBRIC.map(r=>r.key));
+  sw.innerHTML=COMP_CATS.map(([k,l])=>{
+    const has=defined.has(k);
+    return `<button class="rub-chip${k===key&&has?' on':''}${has?'':' todo'}" ${has?`onclick="renderRubric('${k}')"`:''}>${l}${has?'':' ·待补充'}</button>`;
+  }).join('');
+  const r=SCORE_RUBRIC.find(x=>x.key===key);
+  const body=document.getElementById('rubBody');
+  if(!r){ body.innerHTML=`<div class="rub-todo">该维度评分标准待补充。</div>`; return; }
+  body.innerHTML=`<div class="rub-note">${r.note}</div>`+r.groups.map(g=>`
+    <div class="rub-group">
+      <div class="rub-group-hd"><span class="rub-badge">${g.sub}</span><span class="rub-cnt">${g.items.length} 项</span></div>
+      <div class="rub-head"><div>检查项</div><div>量化指标</div><div>打分规则</div></div>
+      ${g.items.map(([chk,metric,rule])=>`<div class="rub-row"><div class="rub-chk">${chk}</div><div class="rub-metric">${metric}</div><div class="rub-rule">${rule}</div></div>`).join('')}
+    </div>`).join('');
+}
+
 // ── 视图切换（旅程 / 组件）──
 let _compInited=false;
 function setView(v){
@@ -1220,7 +1349,7 @@ function setView(v){
   document.getElementById('view-component').style.display=journey?'none':'block';
   document.getElementById('vchip-journey').classList.toggle('on',journey);
   document.getElementById('vchip-component').classList.toggle('on',!journey);
-  if(!journey && !_compInited){ renderCompMatrix(); compDetailReset(); _compInited=true; }
+  if(!journey && !_compInited){ renderCompMatrix(); compDetailReset(); renderRubric('doc'); _compInited=true; }
   window.scrollTo({top:0});
 }
 
