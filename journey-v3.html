@@ -140,24 +140,24 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .jkpi-foot{margin-top:auto;padding-top:11px;display:flex;align-items:center;gap:7px;font-size:10.5px;color:var(--text-3);font-weight:600}
 
 /* ═══════════ FLOOR 2 touchpoint heatmap（matrix.html 样式重绘）═══════════ */
-.hm-grid{display:grid;gap:8px}
-.hm-corner{position:relative;overflow:hidden;border-radius:12px;background:#fff;border:1px solid #EFF0F1;height:48px}
+.hm-grid{display:grid;gap:6px}
+.hm-corner{position:relative;overflow:hidden;border-radius:10px;background:#fff;border:1px solid #EFF0F1;height:36px}
 .hm-corner svg{position:absolute;inset:0;width:100%;height:100%}
 .hm-corner .hc-col{position:absolute;top:24%;right:16%;font-size:11px;font-weight:700;color:#3D4452;letter-spacing:.04em}
 .hm-corner .hc-row{position:absolute;bottom:24%;left:16%;font-size:11px;font-weight:700;color:#3D4452;letter-spacing:.04em}
-.hm-header{font-size:12px;font-weight:700;color:#3D4452;text-align:center;letter-spacing:.04em;white-space:nowrap;background:#fff;border:1px solid rgba(223,223,223,.5);border-radius:12px;height:48px;display:flex;align-items:center;justify-content:center}
-.hm-row-label{display:flex;align-items:center;gap:10px;padding:0 10px;font-size:12.5px;font-weight:700;color:var(--text);background:#fff;border:1px solid rgba(223,223,223,.5);border-radius:12px;height:48px}
-.hm-row-label .rl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.hm-cell{border-radius:12px;height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;border:1px solid #EFF0F1;position:relative;font-family:'JetBrains Mono','PingFang SC','Microsoft YaHei',monospace}
-.hm-cell .cv{font-size:14px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:3px}
+.hm-header{font-size:11.5px;font-weight:700;color:#3D4452;text-align:center;letter-spacing:.04em;white-space:nowrap;background:#fff;border:1px solid rgba(223,223,223,.5);border-radius:10px;height:36px;display:flex;align-items:center;justify-content:center}
+.hm-row-label{display:flex;align-items:center;gap:9px;padding:0 10px;font-size:12px;font-weight:700;color:var(--text);background:#fff;border:1px solid rgba(223,223,223,.5);border-radius:10px;height:36px}
+.hm-row-label .rl-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.hm-cell{border-radius:10px;height:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;border:1px solid #EFF0F1;position:relative;font-family:'JetBrains Mono','PingFang SC','Microsoft YaHei',monospace}
+.hm-cell .cv{font-size:13px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:3px}
 .hm-cell .cv>svg{flex-shrink:0}
 .hm-cell:hover{border-width:2px;border-color:var(--bd-hover);background:var(--bg-hover);filter:saturate(1.5)}
 .hm-cell.hm-sel{border-color:var(--purple);box-shadow:0 0 0 3px rgba(106,103,206,.15);transform:scale(1.06);z-index:1}
 .hm-cell.hm-overall{cursor:default;border-color:var(--border-2)}
-.hm-cell.hm-overall .cv{font-size:16px;font-weight:900}
+.hm-cell.hm-overall .cv{font-size:14px;font-weight:900}
 .hm-header.sum{background:var(--g2);border-color:var(--border-2);color:var(--text-2);font-weight:800}
 .hm-cell.hm-empty{cursor:default;background:var(--g1);border-style:dashed;border-color:var(--g3);color:var(--g5);font-family:inherit}
-.hm-cell.hm-empty .cv{font-size:13px;font-weight:600}
+.hm-cell.hm-empty .cv{font-size:12px;font-weight:600}
 .hm-legend{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-3);font-weight:500}
 .hm-grad{width:120px;height:8px;border-radius:4px;background:linear-gradient(90deg,#FFB9B9 0%,#FFD7B7 35%,#FFF2A5 55%,#C4F3E1 75%,#94E1C8 100%)}
 /* inline detail（matrix.html 风格） */
@@ -389,7 +389,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
   <section class="floor" id="f-top">
     <div class="floor-hd">
       <div class="floor-title">总览</div>
-      <div class="floor-sub">算子开发者视角 · 4 大场景 · 近 7 次 Agentic 评测均值</div>
+      <div class="floor-sub">算子开发者视角 · 6 大场景 · 近 7 次 Agentic 评测均值</div>
       <div class="floor-line"></div>
       <span class="fchip on" style="cursor:default">A5 · 算子开发者</span>
     </div>
@@ -398,27 +398,27 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
       <!-- 整体健康评分 -->
       <div class="card jkpi">
         <div class="jkpi-l"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>整体健康评分</div>
-        <div class="jkpi-v" style="color:var(--gold-dark)">68<small>/100</small></div>
-        <div class="jkpi-foot"><span class="dlt dn"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg>4</span>vs 上期</div>
+        <div class="jkpi-v" style="color:var(--gold-dark)">65<small>/100</small></div>
+        <div class="jkpi-foot"><span class="dlt dn"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg>3</span>vs 上期</div>
       </div>
       <!-- 严重场景 -->
       <div class="card jkpi">
         <div class="jkpi-l"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>严重场景</div>
-        <div class="jkpi-v" style="color:var(--coral-dark)">2<small>个</small></div>
+        <div class="jkpi-v" style="color:var(--coral-dark)">3<small>个</small></div>
         <div class="jkpi-foot"><span class="dlt dn"><svg viewBox="0 0 24 24" stroke="currentColor"><polyline points="6 9 12 15 18 9"/></svg>1</span>较上期</div>
       </div>
       <!-- 活跃痛点 -->
       <div class="card jkpi">
         <div class="jkpi-l"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>活跃痛点</div>
-        <div class="jkpi-v">12<small>条</small></div>
-        <div class="jkpi-foot"><span class="dlt neu">8 条有行动</span>Next Step</div>
+        <div class="jkpi-v">18<small>条</small></div>
+        <div class="jkpi-foot"><span class="dlt neu">12 条有行动</span>Next Step</div>
       </div>
       <!-- 本期优先处理 -->
       <div class="card jkpi">
         <div class="jkpi-l"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>本期优先处理</div>
         <div class="chip-grp" style="margin:12px 0 auto">
+          <a class="mchip" href="#f-scene" onclick="setTimeout(()=>selScene(5),350)" style="text-decoration:none;cursor:pointer"><span class="dot" style="background:var(--coral)"></span>泛化 shape 性能优化</a>
           <a class="mchip" href="#f-scene" onclick="setTimeout(()=>selScene(0),350)" style="text-decoration:none;cursor:pointer"><span class="dot" style="background:var(--coral)"></span>算子复现部署</a>
-          <a class="mchip" href="#f-scene" onclick="setTimeout(()=>selScene(1),350)" style="text-decoration:none;cursor:pointer"><span class="dot" style="background:var(--coral)"></span>Builtin 算子定制</a>
         </div>
         <div class="jkpi-foot">评分 + 痛点密度排序</div>
       </div>
@@ -436,7 +436,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 
     <div class="card">
       <div style="overflow-x:auto">
-        <div id="tpHeatGrid" class="hm-grid" style="grid-template-columns:140px repeat(6,1fr) 80px;min-width:820px"></div>
+        <div id="tpHeatGrid" class="hm-grid" style="grid-template-columns:130px repeat(8,1fr) 70px;min-width:980px"></div>
       </div>
       <div id="tpDetail" style="display:none"></div>
     </div>
@@ -653,14 +653,15 @@ function tpHist(score,trend){
 }
 
 // ══════════ 场景体验矩阵：场景 × 旅程阶段（数据取自 scenarios[].agentSteps）══════════
-const STAGE_UNION=['感知学习','环境准备','环境验证','算子设计与实现','算子迁移','功能调测'];
+const STAGE_UNION=['感知学习','环境准备','环境验证','算子设计与实现','算子迁移','功能调测','性能分析','性能调优'];
 const STAGE_HEADER={'算子设计与实现':'设计实现'}; // 表头缩写
+const fmt10=s=>(s/10).toFixed(1); // 矩阵分数用十分制展示（底层仍 0-100 用于配色）
 function tpCellHtml(score,trend,clickAttr){
   const bg=heatColor(score),fg=textColor(score),bd=borderColor(score);
   const bgH=heatColorHover(score),bdH=borderColorHover(score);
-  const sum=!clickAttr; // 无点击 = 综合汇总格：去表情、数字加粗放大
+  const sum=!clickAttr; // 无点击 = 综合汇总格：数字加粗放大
   return `<div class="hm-cell${sum?' hm-overall':''}" ${clickAttr||''} style="background:${bg};color:${fg};border-color:${bd};--bg-hover:${bgH};--bd-hover:${bdH}">
-    <div class="cv">${sum?'':faceIcon(score)}${Math.round(score)}${trend?cellTrendSvg(trend):''}</div></div>`;
+    <div class="cv">${fmt10(score)}${trend?cellTrendSvg(trend):''}</div></div>`;
 }
 function _sceneStage(sc,stage){ return sc.agentSteps.find(st=>st.name===stage); }
 function renderTpMatrix(){
@@ -691,7 +692,7 @@ function selectStageCell(sceneId,stageIdx,el){
     const vbg=has?heatColor(s2.score):'var(--g2)', vfg=has?textColor(s2.score):'var(--g5)';
     return `<div class="tp-d-dim" style="background:${active?'rgba(106,103,206,.08)':'transparent'}">
       <div class="l">${STAGE_HEADER[sg]||sg}</div>
-      <div class="v" style="background:${vbg};color:${vfg}">${has?Math.round(s2.score):'–'}</div>
+      <div class="v" style="background:${vbg};color:${vfg}">${has?fmt10(s2.score):'–'}</div>
     </div>`;
   }).join('');
   const sparkTrend=sc.trendDir==='up'?'u':sc.trendDir==='dn'?'d':'f';
@@ -700,10 +701,10 @@ function selectStageCell(sceneId,stageIdx,el){
   det.className='tp-detail'; det.style.display='block';
   det.innerHTML=`
     <div class="tp-d-row">
-      <div class="tp-d-box" style="background:${bg};color:${fg}">${Math.round(st.score)}</div>
+      <div class="tp-d-box" style="background:${bg};color:${fg}">${fmt10(st.score)}</div>
       <div style="flex-shrink:0">
         <div class="tp-d-name">${sc.name} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${stage}</span></div>
-        <div class="tp-d-sub">场景综合 ${sc.score} · 点击其他格子切换阶段</div>
+        <div class="tp-d-sub">场景综合 ${fmt10(sc.score)} · 点击其他格子切换阶段</div>
       </div>
       <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px">
         <span style="font-size:11px;color:var(--text-3)">近 6 期</span>
@@ -985,8 +986,119 @@ const scenarios=[
       {vol:40, trend:'→持平', trendCls:'flat', text:'算子资料文档格式不规范、参数描述错误等多类内容错误，主要为低优先级遗留问题', src:'资料仓库 · 社区 issue · 社区开发者'},
     ]
   },
+  {
+    id:4, name:'特定 shape 性能优化', score:66, grade:'mid', gradeLabel:'待改善',
+    runs:[64,67,65,68,66,69,66], trend:2, trendDir:'up',
+    painCount:4, vodCount:28,
+    kpis:[
+      {l:'开发成功率', v:'70%', trend:'↑+3%', trendCls:'up', cls:'mid'},
+      {l:'平均复杂度（tokens消耗量）', v:'44', u:'万tok', trend:'→持平', trendCls:'flat', cls:'mid'},
+      {l:'平均任务执行时长', v:'24', u:'min', trend:'↓-2min', trendCls:'up', cls:'mid'},
+      {l:'用例执行通过率', v:'68%', trend:'↑+2%', trendCls:'up', cls:'mid'},
+    ],
+    agentSteps:[
+      {name:'感知学习', score:71, cls:'mid',
+       summary:'感知学习阶段性能调优相关资料基本可用，但缺少针对特定 shape 的调优范式与 profiling 指引。',
+       observations:['性能调优文档覆盖率 68%，缺少 shape 维度的针对性指引','profiling 工具上手文档较少，依赖经验','自助解决率 62%'],
+       metrics:[
+         {l:'文档覆盖率',     v:'68%',    trend:'↑+2%', trendCls:'up'},
+         {l:'调优范式可获取', v:'58%',    trend:'→持平', trendCls:'flat'},
+         {l:'profiling 指引', v:'55%',    trend:'↓-3%', trendCls:'dn'},
+         {l:'自助解决率',     v:'62%',    trend:'↑+2%', trendCls:'up'},
+       ]},
+      {name:'性能分析', score:64, cls:'mid',
+       summary:'性能分析环节工具链可用，但瓶颈定位仍偏人工，热点到代码的映射不够直接。',
+       observations:['热点定位到代码行的可映射率 61%','算子级 profiling 数据完整度 70%','瓶颈归因平均耗时 2.6 次迭代'],
+       metrics:[
+         {l:'瓶颈定位准确率', v:'66%',    trend:'↑+3%', trendCls:'up'},
+         {l:'热点可映射率',   v:'61%',    trend:'→持平', trendCls:'flat'},
+         {l:'profiling 完整度',v:'70%',   trend:'↑+2%', trendCls:'up'},
+         {l:'归因迭代次数',   v:'2.6 次', trend:'↓-0.3',trendCls:'up'},
+       ]},
+      {name:'性能调优', score:62, cls:'mid',
+       summary:'性能调优阶段特定 shape 可达成目标性能，但调优建议落地性一般，VEC/Cube 利用率提升依赖人工试错。',
+       observations:['目标性能达成率 72%，特定 shape 下可调到 1.0×','调优建议可直接落地比例 54%','平均调优轮次 3.4 次'],
+       metrics:[
+         {l:'目标性能达成率', v:'72%',    trend:'↑+4%', trendCls:'up'},
+         {l:'建议可落地率',   v:'54%',    trend:'→持平', trendCls:'flat'},
+         {l:'核心利用率提升', v:'+12%',   trend:'↑+3%', trendCls:'up'},
+         {l:'平均调优轮次',   v:'3.4 次', trend:'↑+0.2',trendCls:'dn'},
+       ]},
+    ],
+    tools:[
+      {name:'Profiler',rate:'78%',cls:'ok'},{name:'OpAnalyzer',rate:'66%',cls:'warn'},
+      {name:'TuneAdvisor',rate:'54%',cls:'crit'},{name:'PerfCheck',rate:'82%',cls:'ok'},
+    ],
+    pains:[
+      {cat:'tool', score:74, text:'调优建议可操作性不足，VEC/Cube ratio 提示不够具体，开发者需反复试错', meta:'腾讯 | 工具链分队 | 优先级：中', status:'规划中', statusCls:'planned', nextStep:'调优建议可操作化改造，输出 shape 维度调优范式（Q3）'},
+      {cat:'doc', score:60, text:'特定 shape 调优缺少范式与最佳实践文档，profiling 上手门槛偏高', meta:'蚂蚁 | 资料分队 | 优先级：中', status:'规划中', statusCls:'planned', nextStep:'补充 shape 调优范式与 profiling 教程'},
+    ],
+    vods:[
+      {vol:28, trend:'→持平', trendCls:'flat', text:'特定 shape 下性能可达标，但调优过程依赖人工经验、工具建议落地性不足', src:'算子仓 · 社区 issue · 社区开发者'},
+    ]
+  },
+  {
+    id:5, name:'泛化 shape 性能优化', score:52, grade:'bad', gradeLabel:'严重',
+    runs:[56,54,53,51,50,52,52], trend:-3, trendDir:'dn',
+    painCount:7, vodCount:45,
+    kpis:[
+      {l:'开发成功率', v:'56%', trend:'↓-4%', trendCls:'dn', cls:'bad'},
+      {l:'平均复杂度（tokens消耗量）', v:'58', u:'万tok', trend:'↑+5万', trendCls:'dn', cls:'bad'},
+      {l:'平均任务执行时长', v:'36', u:'min', trend:'↑+4min', trendCls:'dn', cls:'bad'},
+      {l:'用例执行通过率', v:'54%', trend:'↓-3%', trendCls:'dn', cls:'bad'},
+    ],
+    agentSteps:[
+      {name:'感知学习', score:58, cls:'bad',
+       summary:'感知学习阶段泛化 shape 调优缺乏体系化方法论，开发者难以建立覆盖多 shape 的调优认知。',
+       observations:['泛化调优方法论文档覆盖率 48%','多 shape 覆盖的范式样例稀缺','自助解决率仅 44%，强依赖专家'],
+       metrics:[
+         {l:'文档覆盖率',       v:'52%',    trend:'↓-4%', trendCls:'dn'},
+         {l:'方法论可获取',     v:'48%',    trend:'↓-6%', trendCls:'dn'},
+         {l:'多 shape 样例',    v:'42%',    trend:'↓-5%', trendCls:'dn'},
+         {l:'自助解决率',       v:'44%',    trend:'↓-3%', trendCls:'dn'},
+       ]},
+      {name:'性能分析', score:51, cls:'bad',
+       summary:'性能分析在多 shape 下数据爆炸，缺少聚合视图，瓶颈在不同 shape 间差异大、难以统一归因。',
+       observations:['多 shape profiling 缺少聚合视图，分析成本高','shape 间瓶颈一致性差，归因难复用','分析自动化覆盖率仅 38%'],
+       metrics:[
+         {l:'瓶颈定位准确率', v:'54%',    trend:'↓-3%', trendCls:'dn'},
+         {l:'分析自动化覆盖', v:'38%',    trend:'↓-4%', trendCls:'dn'},
+         {l:'归因可复用率',   v:'40%',    trend:'→持平', trendCls:'flat'},
+         {l:'平均分析耗时',   v:'22 min', trend:'↑+3min',trendCls:'dn'},
+       ]},
+      {name:'性能调优', score:48, cls:'bad',
+       summary:'泛化 shape 调优最难：单点调优易顾此失彼，整体达标率低，缺少自动泛化的调优策略。',
+       observations:['全 shape 集合性能达标率仅 46%','单 shape 调优后其它 shape 回退率 32%','缺少自动泛化调优策略，平均调优轮次 5.1 次'],
+       metrics:[
+         {l:'整体达标率',     v:'46%',    trend:'↓-5%', trendCls:'dn'},
+         {l:'调优回退率',     v:'32%',    trend:'↑+4%', trendCls:'dn'},
+         {l:'建议可落地率',   v:'44%',    trend:'↓-3%', trendCls:'dn'},
+         {l:'平均调优轮次',   v:'5.1 次', trend:'↑+0.6',trendCls:'dn'},
+       ]},
+      {name:'功能调测', score:60, cls:'mid',
+       summary:'功能调测在泛化场景下精度基本可控，但多 shape 用例量大，回归验证成本高。',
+       observations:['精度通过率 79%，多 shape 偶发边界精度问题','回归用例规模大，自动化覆盖 62%'],
+       metrics:[
+         {l:'精度通过率',     v:'79%',    trend:'→持平', trendCls:'flat'},
+         {l:'回归自动化覆盖', v:'62%',    trend:'↑+2%', trendCls:'up'},
+         {l:'平均调测耗时',   v:'14 min', trend:'↑+1min',trendCls:'dn'},
+       ]},
+    ],
+    tools:[
+      {name:'Profiler',rate:'74%',cls:'ok'},{name:'ShapeSweep',rate:'48%',cls:'crit'},
+      {name:'TuneAdvisor',rate:'46%',cls:'crit'},{name:'AccuracyCheck',rate:'88%',cls:'ok'},
+    ],
+    pains:[
+      {cat:'tool', score:90, text:'缺少自动泛化的调优策略，单 shape 调优后其它 shape 性能回退，需大量人工兜底', meta:'盘古 · 讯飞 | 工具链分队 | 优先级：高', status:'特性开发中', statusCls:'progress', nextStep:'立项自动泛化调优策略，先覆盖高频 shape 集合（Q3）'},
+      {cat:'tool', score:78, text:'多 shape profiling 缺少聚合分析视图，瓶颈归因难复用，分析成本高', meta:'蚂蚁 | 工具链分队 | 优先级：高', status:'规划中', statusCls:'planned', nextStep:'profiling 增加多 shape 聚合视图与归因复用'},
+    ],
+    vods:[
+      {vol:45, trend:'↑+6', trendCls:'dn', text:'泛化 shape 性能优化难度大，单点调优顾此失彼，缺自动化策略，强依赖专家兜底', src:'算子仓 · 社区 issue · 社区开发者'},
+      {vol:33, trend:'↑+4', trendCls:'dn', text:'多 shape 调优工具链能力不足，profiling 数据难聚合分析', src:'工具链仓 · 社区 issue · 社区开发者'},
+    ]
+  },
 ];
-const catalogOrder=[0,2,1,3]; // 复现部署→迁移部署→Builtin定制→基本功能实现
+const catalogOrder=[0,2,1,3,4,5]; // 复现部署→迁移部署→Builtin定制→基本功能实现→特定shape优化→泛化shape优化
 const meanScore=Math.round(scenarios.reduce((a,s)=>a+s.score,0)/scenarios.length);
 let sortMode='score';
 
@@ -1208,10 +1320,21 @@ function renderCompMatrix(){
   rows.forEach(row=>{
     const dotG=row.overallCls==='bad'?'rgba(230,56,56,.2)':row.overallCls==='mid'?'rgba(253,154,0,.2)':'rgba(55,197,151,.2)';
     html+=`<div class="hm-row-label"><div class="rl-dot" style="background:${GRADE_COLOR[row.overallCls]};box-shadow:0 0 0 2px ${dotG}"></div><div>${row.sceneName}</div></div>`;
-    COMP_CATS.forEach(([k])=>{ const c=row.cells[k]; html+=tpCellHtml(c.s,c.t,`onclick="selectCompCell(${row.id},'${k}',this)"`); });
+    COMP_CATS.forEach(([k])=>{ const c=row.cells[k]; html+=tpCellHtml(c.s,c.t,`onclick="selectCompCell(${row.id},'${k}',this)" data-cid="${row.id}" data-k="${k}"`); });
     html+=tpCellHtml(row.overallScore,null,null);
   });
   grid.innerHTML=html;
+  if(_compSel){const el=grid.querySelector(`.hm-cell[data-cid="${_compSel.cid}"][data-k="${_compSel.k}"]`); if(el) el.classList.add('hm-sel');}
+}
+let _compSel=null;
+function compDefaultSelect(){
+  let worst=touchpointData[0]; touchpointData.forEach(r=>{ if(r.overallScore<worst.overallScore) worst=r; });
+  // 优先选有评分制度明细的维度里最差的那个，保证默认详情有内容
+  const rubKeys=new Set(SCORE_RUBRIC.map(r=>r.key));
+  let wk=null,wv=999; COMP_CATS.forEach(([k])=>{ if(!rubKeys.has(k))return; const s=worst.cells[k].s; if(s<wv){wv=s;wk=k;} });
+  if(!wk){ COMP_CATS.forEach(([k])=>{ const s=worst.cells[k].s; if(s<wv){wv=s;wk=k;} }); }
+  const el=document.querySelector(`#compHeatGrid .hm-cell[data-cid="${worst.id}"][data-k="${wk}"]`);
+  if(el) selectCompCell(worst.id,wk,el); else compDetailReset();
 }
 function compDetailReset(){
   const det=document.getElementById('compDetail'); if(!det)return;
@@ -1220,23 +1343,24 @@ function compDetailReset(){
 function selectCompCell(sceneId,k,el){
   document.querySelectorAll('#compHeatGrid .hm-cell').forEach(c=>c.classList.remove('hm-sel'));
   el.classList.add('hm-sel');
+  _compSel={cid:sceneId,k};
   const row=touchpointData.find(r=>r.id===sceneId), c=row.cells[k];
   const label=(COMP_CATS.find(x=>x[0]===k)||[])[1]||k;
   const bg=heatColor(c.s),fg=textColor(c.s);
   const dimsHtml=COMP_CATS.concat([['__overall','综合']]).map(([dk,dl])=>{
     const sc=dk==='__overall'?row.overallScore:row.cells[dk].s, active=dk===k;
     return `<div class="tp-d-dim" style="background:${active?'rgba(106,103,206,.08)':'transparent'}">
-      <div class="l">${dl}</div><div class="v" style="background:${heatColor(sc)};color:${textColor(sc)}">${Math.round(sc)}</div>
+      <div class="l">${dl}</div><div class="v" style="background:${heatColor(sc)};color:${textColor(sc)}">${fmt10(sc)}</div>
     </div>`;
   }).join('');
   const sparkColor=c.t==='u'?'#6DBD9A':c.t==='d'?'#E89494':'#AAAAAA';
   const det=document.getElementById('compDetail');
   det.innerHTML=`
     <div class="tp-d-row">
-      <div class="tp-d-box" style="background:${bg};color:${fg}">${Math.round(c.s)}</div>
+      <div class="tp-d-box" style="background:${bg};color:${fg}">${fmt10(c.s)}</div>
       <div style="flex-shrink:0">
         <div class="tp-d-name">${row.sceneName} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${label}</span></div>
-        <div class="tp-d-sub">综合 ${row.overallScore} · 点击其他格子切换维度</div>
+        <div class="tp-d-sub">综合 ${fmt10(row.overallScore)} · 点击其他格子切换维度</div>
       </div>
       <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px">
         <span style="font-size:11px;color:var(--text-3)">近 6 期</span>
@@ -1258,9 +1382,9 @@ function _compScoreBreakdown(k,base){
       const items=g.items.map((it,i)=>({name:it[0],metric:it[1],sv:_itemScore(base,salt+gi*7,i)}));
       const avg=Math.round(items.reduce((a,x)=>a+x.sv,0)/items.length), cls=_clsOf(avg), isLast=gi===r.groups.length-1;
       const cards=items.map(x=>{const mn=x.metric.split(/[=（(]/)[0].trim();
-        return `<div class="step-metric" title="${x.name}｜${x.metric}"><div class="step-metric-lbl">${mn}</div><div class="step-metric-bottom"><span class="step-metric-val" style="color:${textColor(x.sv)}">${x.sv}</span></div></div>`;}).join('');
+        return `<div class="step-metric" title="${x.name}｜${x.metric}"><div class="step-metric-lbl">${mn}</div><div class="step-metric-bottom"><span class="step-metric-val" style="color:${textColor(x.sv)}">${fmt10(x.sv)}</span></div></div>`;}).join('');
       return `<div class="step-tl-item">
-        <div class="step-tl-node"><div class="step-tl-dot ${cls}">${stepRing(avg,cls)}<span class="sd-num">${avg}</span></div>${isLast?'':'<div class="step-tl-line"></div>'}</div>
+        <div class="step-tl-node"><div class="step-tl-dot ${cls}">${stepRing(avg,cls)}<span class="sd-num">${fmt10(avg)}</span></div>${isLast?'':'<div class="step-tl-line"></div>'}</div>
         <div class="step-tl-body${isLast?' last':''}">
           <div class="step-tl-hdr"><span class="step-tl-name">${g.sub}</span><span class="rub-cnt" style="margin-left:2px">${items.length} 项</span></div>
           <div class="step-metrics">${cards}</div>
@@ -1344,7 +1468,7 @@ function setView(v){
   document.getElementById('view-component').style.display=journey?'none':'block';
   document.getElementById('vchip-journey').classList.toggle('on',journey);
   document.getElementById('vchip-component').classList.toggle('on',!journey);
-  if(!journey && !_compInited){ renderCompMatrix(); compDetailReset(); _compInited=true; }
+  if(!journey && !_compInited){ renderCompMatrix(); compDefaultSelect(); _compInited=true; }
   window.scrollTo({top:0});
 }
 
