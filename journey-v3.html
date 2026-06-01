@@ -183,7 +183,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .ev-chip.gray{background:var(--g1);color:var(--text-3)}
 .ev-chip-btn{cursor:pointer;transition:filter .12s,box-shadow .12s}
 .ev-chip-btn:hover{filter:brightness(.96);box-shadow:0 2px 8px rgba(30,60,120,.14)}
-.step-ev-btn{margin-left:6px;font-family:inherit;font-size:10px;font-weight:700;color:var(--text-3);background:var(--g1);border:1px solid var(--border);border-radius:999px;padding:3px 9px;cursor:pointer;white-space:nowrap;transition:all .12s}
+.step-ev-btn{margin-left:auto;font-family:inherit;font-size:10px;font-weight:700;color:var(--text-3);background:var(--g1);border:1px solid var(--border);border-radius:999px;padding:3px 9px;cursor:pointer;white-space:nowrap;transition:all .12s}
 .step-ev-btn:hover{color:var(--primary);border-color:var(--blue-soft);background:var(--blue-light)}
 
 /* evidence preview popover (痛点 / VOD) */
@@ -221,20 +221,15 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .step-tl{display:flex;flex-direction:column}
 .step-tl-item{display:flex;gap:13px}
 .step-tl-node{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
-.step-tl-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;border:2px solid;font-variant-numeric:tabular-nums}
-.step-tl-dot.bad{background:var(--coral-light);border-color:var(--coral);color:var(--coral-dark)}
-.step-tl-dot.mid{background:var(--gold-light);border-color:var(--gold);color:var(--gold-dark)}
-.step-tl-dot.ok{background:var(--green-light);border-color:var(--green);color:var(--green-dark)}
+.step-tl-dot{position:relative;width:42px;height:42px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.step-tl-dot svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.step-tl-dot .sd-num{font-size:12.5px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.step-tl-dot.bad .sd-num{color:var(--coral-dark)}.step-tl-dot.mid .sd-num{color:var(--gold-dark)}.step-tl-dot.ok .sd-num{color:var(--green-dark)}
 .step-tl-line{width:2px;flex:1;margin:3px 0;border-radius:2px;background:var(--g3)}
 .step-tl-body{padding-bottom:20px;flex:1;min-width:0}
 .step-tl-body.last{padding-bottom:2px}
 .step-tl-hdr{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .step-tl-name{font-size:13px;font-weight:800;white-space:nowrap}
-.as-bar-track{flex:1;height:7px;border-radius:99px;background:var(--g2);overflow:hidden;min-width:40px}
-.as-bar-fill{height:100%;border-radius:99px}
-.as-bar-fill.bad{background:linear-gradient(90deg,#FC636B,#FF8AA3)}.as-bar-fill.mid{background:linear-gradient(90deg,#FD9A00,#FFB900)}.as-bar-fill.ok{background:linear-gradient(90deg,#37C597,#3BE8B0)}
-.as-score{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
-.as-score.bad{color:var(--coral-dark)}.as-score.mid{color:var(--gold-dark)}.as-score.ok{color:var(--green-dark)}
 .as-summary{font-size:11.5px;line-height:1.6;color:var(--text-2);font-weight:500;background:var(--g1);border-radius:8px;padding:9px 12px;margin-bottom:8px}
 .as-summary b{color:var(--text);font-weight:800;margin-right:6px}
 .as-obs{margin-bottom:9px}
@@ -810,6 +805,11 @@ function sparkSvg(data,w,h,color){
   const pts=data.map((v,i)=>`${(i/(data.length-1))*w},${h-2-((v-min)/range)*(h-5)}`).join(' ');
   return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${w}" cy="${h-2-((data[data.length-1]-min)/range)*(h-5)}" r="2.5" fill="${color}"/></svg>`;
 }
+// step score → 环形进度图（环形 + 中心数字由 .sd-num 叠加）
+function stepRing(score,cls){
+  const col={bad:'#FC636B',mid:'#FD9A00',ok:'#37C597'}[cls]||'#6E9BF0';
+  return `<svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--g2)" stroke-width="3.4"/><circle cx="18" cy="18" r="15.5" fill="none" stroke="${col}" stroke-width="3.4" stroke-linecap="round" pathLength="100" stroke-dasharray="${score} 100"/></svg>`;
+}
 
 // ── scene list ──
 function setSort(mode){
@@ -877,11 +877,9 @@ function selScene(id){
           <div class="step-metric-bottom"><span class="step-metric-val">${m.v}</span><span class="step-metric-trend ${m.trendCls}">${m.trend}</span></div>
         </div>`).join('')}</div>`:'';
       return `<div class="step-tl-item">
-        <div class="step-tl-node"><div class="step-tl-dot ${st.cls}">${st.score}</div>${isLast?'':'<div class="step-tl-line"></div>'}</div>
+        <div class="step-tl-node"><div class="step-tl-dot ${st.cls}">${stepRing(st.score,st.cls)}<span class="sd-num">${st.score}</span></div>${isLast?'':'<div class="step-tl-line"></div>'}</div>
         <div class="step-tl-body${isLast?' last':''}">
           <div class="step-tl-hdr"><span class="step-tl-name">${st.name}</span>
-            <div class="as-bar-track"><div class="as-bar-fill ${st.cls}" style="width:${st.score}%"></div></div>
-            <span class="as-score ${st.cls}">${st.score}%</span>
             <button class="step-ev-btn" onmouseenter="showEvPop(${s.id},this)" onmouseleave="scheduleHideEvPop()" onclick="showEvPop(${s.id},this,null,true)">痛点·VOD ›</button></div>
           <div class="as-summary"><b>总结</b>${st.summary}</div>
           ${st.observations&&st.observations.length?`<div class="as-obs"><b>Agent 观测</b><div class="as-obs-list">${st.observations.map(o=>`<div class="as-obs-item">${o}</div>`).join('')}</div></div>`:''}
