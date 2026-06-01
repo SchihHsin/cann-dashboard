@@ -155,7 +155,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .hm-cell.hm-sel{border-color:var(--purple);box-shadow:0 0 0 3px rgba(106,103,206,.15);transform:scale(1.06);z-index:1}
 .hm-cell.hm-overall{cursor:default;border-color:var(--border-2)}
 .hm-cell.hm-overall .cv{font-size:16px;font-weight:900}
-.hm-header.sum{background:var(--blue-light);border-color:var(--blue-soft);color:var(--blue-deep);font-weight:800}
+.hm-header.sum{background:var(--g2);border-color:var(--border-2);color:var(--text-2);font-weight:800}
 .hm-cell.hm-empty{cursor:default;background:var(--g1);border-style:dashed;border-color:var(--g3);color:var(--g5);font-family:inherit}
 .hm-cell.hm-empty .cv{font-size:13px;font-weight:600}
 .hm-legend{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-3);font-weight:500}
@@ -193,6 +193,12 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .rub-metric{color:var(--text-2);font-weight:500}
 .rub-rule{color:var(--text-2);font-weight:600}
 .rub-todo{font-size:12px;color:var(--text-3);padding:20px;text-align:center;background:var(--g1);border:1px dashed var(--border-2);border-radius:8px}
+/* 组件评分详情·逐项结果 */
+.cs-wrap{margin-top:14px;border-top:1px dashed var(--border-2);padding-top:14px}
+.cs-head,.cs-row{display:grid;grid-template-columns:1.15fr 1.7fr 56px;gap:12px;align-items:center;padding:8px 12px}
+.cs-head{font-size:10px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.04em}
+.cs-row{border-top:1px solid var(--g2);font-size:11.5px;line-height:1.45}
+.cs-score{justify-self:end;min-width:44px;text-align:center;padding:3px 6px;border-radius:6px;font-weight:800;font-variant-numeric:tabular-nums;font-family:'JetBrains Mono','PingFang SC',monospace}
 
 /* ═══════════ FLOOR 3 scene deep-dive ═══════════ */
 .scene-list-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -361,7 +367,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 <!-- filter -->
 <div class="filter-bar">
   <span class="fl-lbl">视图</span>
-  <span class="fchip on" id="vchip-journey" onclick="setView('journey',this)">旅程</span>
+  <span class="fchip on" id="vchip-journey" onclick="setView('journey',this)">场景</span>
   <span class="fchip" id="vchip-component" onclick="setView('component',this)">组件</span>
   <div class="fl-sep"></div>
   <span class="fl-lbl">芯片</span>
@@ -541,23 +547,10 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
   <section class="floor">
     <div class="floor-hd">
       <div class="floor-title">组件评分详情</div>
-      <div class="floor-sub">点击上方矩阵选择组件查看</div>
+      <div class="floor-sub">点击矩阵格子查看该组件在该维度下的逐项评分结果</div>
       <div class="floor-line"></div>
     </div>
     <div class="card" id="compDetail"></div>
-  </section>
-
-  <!-- ════════ 组件 · 组件评分制度 ════════ -->
-  <section class="floor">
-    <div class="floor-hd">
-      <div class="floor-title">组件评分制度</div>
-      <div class="floor-sub">各评分维度的检查项 · 量化指标 · 打分规则</div>
-      <div class="floor-line"></div>
-    </div>
-    <div class="card">
-      <div class="rub-switch" id="rubSwitch"></div>
-      <div id="rubBody"></div>
-    </div>
   </section>
 
  </div><!-- /view-component -->
@@ -1251,7 +1244,20 @@ function selectCompCell(sceneId,k,el){
       </div>
       <div class="tp-d-dims">${dimsHtml}</div>
     </div>
-    <div class="tp-d-obs">${c.obs&&c.obs.length?c.obs.map(o=>`<div class="tp-d-obs-item">${o}</div>`).join(''):`<div class="tp-d-obs-item" style="color:var(--text-3)">评分详情内容待补充（占位）。</div>`}</div>`;
+    ${_compScoreBreakdown(k,c.s)}`;
+}
+// 逐项评分结果（依评分制度的检查项，按当前维度分给该组件的得分；模拟，围绕维度分浮动）
+function _itemScore(base,salt,i){const seed=((salt*13+i*29)%19)-9;return Math.max(8,Math.min(99,Math.round(base+seed)));}
+function _compScoreBreakdown(k,base){
+  const r=SCORE_RUBRIC.find(x=>x.key===k);
+  if(!r) return `<div class="cs-wrap"><div class="rub-todo">该维度逐项评分明细待补充。</div></div>`;
+  let salt=0; for(let i=0;i<k.length;i++) salt+=k.charCodeAt(i);
+  return `<div class="cs-wrap">`+r.groups.map((g,gi)=>`
+    <div class="rub-group">
+      <div class="rub-group-hd"><span class="rub-badge">${g.sub}</span><span class="rub-cnt">${g.items.length} 项</span></div>
+      <div class="cs-head"><div>检查项</div><div>量化指标</div><div>得分</div></div>
+      ${g.items.map((it,i)=>{const sv=_itemScore(base,salt+gi*7,i);return `<div class="cs-row"><div class="rub-chk">${it[0]}</div><div class="rub-metric">${it[1]}</div><div class="cs-score" style="background:${heatColor(sv)};color:${textColor(sv)}">${sv}</div></div>`;}).join('')}
+    </div>`).join('')+`</div>`;
 }
 
 // ══════════ 组件评分制度（整理自 reference/组件评分制度.CSV）══════════
@@ -1321,25 +1327,6 @@ const SCORE_RUBRIC=[
     ]},
   ]},
 ];
-let _rubKey='doc';
-function renderRubric(key){
-  _rubKey=key;
-  const sw=document.getElementById('rubSwitch'); if(!sw)return;
-  const defined=new Set(SCORE_RUBRIC.map(r=>r.key));
-  sw.innerHTML=COMP_CATS.map(([k,l])=>{
-    const has=defined.has(k);
-    return `<button class="rub-chip${k===key&&has?' on':''}${has?'':' todo'}" ${has?`onclick="renderRubric('${k}')"`:''}>${l}${has?'':' ·待补充'}</button>`;
-  }).join('');
-  const r=SCORE_RUBRIC.find(x=>x.key===key);
-  const body=document.getElementById('rubBody');
-  if(!r){ body.innerHTML=`<div class="rub-todo">该维度评分标准待补充。</div>`; return; }
-  body.innerHTML=`<div class="rub-note">${r.note}</div>`+r.groups.map(g=>`
-    <div class="rub-group">
-      <div class="rub-group-hd"><span class="rub-badge">${g.sub}</span><span class="rub-cnt">${g.items.length} 项</span></div>
-      <div class="rub-head"><div>检查项</div><div>量化指标</div><div>打分规则</div></div>
-      ${g.items.map(([chk,metric,rule])=>`<div class="rub-row"><div class="rub-chk">${chk}</div><div class="rub-metric">${metric}</div><div class="rub-rule">${rule}</div></div>`).join('')}
-    </div>`).join('');
-}
 
 // ── 视图切换（旅程 / 组件）──
 let _compInited=false;
@@ -1349,7 +1336,7 @@ function setView(v){
   document.getElementById('view-component').style.display=journey?'none':'block';
   document.getElementById('vchip-journey').classList.toggle('on',journey);
   document.getElementById('vchip-component').classList.toggle('on',!journey);
-  if(!journey && !_compInited){ renderCompMatrix(); compDetailReset(); renderRubric('doc'); _compInited=true; }
+  if(!journey && !_compInited){ renderCompMatrix(); compDetailReset(); _compInited=true; }
   window.scrollTo({top:0});
 }
 
