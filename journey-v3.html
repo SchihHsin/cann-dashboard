@@ -111,21 +111,13 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .mchip .dot{width:6px;height:6px;border-radius:50%}
 
 /* ═══════════ JOURNEY: FLOOR 1 hero KPI ═══════════ */
-/* glass refraction stage — gradient backdrop makes the translucent cards refract */
-.glass-stage{position:relative;overflow:hidden;border-radius:var(--radius-l);padding:16px;
-  border:1px solid rgba(255,255,255,.7);box-shadow:var(--shadow);
-  background:radial-gradient(circle at 82% 14%,rgba(161,119,255,.22),transparent 46%),
-             radial-gradient(circle at 10% 92%,rgba(46,107,230,.16),transparent 44%),
-             linear-gradient(135deg,#E9E6FF 0%,#E3EEFF 55%,#EAF6FF 100%)}
-.glass-stage::before{content:'';position:absolute;right:-50px;top:-60px;width:300px;height:300px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,255,255,.55),transparent 70%);pointer-events:none}
-.glass-stage .grid4{position:relative;z-index:1}
-.card.jkpi{background:linear-gradient(135deg,rgba(255,255,255,.62),rgba(255,255,255,.38));
+/* frosted-glass KPI cards (translucent + backdrop blur + diagonal sheen) */
+.card.jkpi{background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,255,255,.48));
   backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);
-  border:1px solid rgba(255,255,255,.85);
-  box-shadow:0 6px 22px rgba(60,80,160,.12),inset 0 1px 0 rgba(255,255,255,.85);overflow:hidden}
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 6px 22px rgba(60,80,160,.10),inset 0 1px 0 rgba(255,255,255,.85);overflow:hidden}
 .card.jkpi::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
-  background:linear-gradient(135deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 42%)}
+  background:linear-gradient(135deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,0) 42%)}
 .card.jkpi>*{position:relative;z-index:1}
 .jkpi{display:flex;flex-direction:column;min-height:120px}
 .jkpi-l{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--text-3)}
@@ -354,7 +346,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
       <span class="fchip on" style="cursor:default">A5 · 算子开发者</span>
     </div>
 
-    <div class="glass-stage"><div class="grid4">
+    <div class="grid4">
       <!-- 整体健康评分 -->
       <div class="card jkpi">
         <div class="jkpi-l"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>整体健康评分</div>
@@ -382,7 +374,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
         </div>
         <div class="jkpi-foot">评分 + 痛点密度排序</div>
       </div>
-    </div></div>
+    </div>
   </section>
 
   <!-- ════════ FLOOR 2 · 触点体验矩阵 ════════ -->
