@@ -1359,6 +1359,27 @@ function _dimGroupsHtml(k,dscore){
     return `<div class="cs-sub"><span class="rub-badge">${g.sub}</span><span class="rub-cnt">${g.items.length} 项</span></div><div class="step-metrics" style="margin-bottom:8px">${cards}</div>`;
   }).join('');
 }
+// 维度级总结 + 分析（由各检查项得分自动生成：最弱子维度 + 最低的几项）
+function _dimAnalysis(compName,k,dscore){
+  const dimLabel=(COMP_CATS.find(x=>x[0]===k)||[])[1]||k;
+  const r=SCORE_RUBRIC.find(x=>x.key===k);
+  if(!r) return {summary:`${dimLabel}维度暂无评分制度明细，综合 ${fmt10(dscore)} 分；待补充检查项后细化分析。`,obs:[]};
+  let salt=0; for(let i=0;i<k.length;i++) salt+=k.charCodeAt(i);
+  const all=[]; const subAvg={};
+  r.groups.forEach((g,gi)=>{ let sum=0; g.items.forEach((it,i)=>{const sv=_itemScore(dscore,salt+gi*7,i);all.push({sub:g.sub,name:it[0],metric:it[1],sv});sum+=sv;}); subAvg[g.sub]=sum/g.items.length; });
+  const worst=[...all].sort((a,b)=>a.sv-b.sv).slice(0,3);
+  const weakSub=Object.keys(subAvg).sort((a,b)=>subAvg[a]-subAvg[b])[0];
+  let summary;
+  if(dscore<50) summary=`${dimLabel}是 ${compName} 的明显短板（${fmt10(dscore)} 分），其中「${weakSub}」最弱，多项检查项不达标，建议优先补齐。`;
+  else if(dscore<70) summary=`${dimLabel}整体可用（${fmt10(dscore)} 分），但「${weakSub}」偏弱，仍有提升空间。`;
+  else summary=`${dimLabel}表现良好（${fmt10(dscore)} 分），主要检查项达标，「${weakSub}」相对略低、可继续巩固。`;
+  const obs=worst.map(w=>`「${w.name}」仅 ${fmt10(w.sv)} 分（${w.metric.split(/[=（(]/)[0].trim()}）`);
+  return {summary,obs};
+}
+function _dimAnalysisHtml(compName,k,dscore){
+  const a=_dimAnalysis(compName,k,dscore);
+  return `<div class="as-summary" style="margin-top:4px"><b>总结</b>${a.summary}</div>${a.obs.length?`<div class="as-obs"><b>分析</b><div class="as-obs-list">${a.obs.map(o=>`<div class="as-obs-item">${o}</div>`).join('')}</div></div>`:''}`;
+}
 // 点格子 → 当前楼层展开该（组件×维度）格子的明细
 function selectCompCell(sceneId,k,el){
   document.querySelectorAll('#compHeatGrid .hm-cell').forEach(c=>c.classList.remove('hm-sel'));
@@ -1388,7 +1409,8 @@ function selectCompCell(sceneId,k,el){
       <div class="tp-d-dims">${dimsHtml}</div>
     </div>
     <div class="agent-lbl" style="margin-top:16px">评分明细 · ${label} 维度逐项打分</div>
-    ${_dimRingTimeline(k,c.s)}`;
+    ${_dimRingTimeline(k,c.s)}
+    ${_dimAnalysisHtml(row.sceneName,k,c.s)}`;
 }
 // 单维度的子维度环形时间线（格子明细用：每个子维度一个环形分 + 检查项卡）
 function _dimRingTimeline(k,base){
@@ -1422,7 +1444,7 @@ function renderCompDeep(sceneId){
     const dscore=row.cells[k].s, cls=_clsOf(dscore), isLast=di===COMP_CATS.length-1;
     return `<div class="step-tl-item">
       <div class="step-tl-node"><div class="step-tl-dot ${cls}">${stepRing(dscore,cls)}<span class="sd-num">${fmt10(dscore)}</span></div>${isLast?'':'<div class="step-tl-line"></div>'}</div>
-      <div class="step-tl-body${isLast?' last':''}"><div class="step-tl-hdr"><span class="step-tl-name">${label}</span></div>${_dimGroupsHtml(k,dscore)}</div></div>`;
+      <div class="step-tl-body${isLast?' last':''}"><div class="step-tl-hdr"><span class="step-tl-name">${label}</span></div>${_dimGroupsHtml(k,dscore)}${_dimAnalysisHtml(row.sceneName,k,dscore)}</div></div>`;
   }).join('');
   det.innerHTML=`
     <div class="det-hd">
