@@ -460,7 +460,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
         <button class="sort-btn" id="sortCatalog" onclick="setSort('catalog')">目录顺序</button>
       </div>
     </div>
-    <div id="sceneListCards" style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:14px"></div>
+    <div id="sceneListCards" style="display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,1fr);gap:12px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px"></div>
 
     <!-- scene detail -->
     <div class="card" id="sceneDetail">
