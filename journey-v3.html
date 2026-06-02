@@ -158,6 +158,8 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 .hm-header.sum{background:var(--g2);border-color:var(--border-2);color:var(--text-2);font-weight:800}
 .hm-cell.hm-empty{cursor:default;background:var(--g1);border-style:dashed;border-color:var(--g3);color:var(--g5);font-family:inherit}
 .hm-cell.hm-empty .cv{font-size:12px;font-weight:600}
+.hm-row-label.rl-click{cursor:pointer;transition:border-color .12s,background .12s}
+.hm-row-label.rl-click:hover{border-color:var(--blue-soft);background:var(--blue-light)}
 .hm-row-label.rl-sel{border-color:var(--purple);background:var(--purple-light)}
 .hm-legend{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-3);font-weight:500}
 .hm-grad{width:120px;height:8px;border-radius:4px;background:linear-gradient(90deg,#FFB9B9 0%,#FFD7B7 35%,#FFF2A5 55%,#C4F3E1 75%,#94E1C8 100%)}
@@ -530,7 +532,7 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
   <section class="floor">
     <div class="floor-hd">
       <div class="floor-title">组件体验矩阵</div>
-      <div class="floor-sub">组件 × 评分维度（资料 / API / 源码 / 工具 / 版本 / 运行反馈 / 社区）· 点击组件查看评分详情</div>
+      <div class="floor-sub">点击格子看单维度明细 · 点击组件名看完整评分</div>
       <div class="floor-line"></div>
       <div class="sort-toggle" style="margin-right:12px">
         <button class="sort-btn on" id="compSortAlpha" onclick="setCompSort('alpha')">字母</button>
@@ -544,6 +546,16 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
       </div>
       <div id="compDetail" style="display:none"></div>
     </div>
+  </section>
+
+  <!-- ════════ 组件 · 组件评分详情（点组件名展开整组件）════════ -->
+  <section class="floor" id="f-compdeep">
+    <div class="floor-hd">
+      <div class="floor-title">组件评分详情</div>
+      <div class="floor-sub">点击上方组件名查看该组件完整评分与分析</div>
+      <div class="floor-line"></div>
+    </div>
+    <div class="card" id="compDeep"></div>
   </section>
 
  </div><!-- /view-component -->
@@ -663,7 +675,7 @@ function renderTpMatrix(){
   html+=STAGE_UNION.map(s=>`<div class="hm-header">${STAGE_HEADER[s]||s}</div>`).join('')+`<div class="hm-header sum">综合</div>`;
   scenarios.forEach(sc=>{
     const dotG=sc.grade==='bad'?'rgba(230,56,56,.2)':sc.grade==='mid'?'rgba(253,154,0,.2)':'rgba(55,197,151,.2)';
-    html+=`<div class="hm-row-label"><div class="rl-dot" style="background:${GRADE_COLOR[sc.grade]};box-shadow:0 0 0 2px ${dotG}"></div><div>${sc.name}</div></div>`;
+    html+=`<div class="hm-row-label rl-click" onclick="selScene(${sc.id});document.getElementById('f-scene').scrollIntoView({behavior:'smooth'})" title="查看该场景深潜"><div class="rl-dot" style="background:${GRADE_COLOR[sc.grade]};box-shadow:0 0 0 2px ${dotG}"></div><div>${sc.name}</div></div>`;
     STAGE_UNION.forEach((stage,si)=>{
       const st=_sceneStage(sc,stage);
       if(st) html+=tpCellHtml(st.score,null,`onclick="selectStageCell(${sc.id},${si},this)"`);
@@ -1312,87 +1324,114 @@ function renderCompMatrix(){
   html+=COMP_CATS.map(([k,l])=>`<div class="hm-header">${l}</div>`).join('')+`<div class="hm-header sum">综合</div>`;
   rows.forEach(row=>{
     const dotG=row.overallCls==='bad'?'rgba(230,56,56,.2)':row.overallCls==='mid'?'rgba(253,154,0,.2)':'rgba(55,197,151,.2)';
-    html+=`<div class="hm-row-label" data-cid="${row.id}"><div class="rl-dot" style="background:${GRADE_COLOR[row.overallCls]};box-shadow:0 0 0 2px ${dotG}"></div><div>${row.sceneName}</div></div>`;
+    html+=`<div class="hm-row-label rl-click" data-cid="${row.id}" onclick="selectCompRow(${row.id},this)" title="查看该组件完整评分"><div class="rl-dot" style="background:${GRADE_COLOR[row.overallCls]};box-shadow:0 0 0 2px ${dotG}"></div><div>${row.sceneName}</div></div>`;
     COMP_CATS.forEach(([k])=>{ const c=row.cells[k]; html+=tpCellHtml(c.s,c.t,`onclick="selectCompCell(${row.id},'${k}',this)" data-cid="${row.id}" data-k="${k}"`); });
     html+=tpCellHtml(row.overallScore,null,null);
   });
   grid.innerHTML=html;
-  if(_compSel){
-    const el=grid.querySelector(`.hm-cell[data-cid="${_compSel.cid}"][data-k="${_compSel.k}"]`); if(el) el.classList.add('hm-sel');
-    const rl=grid.querySelector(`.hm-row-label[data-cid="${_compSel.cid}"]`); if(rl) rl.classList.add('rl-sel');
-  }
+  if(_compSel){ const el=grid.querySelector(`.hm-cell[data-cid="${_compSel.cid}"][data-k="${_compSel.k}"]`); if(el) el.classList.add('hm-sel'); }
+  if(_compRowSel!=null){ const rl=grid.querySelector(`.hm-row-label[data-cid="${_compRowSel}"]`); if(rl) rl.classList.add('rl-sel'); }
 }
-let _compSel=null;
+let _compSel=null,_compRowSel=null;
 function compDefaultSelect(){
   let worst=touchpointData[0]; touchpointData.forEach(r=>{ if(r.overallScore<worst.overallScore) worst=r; });
-  // 优先选有评分制度明细的维度里最差的那个，保证默认详情有内容
   const rubKeys=new Set(SCORE_RUBRIC.map(r=>r.key));
   let wk=null,wv=999; COMP_CATS.forEach(([k])=>{ if(!rubKeys.has(k))return; const s=worst.cells[k].s; if(s<wv){wv=s;wk=k;} });
   if(!wk){ COMP_CATS.forEach(([k])=>{ const s=worst.cells[k].s; if(s<wv){wv=s;wk=k;} }); }
   const el=document.querySelector(`#compHeatGrid .hm-cell[data-cid="${worst.id}"][data-k="${wk}"]`);
   if(el) selectCompCell(worst.id,wk,el); else compDetailReset();
+  compDeepReset();
 }
-function compDetailReset(){
-  const det=document.getElementById('compDetail'); if(!det)return;
-  det.innerHTML=`<div class="det-hint"><svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>点击上方矩阵格子查看组件评分详情（内容待补充）</div>`;
-}
-// 点任意格子 → 选中该「组件」，详情以组件为维度展开（所有评分维度），高亮所点维度
-function selectCompCell(sceneId,k,el){
-  document.querySelectorAll('#compHeatGrid .hm-cell').forEach(c=>c.classList.remove('hm-sel'));
-  document.querySelectorAll('#compHeatGrid .hm-row-label').forEach(c=>c.classList.remove('rl-sel'));
-  el.classList.add('hm-sel');
-  const rl=document.querySelector(`#compHeatGrid .hm-row-label[data-cid="${sceneId}"]`); if(rl) rl.classList.add('rl-sel');
-  _compSel={cid:sceneId,k};
-  renderCompDetail(sceneId,k);
+function compDetailReset(){ const det=document.getElementById('compDetail'); if(det) det.style.display='none'; }
+function compDeepReset(){
+  const det=document.getElementById('compDeep'); if(!det)return;
+  det.innerHTML=`<div class="det-hint"><svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>点击上方组件名，查看该组件的完整评分与分析</div>`;
 }
 function _itemScore(base,salt,i){const seed=((salt*13+i*29)%19)-9;return Math.max(8,Math.min(99,Math.round(base+seed)));}
-function renderCompDetail(sceneId,activeK){
-  const row=touchpointData.find(r=>r.id===sceneId); if(!row)return;
-  const det=document.getElementById('compDetail'); if(!det)return;
-  det.style.display='block'; det.className='tp-detail';
-  const bg=heatColor(row.overallScore),fg=textColor(row.overallScore);
-  const ac=row.cells[activeK]||{t:'f'};
-  const sparkColor=ac.t==='u'?'#6DBD9A':ac.t==='d'?'#E89494':'#AAAAAA';
+// 子维度环形时间线（单个维度，格子明细 / 整组件节点共用）
+function _dimGroupsHtml(k,dscore){
+  const r=SCORE_RUBRIC.find(x=>x.key===k);
+  if(!r) return `<div class="rub-todo">该维度评分明细待补充。</div>`;
+  let salt=0; for(let i=0;i<k.length;i++) salt+=k.charCodeAt(i);
+  return r.groups.map((g,gi)=>{
+    const cards=g.items.map((it,i)=>{const sv=_itemScore(dscore,salt+gi*7,i);const mn=it[1].split(/[=（(]/)[0].trim();
+      return `<div class="step-metric" title="${it[0]}｜${it[1]}"><div class="step-metric-lbl">${mn}</div><div class="step-metric-bottom"><span class="step-metric-val" style="color:${textColor(sv)}">${fmt10(sv)}</span></div></div>`;}).join('');
+    return `<div class="cs-sub"><span class="rub-badge">${g.sub}</span><span class="rub-cnt">${g.items.length} 项</span></div><div class="step-metrics" style="margin-bottom:8px">${cards}</div>`;
+  }).join('');
+}
+// 点格子 → 当前楼层展开该（组件×维度）格子的明细
+function selectCompCell(sceneId,k,el){
+  document.querySelectorAll('#compHeatGrid .hm-cell').forEach(c=>c.classList.remove('hm-sel'));
+  el.classList.add('hm-sel');
+  _compSel={cid:sceneId,k};
+  const row=touchpointData.find(r=>r.id===sceneId), c=row.cells[k];
+  const label=(COMP_CATS.find(x=>x[0]===k)||[])[1]||k;
+  const bg=heatColor(c.s),fg=textColor(c.s);
   const dimsHtml=COMP_CATS.concat([['__overall','综合']]).map(([dk,dl])=>{
-    const sc=dk==='__overall'?row.overallScore:row.cells[dk].s, active=dk===activeK;
-    return `<div class="tp-d-dim" style="background:${active?'rgba(106,103,206,.08)':'transparent'}">
-      <div class="l">${dl}</div><div class="v" style="background:${heatColor(sc)};color:${textColor(sc)}">${fmt10(sc)}</div>
-    </div>`;
+    const sc=dk==='__overall'?row.overallScore:row.cells[dk].s, active=dk===k;
+    return `<div class="tp-d-dim" style="background:${active?'rgba(106,103,206,.08)':'transparent'}"><div class="l">${dl}</div><div class="v" style="background:${heatColor(sc)};color:${textColor(sc)}">${fmt10(sc)}</div></div>`;
   }).join('');
-  // 维度时间线：每个评分维度一个环形节点，下挂子维度 + 检查项指标卡
-  const tl=COMP_CATS.map(([k,label],di)=>{
-    const dscore=row.cells[k].s, cls=_clsOf(dscore), isLast=di===COMP_CATS.length-1, isActive=k===activeK;
-    const r=SCORE_RUBRIC.find(x=>x.key===k);
-    let body;
-    if(r){
-      let salt=0; for(let i=0;i<k.length;i++) salt+=k.charCodeAt(i);
-      body=r.groups.map((g,gi)=>{
-        const cards=g.items.map((it,i)=>{const sv=_itemScore(dscore,salt+gi*7,i);const mn=it[1].split(/[=（(]/)[0].trim();
-          return `<div class="step-metric" title="${it[0]}｜${it[1]}"><div class="step-metric-lbl">${mn}</div><div class="step-metric-bottom"><span class="step-metric-val" style="color:${textColor(sv)}">${fmt10(sv)}</span></div></div>`;}).join('');
-        return `<div class="cs-sub"><span class="rub-badge">${g.sub}</span><span class="rub-cnt">${g.items.length} 项</span></div><div class="step-metrics" style="margin-bottom:8px">${cards}</div>`;
-      }).join('');
-    } else { body=`<div class="rub-todo">该维度评分明细待补充。</div>`; }
-    return `<div class="step-tl-item">
-      <div class="step-tl-node"><div class="step-tl-dot ${cls}">${stepRing(dscore,cls)}<span class="sd-num">${fmt10(dscore)}</span></div>${isLast?'':'<div class="step-tl-line"></div>'}</div>
-      <div class="step-tl-body${isLast?' last':''}">
-        <div class="step-tl-hdr"><span class="step-tl-name"${isActive?' style="color:var(--primary)"':''}>${label}${isActive?' · 当前':''}</span></div>
-        ${body}
-      </div></div>`;
-  }).join('');
+  const sparkColor=c.t==='u'?'#6DBD9A':c.t==='d'?'#E89494':'#AAAAAA';
+  const det=document.getElementById('compDetail');
+  det.style.display='block'; det.className='tp-detail';
   det.innerHTML=`
     <div class="tp-d-row">
-      <div class="tp-d-box" style="background:${bg};color:${fg}">${fmt10(row.overallScore)}</div>
+      <div class="tp-d-box" style="background:${bg};color:${fg}">${fmt10(c.s)}</div>
       <div style="flex-shrink:0">
-        <div class="tp-d-name">${row.sceneName}<span style="font-size:13px;font-weight:600;color:var(--text-3)"> · 组件评分详情</span></div>
-        <div class="tp-d-sub">综合 ${fmt10(row.overallScore)} · 共 ${COMP_CATS.length} 个评分维度 · 点其它组件切换</div>
+        <div class="tp-d-name">${row.sceneName} <span style="font-size:13px;font-weight:600;color:var(--text-3)">· ${label}</span></div>
+        <div class="tp-d-sub">综合 ${fmt10(row.overallScore)} · 点击组件名看完整评分</div>
       </div>
       <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px">
         <span style="font-size:11px;color:var(--text-3)">近 6 期</span>
-        ${miniSparkSvg(tpHist(row.overallScore,ac.t),sparkColor,110,40)}
+        ${miniSparkSvg(tpHist(c.s,c.t),sparkColor,110,40)}
       </div>
       <div class="tp-d-dims">${dimsHtml}</div>
     </div>
-    <div class="agent-lbl" style="margin-top:16px">评分明细 · 按评分维度逐项打分（依评分制度）</div>
+    <div class="agent-lbl" style="margin-top:16px">评分明细 · ${label} 维度逐项打分</div>
+    ${_dimRingTimeline(k,c.s)}`;
+}
+// 单维度的子维度环形时间线（格子明细用：每个子维度一个环形分 + 检查项卡）
+function _dimRingTimeline(k,base){
+  const r=SCORE_RUBRIC.find(x=>x.key===k);
+  if(!r) return `<div class="rub-todo">该维度逐项评分明细待补充。</div>`;
+  let salt=0; for(let i=0;i<k.length;i++) salt+=k.charCodeAt(i);
+  return `<div class="step-tl">`+r.groups.map((g,gi)=>{
+    const items=g.items.map((it,i)=>({n:it[0],m:it[1],sv:_itemScore(base,salt+gi*7,i)}));
+    const avg=Math.round(items.reduce((a,x)=>a+x.sv,0)/items.length),cls=_clsOf(avg),isLast=gi===r.groups.length-1;
+    const cards=items.map(x=>{const mn=x.m.split(/[=（(]/)[0].trim();return `<div class="step-metric" title="${x.n}｜${x.m}"><div class="step-metric-lbl">${mn}</div><div class="step-metric-bottom"><span class="step-metric-val" style="color:${textColor(x.sv)}">${fmt10(x.sv)}</span></div></div>`;}).join('');
+    return `<div class="step-tl-item"><div class="step-tl-node"><div class="step-tl-dot ${cls}">${stepRing(avg,cls)}<span class="sd-num">${fmt10(avg)}</span></div>${isLast?'':'<div class="step-tl-line"></div>'}</div><div class="step-tl-body${isLast?' last':''}"><div class="step-tl-hdr"><span class="step-tl-name">${g.sub}</span><span class="rub-cnt" style="margin-left:2px">${items.length} 项</span></div><div class="step-metrics">${cards}</div></div></div>`;
+  }).join('')+`</div>`;
+}
+// 点组件名 → 下一楼层展开整组件的评分与分析（所有评分维度）
+function selectCompRow(sceneId,el){
+  document.querySelectorAll('#compHeatGrid .hm-row-label').forEach(c=>c.classList.remove('rl-sel'));
+  if(el) el.classList.add('rl-sel');
+  _compRowSel=sceneId;
+  renderCompDeep(sceneId);
+  const f=document.getElementById('f-compdeep'); if(f) f.scrollIntoView({behavior:'smooth'});
+}
+function renderCompDeep(sceneId){
+  const row=touchpointData.find(r=>r.id===sceneId); if(!row)return;
+  const det=document.getElementById('compDeep'); if(!det)return;
+  const gradeLabel=row.overallCls==='bad'?'严重':row.overallCls==='mid'?'待改善':'健康';
+  const dimsHtml=COMP_CATS.concat([['__overall','综合']]).map(([dk,dl])=>{
+    const sc=dk==='__overall'?row.overallScore:row.cells[dk].s;
+    return `<div class="tp-d-dim"><div class="l">${dl}</div><div class="v" style="background:${heatColor(sc)};color:${textColor(sc)}">${fmt10(sc)}</div></div>`;
+  }).join('');
+  const tl=COMP_CATS.map(([k,label],di)=>{
+    const dscore=row.cells[k].s, cls=_clsOf(dscore), isLast=di===COMP_CATS.length-1;
+    return `<div class="step-tl-item">
+      <div class="step-tl-node"><div class="step-tl-dot ${cls}">${stepRing(dscore,cls)}<span class="sd-num">${fmt10(dscore)}</span></div>${isLast?'':'<div class="step-tl-line"></div>'}</div>
+      <div class="step-tl-body${isLast?' last':''}"><div class="step-tl-hdr"><span class="step-tl-name">${label}</span></div>${_dimGroupsHtml(k,dscore)}</div></div>`;
+  }).join('');
+  det.innerHTML=`
+    <div class="det-hd">
+      <div class="det-name">${row.sceneName}</div>
+      <span class="det-grade ${row.overallCls}">${gradeLabel}</span>
+      <div class="det-score ${row.overallCls}">${fmt10(row.overallScore)}<small>/10</small></div>
+    </div>
+    <div class="tp-d-dims" style="margin:0 0 6px">${dimsHtml}</div>
+    <div class="agent-lbl" style="margin-top:14px">评分明细 · 按评分维度逐项打分（依评分制度）</div>
     <div class="step-tl">${tl}</div>`;
 }
 
