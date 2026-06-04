@@ -52,7 +52,8 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 
 /* ── FILTER BAR ── */
 .filter-bar{background:rgba(255,255,255,.7);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:9px 30px;display:flex;align-items:center;gap:9px;position:sticky;top:56px;z-index:99}
-.fl-lbl{font-size:10px;color:var(--text-3);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.fl-lbl{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--text-3);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.fl-lbl svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .fchip{padding:5px 13px;border-radius:999px;font-size:11.5px;font-weight:600;border:1px solid var(--border-2);background:#fff;color:var(--text-2);cursor:pointer;transition:all .12s}
 .fchip:hover{border-color:var(--blue-soft);color:var(--primary)}
 .fchip.on{background:var(--blue-light);color:var(--blue-deep);border-color:var(--blue-soft)}
@@ -370,18 +371,18 @@ body{font-family:'Inter','PingFang SC','Microsoft YaHei',-apple-system,sans-seri
 
 <!-- filter -->
 <div class="filter-bar">
-  <span class="fl-lbl">视图</span>
-  <span class="fchip on" id="vchip-journey" onclick="setView('journey',this)">场景</span>
-  <span class="fchip" id="vchip-component" onclick="setView('component',this)">组件</span>
-  <div class="fl-sep"></div>
-  <span class="fl-lbl">芯片</span>
+  <span class="fl-lbl"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/><path d="M9 1.5v3M15 1.5v3M9 19.5v3M15 19.5v3M1.5 9h3M1.5 15h3M19.5 9h3M19.5 15h3"/></svg>芯片</span>
   <span class="fchip on">A5</span>
   <span class="fchip">A2 &amp; A3</span>
   <div class="fl-sep"></div>
-  <span class="fl-lbl">角色</span>
+  <span class="fl-lbl"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>角色</span>
   <span class="fchip on">算子开发者</span>
   <span class="fchip">AI 框架开发者</span>
   <span class="fchip">应用开发者</span>
+  <div class="fl-sep"></div>
+  <span class="fl-lbl"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>视图</span>
+  <span class="fchip on" id="vchip-journey" onclick="setView('journey',this)">场景</span>
+  <span class="fchip" id="vchip-component" onclick="setView('component',this)">组件</span>
 </div>
 
 <div class="page">
